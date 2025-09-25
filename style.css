@@ -1,0 +1,18 @@
+.charts-text-body {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.25;
+  font-family: "Montserrat", sans-serif;
+}
+.charts-text-body-bold {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.25;
+  font-family: "Montserrat", sans-serif;
+}
+.charts-text-value {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  font-family: "Spacegrotesk", "Space Grotesk", sans-serif;
+}
