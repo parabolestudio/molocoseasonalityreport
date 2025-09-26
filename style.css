@@ -25,9 +25,15 @@
 
 #vis-vertical-filter {
   .vis-filter-container {
+    margin-left: 10px; // just for testing, remove later
+  }
+  .vis-filter-category-container {
+    position: relative;
     display: flex;
+    width: fit-content;
 
     .vis-filter-item {
+      z-index: 20;
       padding: 12px 50px;
       border: 1px solid #040078;
       cursor: pointer;
@@ -51,6 +57,85 @@
         background-color: #040078;
         p {
           color: #ffffff;
+        }
+      }
+    }
+  }
+  .vis-filter-menu-container {
+    position: absolute;
+    top: 24px;
+    right: 0;
+    background-color: #ffffff;
+    z-index: 10;
+    border-left: 1px solid #040078;
+    border-right: 1px solid #040078;
+    border-bottom: 1px solid #040078;
+    border-radius: 0px 0px 10px 10px;
+    width: 100%;
+    padding: 50px 26px 26px 26px;
+
+    p {
+      margin: 0;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 1.25;
+      color: #000000;
+    }
+
+    .vertical-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+      margin-bottom: 0px;
+      list-style: none;
+      padding: 0;
+
+      .vertical-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #f2f2f2;
+        color: #000000;
+        font-size: 16px;
+        line-height: 1.25;
+        border-radius: 20px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.3s ease-in-out;
+
+        .vertical-icon {
+          width: auto;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            width: 100%;
+            height: 100%;
+            /* fill: #666666; */
+            circle {
+              transition: fill 0.3s ease-in-out;
+            }
+          }
+        }
+
+        span {
+          padding: 6px 12px 6px 0;
+        }
+
+        &.active {
+          background-color: black;
+          color: #ffffff;
+
+          .vertical-icon svg circle {
+            fill: black;
+          }
+          .vertical-icon svg path {
+            fill: white;
+          }
         }
       }
     }
