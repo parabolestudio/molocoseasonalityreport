@@ -10,9 +10,49 @@
   line-height: 1.25;
   font-family: "Montserrat", sans-serif;
 }
+.charts-text-big-bold {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.25;
+  font-family: "Montserrat", sans-serif;
+}
 .charts-text-value {
   font-weight: 700;
   font-size: 14px;
   line-height: 1;
   font-family: "Spacegrotesk", "Space Grotesk", sans-serif;
+}
+
+#vis-vertical-filter {
+  .vis-filter-container {
+    display: flex;
+
+    .vis-filter-item {
+      padding: 12px 50px;
+      border: 1px solid #040078;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+
+      &:first-child {
+        border-radius: 100px 0px 0px 100px;
+      }
+      &:nth-child(2) {
+        border-radius: 0px 100px 100px 0px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      &.selected {
+        background-color: #040078;
+        p {
+          color: #ffffff;
+        }
+      }
+    }
+  }
 }
