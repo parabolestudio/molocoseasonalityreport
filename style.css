@@ -56,3 +56,9 @@
     }
   }
 }
+
+#vis-user-container {
+  svg {
+    overflow: visible;
+  }
+}
