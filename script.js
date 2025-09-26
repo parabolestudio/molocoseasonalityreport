@@ -8,7 +8,7 @@ import { renderAdvertiserElements } from "./js/renderAdvertiserElements.js";
 renderVerticalSelection();
 
 // render user behavior chart and surrounding elements (filters, legend, etc)
-// renderUserElements();
+renderUserElements();
 
 // render advertiser behavior chart and surrounding elements (filters, legend, etc)
 renderAdvertiserElements();

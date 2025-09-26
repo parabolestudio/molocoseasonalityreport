@@ -118,9 +118,9 @@ function UserChart({ data }) {
 
   const charts = [
     {
-      title: "DAU",
-      value: "dau",
-      data: chartData.map((d) => ({ date: d.week_start, value: d.dau })),
+      title: "WAU",
+      value: "wau",
+      data: chartData.map((d) => ({ date: d.week_start, value: d.wau })),
     },
     {
       title: "Downloads",

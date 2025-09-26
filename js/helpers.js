@@ -1,5 +1,5 @@
 export const valueFormatting = {
-  dau: (value) => {
+  wau: (value) => {
     return value >= 1_000_000_000
       ? (value / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "B"
       : value >= 1_000_000

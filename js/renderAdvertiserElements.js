@@ -18,6 +18,9 @@ export function renderAdvertiserElements() {
   // populate system selector
   populateSystemSelector("vis-advertiser-dropdown-systems");
 
+  // render metrics buttons
+  renderMetricsButtons();
+
   // fetch data from google sheet
   fetchGoogleSheetCSV("advertiser-kpis")
     .then((data) => {
@@ -49,6 +52,56 @@ export function renderAdvertiserElements() {
   }
 }
 
+function renderMetricsButtons() {
+  const containerId = "vis-advertiser-metrics";
+  const containerElement = document.getElementById(containerId);
+  if (containerElement) {
+    // clear existing content before rendering
+    containerElement.innerHTML = "";
+
+    // Render chart as a component so hooks work
+    renderComponent(html`<${AdvertiserMetricsButtons} />`, containerElement);
+  } else {
+    console.error(`Could not find container element with id ${containerId}`);
+  }
+}
+
+const metrics = [
+  { value: "bids_p50", label: "Bid Requests" },
+  { value: "cpm_p50", label: "CPM" },
+  { value: "cpi_p50", label: "CPI" },
+  { value: "roas_d7_p50", label: "ROAS" },
+  { value: "arppu_d7_p50", label: "ARRPU" },
+];
+const metricDefault = metrics[0];
+
+function AdvertiserMetricsButtons() {
+  const [selectedMetric, setSelectedMetric] = useState(metricDefault.value);
+
+  return html`<div class="vis-metrics-buttons-container">
+    ${metrics.map(
+      (metric) =>
+        html`<button
+          class="vis-metrics-button ${selectedMetric === metric.value
+            ? "selected"
+            : ""}"
+          data-metric="${metric.value}"
+          onclick=${() => {
+            setSelectedMetric(metric.value);
+            // Dispatch custom event to notify other components
+            document.dispatchEvent(
+              new CustomEvent("vis-advertiser-metrics-changed", {
+                detail: { selectedMetric: metric.value },
+              })
+            );
+          }}
+        >
+          ${metric.label}
+        </button>`
+    )}
+  </div>`;
+}
+
 function renderAdvertiserChart(data) {
   const containerId = "vis-advertiser-container";
   const containerElement = document.getElementById(containerId);
@@ -73,6 +126,7 @@ function AdvertiserChart({ data }) {
   const [country, setCountry] = useState(
     getDropdownValue("vis-advertiser-dropdown-countries")
   );
+  const [metric, setMetric] = useState(metricDefault.value);
   const [chartData, setChartData] = useState(filterData(data));
 
   function filterData(inputData) {
@@ -114,6 +168,21 @@ function AdvertiserChart({ data }) {
     };
   }, []);
 
+  // listen to change in advertiser metrics buttons
+  useEffect(() => {
+    const handleMetricsChange = (e) => setMetric(e.detail.selectedMetric);
+    document.addEventListener(
+      "vis-advertiser-metrics-changed",
+      handleMetricsChange
+    );
+    return () => {
+      document.removeEventListener(
+        "vis-advertiser-metrics-changed",
+        handleMetricsChange
+      );
+    };
+  }, []);
+
   console.log("Rendering advertiser chart with data:", chartData);
 
   // set up vis dimensions
@@ -122,14 +191,14 @@ function AdvertiserChart({ data }) {
   const width =
     visContainer && visContainer.offsetWidth ? visContainer.offsetWidth : 600;
   const height = 600;
-  const margin = { top: 50, right: 1, bottom: 50, left: 1 };
+  const margin = { top: 20, right: 1, bottom: 20, left: 1 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
   return html`<div>
     <svg
       viewBox="0 0 ${width} ${height}"
-      style="width: 100%; height: 100%; background-color: transparent"
+      style="width: 100%; height: 100%; background-color: #f1f1f1"
     >
       <g transform="translate(${margin.left},${margin.top})">
         <rect

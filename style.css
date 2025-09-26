@@ -57,7 +57,33 @@
   }
 }
 
-#vis-user-container {
+#vis-advertiser-metrics {
+  .vis-metrics-buttons-container {
+    display: flex;
+    gap: 12px;
+
+    .vis-metrics-button {
+      padding: 5px 15px;
+      cursor: pointer;
+      border-radius: 10px;
+      background-color: #e4e4e4;
+      color: #000;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.25;
+
+      &.selected {
+        background-color: #000;
+        color: #ffffff;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+#vis-user-container,
+#vis-advertiser-container {
   svg {
     overflow: visible;
   }
