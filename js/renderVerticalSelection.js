@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
 } from "./utils/preact-htm.js";
+import { gamingVerticals, consumerVerticals } from "./verticals.js";
 
 const containerId = "vis-vertical-filter";
 
@@ -27,141 +28,21 @@ export function renderVerticalSelection() {
 const ASSETS_URL =
   "https://raw.githubusercontent.com/parabolestudio/molocoseasonalityreport/refs/heads/main/assets/icons/";
 
-const gamingVerticals = [
+const categoryIcons = [
   {
-    label: "All",
-    value: "all",
-    icon: "all.svg",
+    label: "Gaming",
+    icon: "gaming.svg",
   },
   {
-    label: "Match",
-    value: "match",
-    icon: "match.svg",
-  },
-  {
-    label: "Casino",
-    value: "casino",
-    icon: "casino.svg",
-  },
-  {
-    label: "Puzzle",
-    value: "puzzle",
-    icon: "puzzle.svg",
-  },
-  {
-    label: "RPG",
-    value: "rpg",
-    icon: "rpg.svg",
-  },
-  {
-    label: "Simulation",
-    value: "simulation",
-    icon: "simulation.svg",
-  },
-  {
-    label: "Strategy",
-    value: "strategy",
-    icon: "strategy.svg",
-  },
-  {
-    label: "Tabletop",
-    value: "tabletop",
-    icon: "tabletop.svg",
-  },
-];
-
-const consumerVerticals = [
-  {
-    label: "All",
-    value: "all",
-    icon: "all.svg",
-  },
-  {
-    label: "E-commerce",
-    value: "ecommerce",
-    icon: "ecommerce.svg",
-  },
-  {
-    label: "RMG",
-    value: "rmg",
-    icon: "rmg.svg",
-  },
-  {
-    label: "Social",
-    value: "social",
-    icon: "social.svg",
-  },
-  {
-    label: "Trading & Investing",
-    value: "trading_investing",
-    icon: "trading.svg",
-  },
-  {
-    label: "Finance & Banking",
-    value: "finance_banking",
-    icon: "finance.svg",
-  },
-  {
-    label: "Utility & Productivity",
-    value: "utility_productivity",
-    icon: "utility.svg",
-  },
-  {
-    label: "Food & Delivery",
-    value: "food_delivery",
-    icon: "food.svg",
-  },
-  {
-    label: "Dating",
-    value: "dating",
-    icon: "dating.svg",
-  },
-  {
-    label: "Entertainment",
-    value: "entertainment",
-    icon: "entertainment.svg",
-  },
-  {
-    label: "Travel",
-    value: "travel",
-    icon: "travel.svg",
-  },
-  {
-    label: "Health & Fitness",
-    value: "health_fitness",
-    icon: "health.svg",
-  },
-  {
-    label: "Education",
-    value: "education",
-    icon: "education.svg",
-  },
-  {
-    label: "News",
-    value: "news",
-    icon: "news.svg",
-  },
-  {
-    label: "Loyalty",
-    value: "loyalty",
-    icon: "loyalty.svg",
-  },
-  {
-    label: "Gen AI",
-    value: "genai",
-    icon: "genai.svg",
-  },
-  {
-    label: "Other",
-    value: "other",
-    icon: "other.svg",
+    label: "Consumer",
+    icon: "consumer.svg",
   },
 ];
 
 function VerticalSelector() {
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const [svgCache, setSvgCache] = useState({});
 
@@ -183,33 +64,52 @@ function VerticalSelector() {
 
   // get vertical icons on mount
   useEffect(async () => {
+    // Pre-fetch category SVG icons first
+    const iconPathsCategories = categoryIcons.map((d) => d.icon);
+    for (const iconPath of iconPathsCategories) {
+      await fetchSvgContent(iconPath);
+    }
     // Pre-fetch all SVG icons
     const allVerticals = [...gamingVerticals, ...consumerVerticals];
     const iconPaths = allVerticals.map((d) => d.icon);
-
     for (const iconPath of iconPaths) {
       await fetchSvgContent(iconPath);
     }
   }, []);
 
   function handleCategoryChange(newCategory) {
-    console.log("Changing category to:", newCategory);
-    setCategory(newCategory);
+    if (newCategory !== category) {
+      console.log("Changing category to:", newCategory);
+      setCategory(newCategory);
 
-    if (menuOpen) setMenuOpen(false);
+      console.log("Resetting vertical to 'all'");
+      setVertical("all");
 
-    // Dispatch custom event to notify other components
-    document.dispatchEvent(
-      new CustomEvent(`${containerId}-changed`, {
-        detail: { selectedCategory: newCategory },
-      })
-    );
+      if (menuOpen) setMenuOpen(false);
+
+      // Dispatch custom event to notify other components
+      document.dispatchEvent(
+        new CustomEvent(`${containerId}-category-changed`, {
+          detail: { selectedCategory: newCategory },
+        })
+      );
+      document.dispatchEvent(
+        new CustomEvent(`${containerId}-vertical-changed`, {
+          detail: { selectedVertical: "all" },
+        })
+      );
+    }
   }
 
-  function handleSelectorClick(e, vertical) {
+  function handleSelectorClick(e, selectorCategory) {
     e.stopPropagation();
-    console.log("Clicked vertical:", vertical);
-    setMenuOpen(!menuOpen);
+
+    if (selectorCategory !== category) {
+      handleCategoryChange(selectorCategory);
+      setMenuOpen(true);
+    } else {
+      setMenuOpen(!menuOpen);
+    }
   }
 
   const verticalSet =
@@ -221,13 +121,14 @@ function VerticalSelector() {
       class="vertical-item ${vertical === item.value ? "active" : "inactive"}"
       onClick="${() => {
         setVertical(item.value);
+        setMenuOpen(false);
 
         // Dispatch custom event to notify other components
-        // document.dispatchEvent(
-        //   new CustomEvent("viz11CategoryChanged", {
-        //     detail: { selectedVertical: d.value },
-        //   })
-        // );
+        document.dispatchEvent(
+          new CustomEvent(`${containerId}-vertical-changed`, {
+            detail: { selectedVertical: item.value },
+          })
+        );
       }}"
     >
       <div
@@ -238,12 +139,23 @@ function VerticalSelector() {
     </li>`;
   });
 
+  console.log(
+    "Rendering VerticalSelector with category:",
+    category,
+    "and vertical:",
+    vertical
+  );
+
   return html`<div class="vis-filter-container">
     <div class="vis-filter-category-container">
       <div
         class=${`vis-filter-item ${category === "gaming" ? "selected" : ""}`}
         onclick=${() => handleCategoryChange("gaming")}
       >
+        <div
+          class="category-icon"
+          dangerouslySetInnerHTML=${{ __html: svgCache["gaming.svg"] || "" }}
+        ></div>
         <p class="charts-text-big-bold">Gaming</p>
         <svg
           width="23"
@@ -253,6 +165,7 @@ function VerticalSelector() {
           xmlns="http://www.w3.org/2000/svg"
           onclick=${(e) => handleSelectorClick(e, "gaming")}
           transform="rotate(${menuOpen && category === "gaming" ? 180 : 0})"
+          style="transition: transform 0.3s ease;"
         >
           <circle
             cx="11.9265"
@@ -272,6 +185,10 @@ function VerticalSelector() {
         class=${`vis-filter-item ${category === "consumer" ? "selected" : ""}`}
         onclick=${() => handleCategoryChange("consumer")}
       >
+        <div
+          class="category-icon"
+          dangerouslySetInnerHTML=${{ __html: svgCache["consumer.svg"] || "" }}
+        ></div>
         <p class="charts-text-big-bold">Consumer</p>
         <svg
           width="23"
@@ -281,6 +198,7 @@ function VerticalSelector() {
           xmlns="http://www.w3.org/2000/svg"
           onclick=${(e) => handleSelectorClick(e, "consumer")}
           transform="rotate(${menuOpen && category === "consumer" ? 180 : 0})"
+          style="transition: transform 0.3s ease;"
         >
           <circle
             cx="11.9265"
@@ -299,7 +217,7 @@ function VerticalSelector() {
       ${menuOpen &&
       html` <div class="vis-filter-menu-container">
         <p>Select sub-vertical</p>
-        <ul data-active-vertical="${vertical}" class="vertical-list">
+        <ul class="vertical-list">
           ${verticalItems}
         </ul>
       </div>`}

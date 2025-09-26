@@ -58,6 +58,10 @@
         p {
           color: #ffffff;
         }
+
+        .category-icon svg path {
+          fill: white;
+        }
       }
     }
   }
@@ -72,7 +76,7 @@
     border-bottom: 1px solid #040078;
     border-radius: 0px 0px 10px 10px;
     width: 100%;
-    padding: 50px 26px 26px 26px;
+    padding: 60px 26px 26px 26px;
 
     p {
       margin: 0;
@@ -86,8 +90,8 @@
     .vertical-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 16px;
+      gap: 12px;
+      margin-top: 25px;
       margin-bottom: 0px;
       list-style: none;
       padding: 0;
@@ -115,7 +119,6 @@
           svg {
             width: 100%;
             height: 100%;
-            /* fill: #666666; */
             circle {
               transition: fill 0.3s ease-in-out;
             }
