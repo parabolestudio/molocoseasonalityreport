@@ -145,6 +145,72 @@
   }
 }
 
+#vis-comparison-years {
+  .vis-year-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: start;
+    align-items: start;
+
+    .vis-year-button {
+      font-family: "Montserrat", sans-serif;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 400;
+      color: #000000;
+      background: #f8f8f8;
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 5px 15px;
+      width: fill-content;
+
+      &.selected {
+        font-weight: 700;
+        color: white;
+        background: #0280fb;
+      }
+    }
+  }
+}
+#vis-comparison-periods {
+  .vis-period-buttons-container {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+
+    .vis-period-button {
+      font-family: "Montserrat", sans-serif;
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.7);
+      background: #f8f8f8;
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 15px 15px;
+
+      .vis-period-button-text {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .vis-period-title {
+        display: block;
+        font-weight: 700;
+        font-size: 18px;
+      }
+
+      &.selected {
+        color: white;
+        background: #0280fb;
+      }
+    }
+  }
+}
+
+/* used in advertiser and comparison chart */
 .vis-metrics-buttons-container {
   display: flex;
   gap: 12px;

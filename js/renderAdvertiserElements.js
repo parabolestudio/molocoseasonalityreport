@@ -126,17 +126,23 @@ function AdvertiserChart({ data }) {
   const [country, setCountry] = useState(
     getDropdownValue("vis-advertiser-dropdown-countries")
   );
+  const [category, setCategory] = useState("gaming");
+  const [vertical, setVertical] = useState("all");
   const [metric, setMetric] = useState(metricDefault.value);
   const [chartData, setChartData] = useState(filterData(data));
 
   function filterData(inputData) {
     return inputData.filter(
-      (d) => d.system === system && d.country === country
+      (d) =>
+        d.system === system &&
+        d.country === country &&
+        d.category === category &&
+        d.vertical === vertical
     );
   }
   useEffect(() => {
     setChartData(filterData(data));
-  }, [system, country]);
+  }, [system, country, category, vertical]);
 
   // listen to change in advertiser system dropdown
   useEffect(() => {
@@ -183,7 +189,51 @@ function AdvertiserChart({ data }) {
     };
   }, []);
 
-  console.log("Rendering advertiser chart with data:", chartData);
+  // listen to change in general category
+  useEffect(() => {
+    const handleCategoryChange = (e) => {
+      const selectedCategory = e.detail.selectedCategory;
+      setCategory(selectedCategory);
+    };
+    document.addEventListener(
+      "vis-vertical-filter-category-changed",
+      handleCategoryChange
+    );
+    return () => {
+      document.removeEventListener(
+        "vis-vertical-filter-category-changed",
+        handleCategoryChange
+      );
+    };
+  }, []);
+
+  // listen to change in general vertical
+  useEffect(() => {
+    const handleVerticalChange = (e) => {
+      const selectedVertical = e.detail.selectedVertical;
+      setVertical(selectedVertical);
+    };
+    document.addEventListener(
+      "vis-vertical-filter-vertical-changed",
+      handleVerticalChange
+    );
+    return () => {
+      document.removeEventListener(
+        "vis-vertical-filter-vertical-changed",
+        handleVerticalChange
+      );
+    };
+  }, []);
+
+  console.log(
+    "Rendering advertiser chart",
+    chartData,
+    system,
+    country,
+    category,
+    vertical,
+    metric
+  );
 
   // set up vis dimensions
 

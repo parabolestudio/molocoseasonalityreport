@@ -123,7 +123,7 @@ function UserChart({ data }) {
     };
   }, []);
 
-  // listen to change in user category dropdown
+  // listen to change in general category
   useEffect(() => {
     const handleCategoryChange = (e) => {
       const selectedCategory = e.detail.selectedCategory;
@@ -141,7 +141,7 @@ function UserChart({ data }) {
     };
   }, []);
 
-  // listen to change in user vertical dropdown
+  // listen to change in general vertical
   useEffect(() => {
     const handleVerticalChange = (e) => {
       const selectedVertical = e.detail.selectedVertical;
@@ -159,7 +159,14 @@ function UserChart({ data }) {
     };
   }, []);
 
-  console.log("Rendering user chart with data:", chartData);
+  console.log(
+    "Rendering user chart",
+    chartData,
+    system,
+    country,
+    category,
+    vertical
+  );
 
   const charts = [
     {
