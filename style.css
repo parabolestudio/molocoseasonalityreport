@@ -33,7 +33,7 @@
     width: fit-content;
 
     .vis-filter-item {
-      z-index: 20;
+      z-index: 11;
       padding: 12px 50px;
       border: 1px solid #040078;
       cursor: pointer;

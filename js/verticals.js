@@ -49,7 +49,7 @@ export const consumerVerticals = [
   },
   {
     label: "E-commerce",
-    value: "ecommerce",
+    value: "e-commerce",
     icon: "ecommerce.svg",
   },
   {
@@ -64,17 +64,17 @@ export const consumerVerticals = [
   },
   {
     label: "Trading & Investing",
-    value: "trading_investing",
+    value: "Finance (Trading & Investing)",
     icon: "trading.svg",
   },
   {
     label: "Finance & Banking",
-    value: "finance_banking",
+    value: "Finance (Financial Health & Banking)",
     icon: "finance.svg",
   },
   {
     label: "Utility & Productivity",
-    value: "utility_productivity",
+    value: "Utility & Productivity",
     icon: "utility.svg",
   },
   {
@@ -99,7 +99,7 @@ export const consumerVerticals = [
   },
   {
     label: "Health & Fitness",
-    value: "health_fitness",
+    value: "Health & Fitness",
     icon: "health.svg",
   },
   {
@@ -119,7 +119,7 @@ export const consumerVerticals = [
   },
   {
     label: "Gen AI",
-    value: "genai",
+    value: "Generative AI",
     icon: "genai.svg",
   },
   {

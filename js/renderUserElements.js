@@ -41,9 +41,12 @@ export function renderUserElements() {
     return data.forEach((d) => {
       d["country"] = d["country"];
       d["system"] = d["os"];
-      d["category"] = d["category"];
-      d["vertical"] = d["vertical"];
-      d["dau"] = +d["total_dau"];
+      d["category"] =
+        d["category"].toLowerCase() === "non-gaming"
+          ? "consumer"
+          : d["category"].toLowerCase();
+      d["vertical"] = d["vertical"].toLowerCase().trim();
+      d["wau"] = +d["median_wau"];
       d["downloads"] = +d["total_downloads"];
       d["revenue"] = +d["total_revenue"];
       d["time_spent"] = +d["total_time_spent"].trim();
@@ -73,16 +76,22 @@ function UserChart({ data }) {
   const [country, setCountry] = useState(
     getDropdownValue("vis-user-dropdown-countries")
   );
+  const [category, setCategory] = useState("gaming");
+  const [vertical, setVertical] = useState("all");
   const [chartData, setChartData] = useState(filterData(data));
 
   function filterData(inputData) {
     return inputData.filter(
-      (d) => d.system === system && d.country === country
+      (d) =>
+        d.system === system &&
+        d.country === country &&
+        d.category === category &&
+        d.vertical === vertical
     );
   }
   useEffect(() => {
     setChartData(filterData(data));
-  }, [system, country]);
+  }, [system, country, vertical, category]);
 
   // listen to change in user system dropdown
   useEffect(() => {
@@ -110,6 +119,42 @@ function UserChart({ data }) {
       document.removeEventListener(
         "vis-user-dropdown-countries-changed",
         handleCountryChange
+      );
+    };
+  }, []);
+
+  // listen to change in user category dropdown
+  useEffect(() => {
+    const handleCategoryChange = (e) => {
+      const selectedCategory = e.detail.selectedCategory;
+      setCategory(selectedCategory);
+    };
+    document.addEventListener(
+      "vis-vertical-filter-category-changed",
+      handleCategoryChange
+    );
+    return () => {
+      document.removeEventListener(
+        "vis-vertical-filter-category-changed",
+        handleCategoryChange
+      );
+    };
+  }, []);
+
+  // listen to change in user vertical dropdown
+  useEffect(() => {
+    const handleVerticalChange = (e) => {
+      const selectedVertical = e.detail.selectedVertical;
+      setVertical(selectedVertical);
+    };
+    document.addEventListener(
+      "vis-vertical-filter-vertical-changed",
+      handleVerticalChange
+    );
+    return () => {
+      document.removeEventListener(
+        "vis-vertical-filter-vertical-changed",
+        handleVerticalChange
       );
     };
   }, []);
