@@ -50,6 +50,7 @@ const SHEET_ID =
 
 const SHEET_TAB_IDS = {
   "user-engagement": "2041233709",
+  "advertiser-kpis": "367086481",
 };
 
 function getSheetUrl(tabName) {

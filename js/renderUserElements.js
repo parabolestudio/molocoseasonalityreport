@@ -12,14 +12,11 @@ import {
 } from "./utils/preact-htm.js";
 import { valueFormatting } from "./helpers.js";
 
-export function renderUserBehaviorElements() {
-  console.log("Rendering user behavior elements");
+export function renderUserElements() {
+  console.log("Rendering user elements");
 
   // populate system selector
   populateSystemSelector("vis-user-dropdown-systems");
-
-  // render chart legend
-  // TODO: implement legend rendering from RMG, done in Webflow?
 
   // fetch data from google sheet
   fetchGoogleSheetCSV("user-engagement")
@@ -56,7 +53,8 @@ export function renderUserBehaviorElements() {
 }
 
 function renderUserChart(data) {
-  const containerElement = document.getElementById("vis-user-container");
+  const containerId = "vis-user-container";
+  const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
     containerElement.innerHTML = "";
@@ -64,9 +62,7 @@ function renderUserChart(data) {
     // Render chart as a component so hooks work
     renderComponent(html`<${UserChart} data=${data} />`, containerElement);
   } else {
-    console.error(
-      `Could not find container element for creative format with id ${containerId}`
-    );
+    console.error(`Could not find container element with id ${containerId}`);
   }
 }
 
