@@ -18,6 +18,7 @@ import {
   ASSETS_URL,
 } from "./helpers.js";
 import { holidays } from "./holidays.js";
+import TooltipHoliday from "./TooltipHoliday.js";
 
 export function renderUserElements() {
   console.log("Rendering user elements");
@@ -89,7 +90,7 @@ function UserChart({ data }) {
   const [chartData, setChartData] = useState(filterData(data));
 
   const [hoveredHoliday, setHoveredHoliday] = useState(null);
-  const [tooltipValues, setTooltipValues] = useState(null);
+  const [hoveredValues, setHoveredValues] = useState(null);
 
   function filterData(inputData) {
     return inputData.filter(
@@ -305,7 +306,7 @@ function UserChart({ data }) {
               href="${ASSETS_URL}${holiday.icon}"
               transform="translate(-14, ${height - margin.bottom + 5})"
               style="cursor: pointer;"
-              onmouseleave="${() => {}}"
+              onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
@@ -351,7 +352,7 @@ function UserChart({ data }) {
       </g>
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
-    <${TooltipValues} hoveredItem=${null} />
+    <${TooltipValues} hoveredItem=${hoveredValues} />
   </div>`;
 }
 
@@ -537,23 +538,6 @@ function TooltipValues({ hoveredItem }) {
             )
           : "-"}
       </p>
-    </div>
-  </div>`;
-}
-
-function TooltipHoliday({ hoveredItem }) {
-  if (!hoveredItem) return null;
-
-  return html`<div
-    class="tooltip"
-    style="left: ${hoveredItem.tooltipX}px; ${hoveredItem.align}: ${hoveredItem.tooltipY}px; ${hoveredItem.align ===
-    "bottom"
-      ? "top: unset;"
-      : ""}"
-  >
-    <div>
-      <p class="tooltip-title">${hoveredItem.name}</p>
-      <p class="tooltip-label">${hoveredItem.date}</p>
     </div>
   </div>`;
 }
