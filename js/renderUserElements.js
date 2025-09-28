@@ -88,6 +88,9 @@ function UserChart({ data }) {
   const [vertical, setVertical] = useState("all");
   const [chartData, setChartData] = useState(filterData(data));
 
+  const [hoveredHoliday, setHoveredHoliday] = useState(null);
+  const [tooltipValues, setTooltipValues] = useState(null);
+
   function filterData(inputData) {
     return inputData.filter(
       (d) =>
@@ -261,17 +264,31 @@ function UserChart({ data }) {
     })
     .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
 
-  return html`<div>
+  // onmouseleave="${() => setTooltipHoliday(null)}"
+  return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
       style="width: 100%; height: 100%; background-color: transparent"
     >
       <g>
         ${holidays.map((holiday, index) => {
-          return html`<g transform="translate(${250 + index * 100}, 0)">
+          const x = 250 + index * 100;
+          return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-14, 5)"
+              transform="translate(-14,
+            5)"
+              onmouseleave="${() => setHoveredHoliday(null)}"
+              onmouseenter="${() => {
+                setHoveredHoliday({
+                  name: holiday.name,
+                  date: holiday.displayDate,
+                  tooltipX: x + 20,
+                  tooltipY: 0 + 20,
+                  align: "top",
+                });
+              }}"
+              style="cursor: pointer;"
             />
             <line
               x1="0"
@@ -283,6 +300,21 @@ function UserChart({ data }) {
               stroke-dasharray="4,4"
               stroke-linecap="round"
               stroke-linejoin="round"
+            />
+            <image
+              href="${ASSETS_URL}${holiday.icon}"
+              transform="translate(-14, ${height - margin.bottom + 5})"
+              style="cursor: pointer;"
+              onmouseleave="${() => {}}"
+              onmouseenter="${() => {
+                setHoveredHoliday({
+                  name: holiday.name,
+                  date: holiday.displayDate,
+                  tooltipX: x + 20,
+                  tooltipY: 0 + 40,
+                  align: "bottom",
+                });
+              }}"
             />
           </g>`;
         })}
@@ -318,6 +350,8 @@ function UserChart({ data }) {
         )}
       </g>
     </svg>
+    <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
+    <${TooltipValues} hoveredItem=${null} />
   </div>`;
 }
 
@@ -432,4 +466,94 @@ function SingleChart({
       ${chart.title}
     </text>
   </g>`;
+}
+
+function TooltipValues({ hoveredItem }) {
+  if (!hoveredItem) return null;
+
+  const formattedDayPrev = hoveredItem.firstDayOfWeekPrev
+    ? d3.utcFormat("%b %d, %Y")(getDateInUTC(hoveredItem.firstDayOfWeekPrev))
+    : null;
+  const formattedDayCurrent = hoveredItem.firstDayOfWeekCurrent
+    ? d3.utcFormat("%b %d, %Y")(getDateInUTC(hoveredItem.firstDayOfWeekCurrent))
+    : null;
+
+  return html`<div
+    class="tooltip"
+    style="left: ${hoveredItem.tooltipX}px; top: ${hoveredItem.tooltipY}px;"
+  >
+    <p class="tooltip-title">
+      Week ${hoveredItem.week} in 2024<br />${hoveredItem.firstDayOfWeekPrev
+        ? `(starts ${formattedDayPrev})`
+        : ""}
+    </p>
+    <div>
+      <p class="tooltip-label">${hoveredItem.variable1}</p>
+      <p class="tooltip-value">
+        ${hoveredItem.costPrev
+          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable1]](
+              hoveredItem.costPrev,
+              2
+            )
+          : "-"}
+      </p>
+    </div>
+    <div>
+      <p class="tooltip-label">${hoveredItem.variable2}</p>
+      <p class="tooltip-value">
+        ${hoveredItem.spendPrev
+          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable2]](
+              hoveredItem.spendPrev,
+              0
+            )
+          : "-"}
+      </p>
+    </div>
+    <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
+    <p class="tooltip-title">
+      Week ${hoveredItem.week} in 2025<br />
+      ${hoveredItem.firstDayOfWeekCurrent
+        ? `(starts ${formattedDayCurrent})`
+        : ""}
+    </p>
+    <div>
+      <p class="tooltip-label">${hoveredItem.variable1}</p>
+      <p class="tooltip-value">
+        ${hoveredItem.costCurrent
+          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable1]](
+              hoveredItem.costCurrent,
+              2
+            )
+          : "-"}
+      </p>
+    </div>
+    <div>
+      <p class="tooltip-label">${hoveredItem.variable2}</p>
+      <p class="tooltip-value">
+        ${hoveredItem.spendCurrent
+          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable2]](
+              hoveredItem.spendCurrent,
+              0
+            )
+          : "-"}
+      </p>
+    </div>
+  </div>`;
+}
+
+function TooltipHoliday({ hoveredItem }) {
+  if (!hoveredItem) return null;
+
+  return html`<div
+    class="tooltip"
+    style="left: ${hoveredItem.tooltipX}px; ${hoveredItem.align}: ${hoveredItem.tooltipY}px; ${hoveredItem.align ===
+    "bottom"
+      ? "top: unset;"
+      : ""}"
+  >
+    <div>
+      <p class="tooltip-title">${hoveredItem.name}</p>
+      <p class="tooltip-label">${hoveredItem.date}</p>
+    </div>
+  </div>`;
 }

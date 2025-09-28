@@ -241,3 +241,39 @@
     overflow: visible;
   }
 }
+
+/*
+Tooltip for multiple visualizations
+*/
+.tooltip {
+  position: absolute;
+  background-color: white;
+  border-radius: 10px;
+  padding: 16px;
+  border: 0.5px solid #000;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  transition: all 0.3s ease;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: none;
+
+  p {
+    color: black;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.25;
+  }
+
+  p.tooltip-title {
+    font-weight: 700;
+  }
+  p.tooltip-value {
+    font-weight: 700;
+    font-family: "Spacegrotesk", "Space Grotesk", sans-serif;
+  }
+}
