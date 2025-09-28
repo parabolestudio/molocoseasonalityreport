@@ -15,7 +15,9 @@ import {
   prevTimeScaleUTC,
   currentTimeScaleUTC,
   getDateInUTC,
+  ASSETS_URL,
 } from "./helpers.js";
+import { holidays } from "./holidays.js";
 
 export function renderUserElements() {
   console.log("Rendering user elements");
@@ -264,6 +266,27 @@ function UserChart({ data }) {
       viewBox="0 0 ${width} ${height}"
       style="width: 100%; height: 100%; background-color: transparent"
     >
+      <g>
+        ${holidays.map((holiday, index) => {
+          return html`<g transform="translate(${250 + index * 100}, 0)">
+            <image
+              href="${ASSETS_URL}${holiday.icon}"
+              transform="translate(-14, 5)"
+            />
+            <line
+              x1="0"
+              x2="0"
+              y1="${margin.top}"
+              y2="${height - margin.bottom}"
+              stroke="#D5D5D5"
+              stroke-width="1.5"
+              stroke-dasharray="4,4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </g>`;
+        })}
+      </g>
       <g transform="translate(${margin.left},${margin.top})">
         <rect
           x="0"
@@ -353,8 +376,10 @@ function SingleChart({
         fill="none"
         stroke="${chartColors[index % chartColors.length]}"
         stroke-width="3"
-        stroke-dasharray="2,2"
+        stroke-dasharray="0.1,5"
         style="transition: all ease 0.3s"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       />
       <path
         d="${currentLine}"

@@ -12,7 +12,7 @@ renderVerticalSelection();
 renderUserElements();
 
 // render advertiser behavior chart and surrounding elements (filters, legend, etc)
-renderAdvertiserElements();
+// renderAdvertiserElements();
 
 // render comparison elements (filters, legend, etc)
-renderComparisonElements();
+// renderComparisonElements();

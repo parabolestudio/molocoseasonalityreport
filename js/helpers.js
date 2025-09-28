@@ -1,3 +1,6 @@
+export const ASSETS_URL =
+  "https://raw.githubusercontent.com/parabolestudio/molocoseasonalityreport/refs/heads/main/assets/icons/";
+
 export const valueFormatting = {
   wau: (value) => {
     return value >= 1_000_000_000

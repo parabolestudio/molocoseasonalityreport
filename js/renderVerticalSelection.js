@@ -5,6 +5,7 @@ import {
   useEffect,
 } from "./utils/preact-htm.js";
 import { gamingVerticals, consumerVerticals } from "./verticals.js";
+import { ASSETS_URL } from "./helpers.js";
 
 const containerId = "vis-vertical-filter";
 
@@ -24,9 +25,6 @@ export function renderVerticalSelection() {
     );
   }
 }
-
-const ASSETS_URL =
-  "https://raw.githubusercontent.com/parabolestudio/molocoseasonalityreport/refs/heads/main/assets/icons/";
 
 const categoryIcons = [
   {
