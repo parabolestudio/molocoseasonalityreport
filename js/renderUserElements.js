@@ -10,7 +10,12 @@ import {
   useState,
   useEffect,
 } from "./utils/preact-htm.js";
-import { valueFormatting } from "./helpers.js";
+import {
+  valueFormatting,
+  prevTimeScaleUTC,
+  currentTimeScaleUTC,
+  getDateInUTC,
+} from "./helpers.js";
 
 export function renderUserElements() {
   console.log("Rendering user elements");
@@ -51,6 +56,7 @@ export function renderUserElements() {
       d["revenue"] = +d["total_revenue"];
       d["time_spent"] = +d["total_time_spent"].trim();
       d["week_start"] = d["week_start_date"];
+      d["weekNumber"] = +d["Week Number"].trim();
     });
   }
 }
@@ -172,22 +178,31 @@ function UserChart({ data }) {
     {
       title: "WAU",
       value: "wau",
-      data: chartData.map((d) => ({ date: d.week_start, value: d.wau })),
+      data: chartData.map((d) => ({ week_start: d.week_start, value: d.wau })),
     },
     {
       title: "Downloads",
       value: "downloads",
-      data: chartData.map((d) => ({ date: d.week_start, value: d.downloads })),
+      data: chartData.map((d) => ({
+        week_start: d.week_start,
+        value: d.downloads,
+      })),
     },
     {
       title: "Revenue",
       value: "revenue",
-      data: chartData.map((d) => ({ date: d.week_start, value: d.revenue })),
+      data: chartData.map((d) => ({
+        week_start: d.week_start,
+        value: d.revenue,
+      })),
     },
     {
       title: "Time spent",
       value: "time_spent",
-      data: chartData.map((d) => ({ date: d.week_start, value: d.time_spent })),
+      data: chartData.map((d) => ({
+        week_start: d.week_start,
+        value: d.time_spent,
+      })),
     },
   ];
 
@@ -219,6 +234,31 @@ function UserChart({ data }) {
     chartInnerHeight,
   };
 
+  const prevTime = prevTimeScaleUTC.range([0, chartWidth]);
+  const currentTime = currentTimeScaleUTC.range([0, chartWidth]);
+
+  // array with weeknumbers starting at 40, 40 until 52, then 1 until 14
+  const weekNumberArray = d3.range(40, 53).concat(d3.range(1, 15));
+  const weekScale = d3
+    .scaleBand()
+    .domain(weekNumberArray)
+    .range([0, chartWidth]);
+  console.log("weekScale domain:", weekScale.domain());
+
+  const datapointsPrev = chartData
+    .filter((d) => {
+      const date = getDateInUTC(d.week_start);
+      return date >= prevTime.domain()[0] && date <= prevTime.domain()[1];
+    })
+    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+
+  const datapointsCurrent = chartData
+    .filter((d) => {
+      const date = getDateInUTC(d.week_start);
+      return date >= currentTime.domain()[0] && date <= currentTime.domain()[1];
+    })
+    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+
   return html`<div>
     <svg
       viewBox="0 0 ${width} ${height}"
@@ -240,20 +280,55 @@ function UserChart({ data }) {
               index=${i}
               chart=${chart}
               dimensions=${dimensions}
+              weekScale=${weekScale}
+              datapointsPrev=${datapointsPrev.map((d) => ({
+                week_start: d.week_start,
+                value: d[chart.value],
+                weekNumber: d.weekNumber,
+              }))}
+              datapointsCurrent=${datapointsCurrent.map((d) => ({
+                week_start: d.week_start,
+                value: d[chart.value],
+                weekNumber: d.weekNumber,
+              }))}
             />`
         )}
       </g>
     </svg>
   </div>`;
 }
-function SingleChart({ chart, index, dimensions: dim }) {
-  console.log("Rendering single chart:", chart);
+
+const chartColors = ["#C368F9", "#16D2FF", "#60E2B7", "#876AFF"];
+
+function SingleChart({
+  chart,
+  index,
+  dimensions: dim,
+  weekScale,
+  datapointsPrev,
+  datapointsCurrent,
+}) {
+  console.log(
+    "Rendering single chart:",
+    chart,
+    datapointsPrev,
+    datapointsCurrent
+  );
 
   const maxValue = d3.max(chart.data, (d) => d.value);
   const valueScale = d3
     .scaleLinear()
     .domain([0, maxValue])
     .range([dim.chartInnerHeight, 0]);
+
+  const lineGen = d3
+    .line()
+    .y((d) => valueScale(d.value))
+    .x((d) => weekScale(d.weekNumber))
+    .defined((d) => d.value !== null);
+
+  const prevLine = lineGen(datapointsPrev);
+  const currentLine = lineGen(datapointsCurrent);
 
   return html`<g transform="translate(0, ${index * dim.chartHeight})">
     <rect
@@ -272,6 +347,21 @@ function SingleChart({ chart, index, dimensions: dim }) {
         height="${dim.chartInnerHeight}"
         fill="orange"
         fill-opacity="0"
+      />
+      <path
+        d="${prevLine}"
+        fill="none"
+        stroke="${chartColors[index % chartColors.length]}"
+        stroke-width="3"
+        stroke-dasharray="2,2"
+        style="transition: all ease 0.3s"
+      />
+      <path
+        d="${currentLine}"
+        fill="none"
+        stroke="${chartColors[index % chartColors.length]}"
+        stroke-width="3"
+        style="transition: all ease 0.3s"
       />
       <line x1="0" y1="0" x2="0" y2="${dim.chartInnerHeight}" stroke="black" />
       <line
