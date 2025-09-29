@@ -22,10 +22,9 @@ import TooltipHoliday from "./TooltipHoliday.js";
 export function renderUserElements(data = null) {
   // populate system selector
   populateSystemSelector("vis-user-dropdown-systems");
+  populateCountrySelector(["USA"], "vis-user-dropdown-countries");
 
   if (data && data.length > 0) {
-    // format data
-
     // populate country selector
     const countries = Array.from(
       new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))

@@ -38,6 +38,8 @@ export function renderComparisonElements(userData, advertiserData) {
   // render period buttons
   renderPeriodButtons();
 
+  populateCountrySelector(["USA"], "vis-comparison-dropdown-countries");
+
   if (
     userData &&
     userData.length > 0 &&

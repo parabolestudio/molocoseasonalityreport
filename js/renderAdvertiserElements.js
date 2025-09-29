@@ -29,6 +29,8 @@ export function renderAdvertiserElements(data) {
   // render metrics buttons
   renderMetricsButtons();
 
+  populateCountrySelector(["USA"], "vis-advertiser-dropdown-countries");
+
   if (data && data.length > 0) {
     // format data
     handleData(data);
