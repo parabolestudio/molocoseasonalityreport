@@ -310,6 +310,19 @@ function AdvertiserChart({ data }) {
     ? datapointsCurrent.find((d) => d.weekNumber === hoveredValues?.week)
     : null;
 
+  const months = [
+    {
+      name: "October",
+      begin: "2024-10-01",
+      end: "2024-10-31",
+    },
+    { name: "November", begin: "2024-11-01", end: "2024-11-30" },
+    { name: "December", begin: "2024-12-01", end: "2024-12-31" },
+    { name: "January", begin: "2025-01-01", end: "2025-01-31" },
+    { name: "February", begin: "2025-02-01", end: "2025-02-28" },
+    { name: "March", begin: "2025-03-01", end: "2025-03-31" },
+  ];
+
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
@@ -403,22 +416,40 @@ function AdvertiserChart({ data }) {
       </g>
       <g transform="translate(${margin.left},${margin.top})">
         <g>
-          <rect
-            x="0"
-            y="${innerHeight + 20}"
-            width="${innerWidth}"
-            height="${33}"
-            fill="#f0f0f0"
-            fill-opacity="0.8"
-          />
+          ${months.map((month) => {
+            const xBegin = prevTimeScaleUTC(getDateInUTC(month.begin)) || null;
+            const xEnd = prevTimeScaleUTC(getDateInUTC(month.end)) || null;
+            if (xBegin === null || xEnd === null) return null;
+            return html`<g key=${month.name}>
+              <rect
+                x="${xBegin}"
+                y="${innerHeight + 20}"
+                width="${xEnd - xBegin}"
+                height="33"
+                fill="#f0f0f0"
+                fill-opacity="0.8"
+                rx="10"
+                ry="10"
+              />
+              <text
+                x="${(xBegin + xEnd) / 2}"
+                y="${innerHeight + 20 + 22}"
+                text-anchor="middle"
+                class="charts-text-body"
+              >
+                ${month.name}
+              </text>
+            </g>`;
+          })}
         </g>
+
         <rect
           x="0"
           y="0"
           width="${innerWidth}"
           height="${innerHeight}"
           fill="transparent"
-          stroke="black"
+          stroke="transparent"
         />
         <path
           d="${prevLine}"
