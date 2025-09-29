@@ -246,14 +246,22 @@ function UserChart({ data }) {
   // array with weeknumbers starting at 40, 40 until 52, then 1 until 14
   const weekNumberArray = d3.range(40, 53).concat(d3.range(1, 15));
   const weekScale = d3
-    .scaleBand()
+    .scalePoint()
     .domain(weekNumberArray)
     .range([0, chartWidth]);
   console.log("weekScale domain:", weekScale.domain());
+  console.log("prevTime domain:", prevTime.domain());
 
   const datapointsPrev = chartData
     .filter((d) => {
       const date = getDateInUTC(d.week_start);
+      console.log(
+        "Checking prev date:",
+        d.week_start,
+        date,
+        prevTime.domain(),
+        date >= prevTime.domain()[0] && date <= prevTime.domain()[1]
+      );
       return date >= prevTime.domain()[0] && date <= prevTime.domain()[1];
     })
     .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
@@ -406,6 +414,7 @@ function SingleChart({
         fill="orange"
         fill-opacity="0"
       />
+
       <path
         d="${prevLine}"
         fill="none"

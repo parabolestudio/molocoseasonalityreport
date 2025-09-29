@@ -47,11 +47,11 @@ const currentYear = new Date().getFullYear();
 // Create a time scale from Oct 1 to end of March the following year (month is zero-based)
 export const prevTimeScaleUTC = d3
   .scaleLinear()
-  .domain([Date.UTC(prevYear, 9, 1), Date.UTC(currentYear, 2, 31)]);
+  .domain([Date.UTC(prevYear, 8, 30), Date.UTC(currentYear, 2, 31)]);
 
 export const currentTimeScaleUTC = d3
   .scaleLinear()
-  .domain([Date.UTC(currentYear, 9, 1), Date.UTC(currentYear + 1, 2, 31)]);
+  .domain([Date.UTC(currentYear, 8, 30), Date.UTC(currentYear + 1, 2, 31)]);
 
 export function getDateInUTC(dateString) {
   const [year, month, day] = dateString.split("-").map(Number);

@@ -270,7 +270,7 @@ function AdvertiserChart({ data }) {
   // array with weeknumbers starting at 40, 40 until 52, then 1 until 14
   const weekNumberArray = d3.range(40, 53).concat(d3.range(1, 15));
   const weekScale = d3
-    .scaleBand()
+    .scalePoint()
     .domain(weekNumberArray)
     .range([0, innerWidth]);
 

@@ -15,4 +15,4 @@ renderUserElements();
 renderAdvertiserElements();
 
 // render comparison elements (filters, legend, etc)
-renderComparisonElements();
+// renderComparisonElements();
