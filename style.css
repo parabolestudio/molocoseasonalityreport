@@ -155,7 +155,7 @@
 
     .vis-year-button {
       font-family: "Montserrat", sans-serif;
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1.25;
       font-weight: 400;
       color: #000000;
@@ -181,7 +181,7 @@
 
     .vis-period-button {
       font-family: "Montserrat", sans-serif;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1.25;
       font-weight: 400;
       color: rgba(0, 0, 0, 0.7);
@@ -199,7 +199,7 @@
       .vis-period-title {
         display: block;
         font-weight: 700;
-        font-size: 18px;
+        font-size: 16px;
       }
 
       &.selected {

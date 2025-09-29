@@ -10,7 +10,9 @@ import {
   useState,
   useEffect,
 } from "./utils/preact-htm.js";
-import { getDateInUTC } from "./helpers.js";
+import { getDateInUTC, ASSETS_URL } from "./helpers.js";
+import { holidays } from "./holidays.js";
+import TooltipHoliday from "./TooltipHoliday.js";
 
 export function renderComparisonElements() {
   console.log("Rendering comparison elements");
@@ -199,33 +201,38 @@ const periods = [
     title: "Show all",
     subtitle: "October to March",
     icon: "",
-    startPast: {
-      day: "30",
-      month: "9",
-      year: "2024",
-      week: "40",
-      full: "2024-09-30",
+    start: {
+      past: {
+        day: "30",
+        month: "9",
+        year: "2024",
+        week: "40",
+        full: "2024-09-30",
+      },
+      current: {
+        day: "29",
+        month: "9",
+        year: "2025",
+        week: "40",
+        full: "2025-09-29",
+      },
     },
-    endPast: {
-      day: "31",
-      month: "3",
-      year: "2025",
-      week: "14",
-      full: "2025-03-31",
-    },
-    startCurrent: {
-      day: "29",
-      month: "9",
-      year: "2025",
-      week: "40",
-      full: "2025-09-29",
-    },
-    endCurrent: {
-      day: "30",
-      month: "3",
-      year: "2026",
-      week: "14",
-      full: "2026-03-30",
+    end: {
+      past: {
+        day: "31",
+        month: "3",
+        year: "2025",
+        week: "14",
+        full: "2025-03-31",
+      },
+
+      current: {
+        day: "30",
+        month: "3",
+        year: "2026",
+        week: "14",
+        full: "2026-03-30",
+      },
     },
   },
   {
@@ -233,33 +240,38 @@ const periods = [
     title: "Pre-holiday",
     subtitle: "October to late November",
     icon: "",
-    startPast: {
-      day: "30",
-      month: "9",
-      year: "2024",
-      week: "40",
-      full: "2024-09-30",
+    start: {
+      past: {
+        day: "30",
+        month: "9",
+        year: "2024",
+        week: "40",
+        full: "2024-09-30",
+      },
+      current: {
+        day: "29",
+        month: "9",
+        year: "2025",
+        week: "40",
+        full: "2025-09-29",
+      },
     },
-    endPast: {
-      day: "25",
-      month: "11",
-      year: "2024",
-      week: "48",
-      full: "2024-11-25",
-    },
-    startCurrent: {
-      day: "29",
-      month: "9",
-      year: "2025",
-      week: "40",
-      full: "2025-09-29",
-    },
-    endCurrent: {
-      day: "24",
-      month: "11",
-      year: "2025",
-      week: "48",
-      full: "2025-11-24",
+    end: {
+      past: {
+        day: "25",
+        month: "11",
+        year: "2024",
+        week: "48",
+        full: "2024-11-25",
+      },
+
+      current: {
+        day: "24",
+        month: "11",
+        year: "2025",
+        week: "48",
+        full: "2025-11-24",
+      },
     },
   },
   {
@@ -328,34 +340,16 @@ function renderComparisonChart(data) {
 }
 
 // time scales
+// year can be "past" or "current"
+// period can be "all", "pre-holiday", "peak-season", "post-holiday"
 function getTimeScale(year = "past", period) {
-  // year can be "past" or "current"
-  // period can be "all", "pre-holiday", "peak-season", "post-holiday"
-
   const periodObj = periods.find((p) => p.value === period);
-  let startY = null;
-  let startMonth = null;
-  let startDay = null;
-  let endY = null;
-  let endMonth = null;
-  let endDay = null;
-  if (periodObj) {
-    if (year === "past") {
-      startY = periodObj.startPast?.year || null;
-      startMonth = periodObj.startPast?.month || null;
-      startDay = periodObj.startPast?.day || null;
-      endY = periodObj.endPast?.year || null;
-      endMonth = periodObj.endPast?.month || null;
-      endDay = periodObj.endPast?.day || null;
-    } else {
-      startY = periodObj.startCurrent?.year || null;
-      startMonth = periodObj.startCurrent?.month || null;
-      startDay = periodObj.startCurrent?.day || null;
-      endY = periodObj.endCurrent?.year || null;
-      endMonth = periodObj.endCurrent?.month || null;
-      endDay = periodObj.endCurrent?.day || null;
-    }
-  }
+  let startY = periodObj.start[year].year || null;
+  let startMonth = periodObj.start[year].month || null;
+  let startDay = periodObj.start[year].day || null;
+  let endY = periodObj.end[year].year || null;
+  let endMonth = periodObj.end[year].month || null;
+  let endDay = periodObj.end[year].day || null;
 
   const start = Date.UTC(startY, startMonth - 1, startDay);
   const end = Date.UTC(endY, endMonth - 1, endDay);
@@ -379,6 +373,8 @@ function ComparisonChart({ data }) {
   const [advertiserMetric, setAdvertiserMetric] = useState(
     advertiserMetricDefault.value
   );
+  const [hoveredHoliday, setHoveredHoliday] = useState(null);
+  const [hoveredValues, setHoveredValues] = useState(null);
 
   const [chartData, setChartData] = useState(filterData(data));
 
@@ -593,71 +589,69 @@ function ComparisonChart({ data }) {
     const periodObj = periods.find((p) => p.value === period);
     if (!periodObj) return false;
 
-    let periodStart = null;
-    let periodEnd = null;
-    if (year === "past") {
-      periodStart = getDateInUTC(periodObj.startPast.full);
-      periodEnd = getDateInUTC(periodObj.endPast.full);
-    } else {
-      periodStart = getDateInUTC(periodObj.startCurrent.full);
-      periodEnd = getDateInUTC(periodObj.endCurrent.full);
-    }
-
+    let periodStart = getDateInUTC(periodObj.start[year].full);
+    let periodEnd = getDateInUTC(periodObj.end[year].full);
     return (
       monthEnd >= periodStart && monthStart <= periodEnd && year === month.year
     );
   });
 
-  console.log("Displaying months:", displayMonths);
-
-  return html`<div>
+  return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
-      style="width: 100%; height: 100%; border: 1px solid black;"
+      style="width: 100%; height: 100%; border: 1px solid transparent;"
     >
+      <g>
+        ${holidays.map((holiday) => {
+          const x = timeScale(getDateInUTC(holiday.date)) + margin.left;
+          if (isNaN(x) || x < margin.left) return null;
+          if (x > width - margin.right) return null;
+          return html`<g transform="translate(${x}, 0)">
+            <image
+              href="${ASSETS_URL}${holiday.icon}"
+              transform="translate(-${35 / 2},
+                    5)"
+              onmouseleave="${() => setHoveredHoliday(null)}"
+              onmouseenter="${() => {
+                setHoveredHoliday({
+                  name: holiday.name,
+                  date: holiday.displayDate,
+                  tooltipX: x + 20,
+                  tooltipY: 0 + 20,
+                });
+              }}"
+              style="cursor: pointer;"
+            />
+            <line
+              x1="0"
+              x2="0"
+              y1="${margin.top}"
+              y2="${height - margin.bottom}"
+              stroke="#D5D5D5"
+              stroke-width="1.5"
+              stroke-dasharray="4,4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <rect
+              x="-5"
+              y="${height - margin.bottom + 5}"
+              width="10"
+              height="10"
+              fill="#040078"
+            />
+          </g>`;
+        })}
+      </g>
+
       <g transform="translate(${margin.left},${margin.top})">
         <rect
           x="0"
           y="0"
           width="${innerWidth}"
           height="${innerHeight}"
-          fill="#f0f0f0"
-        />
-        <circle
-          cx="${timeScale(getDateInUTC("2024-10-01"))}"
-          cy="50"
-          r="5"
-          fill="red"
-        />
-        <circle
-          cx="${timeScale(getDateInUTC("2024-11-01"))}"
-          cy="50"
-          r="5"
-          fill="orange"
-        />
-        <circle
-          cx="${timeScale(getDateInUTC("2024-12-01"))}"
-          cy="50"
-          r="5"
-          fill="orange"
-        />
-        <circle
-          cx="${timeScale(getDateInUTC("2025-01-01"))}"
-          cy="50"
-          r="5"
-          fill="orange"
-        />
-        <circle
-          cx="${timeScale(getDateInUTC("2025-02-01"))}"
-          cy="50"
-          r="5"
-          fill="orange"
-        />
-        <circle
-          cx="${timeScale(getDateInUTC("2025-03-01"))}"
-          cy="50"
-          r="5"
-          fill="orange"
+          fill="none"
+          stroke="black"
         />
 
         <g>
@@ -689,5 +683,6 @@ function ComparisonChart({ data }) {
         </g>
       </g>
     </svg>
+    <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
   </div>`;
 }
