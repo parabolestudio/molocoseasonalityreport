@@ -10,7 +10,6 @@ import { ASSETS_URL } from "./helpers.js";
 const containerId = "vis-vertical-filter";
 
 export function renderVerticalSelection() {
-  console.log("Rendering vertical selection");
   let containerElement = document.querySelector(`#${containerId}`);
 
   if (containerElement) {

@@ -1,4 +1,3 @@
-import { fetchGoogleSheetCSV } from "./googleSheets.js";
 import {
   populateCountrySelector,
   populateSystemSelector,
@@ -20,47 +19,42 @@ import {
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 
-export function renderUserElements() {
-  console.log("Rendering user elements");
+function handleData(inputData) {
+  return inputData.forEach((d) => {
+    d["country"] = d["country"];
+    d["system"] = d["os"];
+    d["category"] =
+      d["category"].toLowerCase() === "non-gaming"
+        ? "consumer"
+        : d["category"].toLowerCase();
+    d["vertical"] = d["vertical"].toLowerCase().trim();
+    d["wau"] = +d["median_wau"];
+    d["downloads"] = +d["total_downloads"];
+    d["revenue"] = +d["total_revenue"];
+    d["time_spent"] = +d["total_time_spent"].trim();
+    d["week_start"] = d["week_start_date"];
+    d["weekNumber"] = +d["Week Number"].trim();
+  });
+}
 
+export function renderUserElements(data = null) {
   // populate system selector
   populateSystemSelector("vis-user-dropdown-systems");
 
-  // fetch data from google sheet
-  fetchGoogleSheetCSV("user-engagement")
-    .then((data) => {
-      // format data
-      handleData(data);
+  if (data && data.length > 0) {
+    // format data
+    handleData(data);
 
-      // populate country selector
-      const countries = Array.from(
-        new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))
-      ).sort();
-      populateCountrySelector(countries, "vis-user-dropdown-countries");
+    // populate country selector
+    const countries = Array.from(
+      new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))
+    ).sort();
+    populateCountrySelector(countries, "vis-user-dropdown-countries");
 
-      // render chart with data
-      renderUserChart(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching sheet data (user engagement):", error);
-    });
-
-  function handleData(data) {
-    return data.forEach((d) => {
-      d["country"] = d["country"];
-      d["system"] = d["os"];
-      d["category"] =
-        d["category"].toLowerCase() === "non-gaming"
-          ? "consumer"
-          : d["category"].toLowerCase();
-      d["vertical"] = d["vertical"].toLowerCase().trim();
-      d["wau"] = +d["median_wau"];
-      d["downloads"] = +d["total_downloads"];
-      d["revenue"] = +d["total_revenue"];
-      d["time_spent"] = +d["total_time_spent"].trim();
-      d["week_start"] = d["week_start_date"];
-      d["weekNumber"] = +d["Week Number"].trim();
-    });
+    // render chart with data
+    renderUserChart(data);
+  } else {
+    renderUserChart([]);
   }
 }
 
@@ -69,7 +63,7 @@ function renderUserChart(data) {
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
     renderComponent(html`<${UserChart} data=${data} />`, containerElement);
@@ -79,11 +73,12 @@ function renderUserChart(data) {
 }
 
 function UserChart({ data }) {
+  // return html`<p>test</p>`;
   const [system, setSystem] = useState(
     getDropdownValue("vis-user-dropdown-systems")
   );
   const [country, setCountry] = useState(
-    getDropdownValue("vis-user-dropdown-countries")
+    getDropdownValue("vis-user-dropdown-countries") || "USA"
   );
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
@@ -93,6 +88,7 @@ function UserChart({ data }) {
   const [hoveredValues, setHoveredValues] = useState(null);
 
   function filterData(inputData) {
+    if (!inputData || inputData.length === 0) return [];
     return inputData.filter(
       (d) =>
         d.system === system &&
@@ -103,7 +99,16 @@ function UserChart({ data }) {
   }
   useEffect(() => {
     setChartData(filterData(data));
-  }, [system, country, vertical, category]);
+  }, [system, country, vertical, category, data]);
+
+  // console.log(
+  //   "Rendering user chart",
+  //   chartData,
+  //   system,
+  //   country,
+  //   category,
+  //   vertical
+  // );
 
   // listen to change in user system dropdown
   useEffect(() => {
@@ -170,15 +175,6 @@ function UserChart({ data }) {
       );
     };
   }, []);
-
-  console.log(
-    "Rendering user chart",
-    chartData,
-    system,
-    country,
-    category,
-    vertical
-  );
 
   const charts = [
     {
@@ -274,6 +270,8 @@ function UserChart({ data }) {
       style="width: 100%; height: 100%; background-color: transparent"
       onmouseleave="${() => setHoveredValues(null)}"
       onmousemove="${(event) => {
+        if (!data || data.length === 0) return;
+
         const pointer = d3.pointer(event);
 
         const leftSide = margin.left + chartMargin.left;
@@ -550,22 +548,24 @@ function SingleChart({
         text-anchor="end"
         >March</text
       >
-      <text
+      ${chart.data.length > 0 &&
+      html` <text
         x="-10"
         y=${valueScale(0) - 8}
         class="charts-text-body"
         text-anchor="end"
         dominant-baseline="middle"
         >0</text
-      >
-      <text
+      >`}
+      ${chart.data.length > 0 &&
+      html`<text
         x="-10"
         y=${valueScale(maxValue) + 8}
         class="charts-text-body"
         text-anchor="end"
         dominant-baseline="middle"
         >${valueFormatting[chart.value](maxValue)}</text
-      >
+      >`}
     </g>
     <text
       x="0"
