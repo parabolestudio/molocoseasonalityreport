@@ -184,11 +184,13 @@ function UserChart({ data }) {
     {
       title: "WAU",
       value: "wau",
+      tooltipTitle: "Weekly Active Users (WAU)",
       data: chartData.map((d) => ({ week_start: d.week_start, value: d.wau })),
     },
     {
       title: "Downloads",
       value: "downloads",
+      tooltipTitle: "Downloads",
       data: chartData.map((d) => ({
         week_start: d.week_start,
         value: d.downloads,
@@ -197,6 +199,7 @@ function UserChart({ data }) {
     {
       title: "Revenue",
       value: "revenue",
+      tooltipTitle: "Revenue",
       data: chartData.map((d) => ({
         week_start: d.week_start,
         value: d.revenue,
@@ -205,6 +208,7 @@ function UserChart({ data }) {
     {
       title: "Time spent",
       value: "time_spent",
+      tooltipTitle: "Time Spent",
       data: chartData.map((d) => ({
         week_start: d.week_start,
         value: d.time_spent,
@@ -249,19 +253,10 @@ function UserChart({ data }) {
     .scalePoint()
     .domain(weekNumberArray)
     .range([0, chartWidth]);
-  console.log("weekScale domain:", weekScale.domain());
-  console.log("prevTime domain:", prevTime.domain());
 
   const datapointsPrev = chartData
     .filter((d) => {
       const date = getDateInUTC(d.week_start);
-      console.log(
-        "Checking prev date:",
-        d.week_start,
-        date,
-        prevTime.domain(),
-        date >= prevTime.domain()[0] && date <= prevTime.domain()[1]
-      );
       return date >= prevTime.domain()[0] && date <= prevTime.domain()[1];
     })
     .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
@@ -273,11 +268,84 @@ function UserChart({ data }) {
     })
     .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
 
-  // onmouseleave="${() => setTooltipHoliday(null)}"
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
       style="width: 100%; height: 100%; background-color: transparent"
+      onmouseleave="${() => setHoveredValues(null)}"
+      onmousemove="${(event) => {
+        const pointer = d3.pointer(event);
+
+        const leftSide = margin.left + chartMargin.left;
+        const rightSide = leftSide + chartWidth;
+
+        if (pointer[0] >= leftSide && pointer[0] <= rightSide) {
+          const innerX = pointer[0] - margin.left;
+
+          // figure out which chart the pointer is in
+          let metricIndex = null;
+          if (
+            margin.top + chartMargin.top <= pointer[1] &&
+            pointer[1] < margin.top + chartMargin.top + chartInnerHeight
+          ) {
+            metricIndex = 0;
+          } else if (
+            margin.top + chartHeight + chartMargin.top <= pointer[1] &&
+            pointer[1] <=
+              margin.top + chartHeight + chartMargin.top + chartInnerHeight
+          ) {
+            metricIndex = 1;
+          } else if (
+            margin.top + chartHeight * 2 + chartMargin.top <= pointer[1] &&
+            pointer[1] <=
+              margin.top + chartHeight * 2 + chartMargin.top + chartInnerHeight
+          ) {
+            metricIndex = 2;
+          } else if (
+            margin.top + chartHeight * 3 + chartMargin.top <= pointer[1] &&
+            pointer[1] <=
+              margin.top + chartHeight * 3 + chartMargin.top + chartInnerHeight
+          ) {
+            metricIndex = 3;
+          }
+
+          const chart = charts[metricIndex];
+          if (!chart) {
+            setHoveredValues(null);
+            return;
+          }
+
+          const tooltipY = margin.top + metricIndex * chartHeight;
+
+          const index = Math.floor(innerX / weekScale.step());
+          const hoveredWeek = weekScale.domain()[index];
+
+          // get value for hoveredItem
+          const datapointPrev =
+            datapointsPrev.find((d) => d.weekNumber === hoveredWeek) || {};
+          const datapointCurrent =
+            datapointsCurrent.find((d) => d.weekNumber === hoveredWeek) || {};
+
+          let tooltipX = innerX + margin.left;
+          if (tooltipX + 150 > width) {
+            tooltipX = width - 160;
+          }
+
+          setHoveredValues({
+            tooltipX: tooltipX + 20,
+            tooltipY: tooltipY,
+            week: hoveredWeek,
+            firstDayOfWeekPrev: datapointPrev.week_start || null,
+            firstDayOfWeekCurrent: datapointCurrent.week_start || null,
+            variable: chart.value,
+            title: chart.tooltipTitle,
+            valuePrev: datapointPrev[chart.value] || null,
+            valueCurrent: datapointCurrent[chart.value] || null,
+          });
+        } else {
+          setHoveredValues(null);
+        }
+      }}"
     >
       <g>
         ${holidays.map((holiday, index) => {
@@ -374,12 +442,12 @@ function SingleChart({
   datapointsPrev,
   datapointsCurrent,
 }) {
-  console.log(
-    "Rendering single chart:",
-    chart,
-    datapointsPrev,
-    datapointsCurrent
-  );
+  // console.log(
+  //   "Rendering single chart:",
+  //   chart,
+  //   datapointsPrev,
+  //   datapointsCurrent
+  // );
 
   const maxValue = d3.max(chart.data, (d) => d.value);
   const valueScale = d3
@@ -492,59 +560,33 @@ function TooltipValues({ hoveredItem }) {
     class="tooltip"
     style="left: ${hoveredItem.tooltipX}px; top: ${hoveredItem.tooltipY}px;"
   >
-    <p class="tooltip-title">
-      Week ${hoveredItem.week} in 2024<br />${hoveredItem.firstDayOfWeekPrev
-        ? `(starts ${formattedDayPrev})`
-        : ""}
-    </p>
+    <p class="tooltip-title">${hoveredItem.title}</p>
+
     <div>
-      <p class="tooltip-label">${hoveredItem.variable1}</p>
+      <p class="tooltip-label">
+        Week ${hoveredItem.week} in 2025<br />
+        ${hoveredItem.firstDayOfWeekCurrent
+          ? `(starts ${formattedDayCurrent})`
+          : ""}
+      </p>
       <p class="tooltip-value">
-        ${hoveredItem.costPrev
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable1]](
-              hoveredItem.costPrev,
-              2
-            )
+        ${hoveredItem.valueCurrent
+          ? valueFormatting[hoveredItem.variable](hoveredItem.valueCurrent, 2)
           : "-"}
       </p>
     </div>
-    <div>
-      <p class="tooltip-label">${hoveredItem.variable2}</p>
-      <p class="tooltip-value">
-        ${hoveredItem.spendPrev
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable2]](
-              hoveredItem.spendPrev,
-              0
-            )
-          : "-"}
-      </p>
-    </div>
+
     <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
-    <p class="tooltip-title">
-      Week ${hoveredItem.week} in 2025<br />
-      ${hoveredItem.firstDayOfWeekCurrent
-        ? `(starts ${formattedDayCurrent})`
-        : ""}
-    </p>
+
     <div>
-      <p class="tooltip-label">${hoveredItem.variable1}</p>
-      <p class="tooltip-value">
-        ${hoveredItem.costCurrent
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable1]](
-              hoveredItem.costCurrent,
-              2
-            )
-          : "-"}
+      <p class="tooltip-label">
+        Week ${hoveredItem.week} in 2024<br />${hoveredItem.firstDayOfWeekPrev
+          ? `(starts ${formattedDayPrev})`
+          : ""}
       </p>
-    </div>
-    <div>
-      <p class="tooltip-label">${hoveredItem.variable2}</p>
       <p class="tooltip-value">
-        ${hoveredItem.spendCurrent
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable2]](
-              hoveredItem.spendCurrent,
-              0
-            )
+        ${hoveredItem.valuePrev
+          ? valueFormatting[hoveredItem.variable](hoveredItem.valuePrev, 2)
           : "-"}
       </p>
     </div>
