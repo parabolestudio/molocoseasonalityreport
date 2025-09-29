@@ -749,10 +749,72 @@ function ComparisonChart({ userData, advertiserData }) {
   const userLine = lineUserGen(datapointsUser);
   const advertiserLine = lineAdvertiserGen(datapointsAdvertiser);
 
+  const highlightUser = hoveredValues
+    ? datapointsUser.find((d) => d.weekNumber === hoveredValues?.week)
+    : null;
+  const highlightAdvertiser = hoveredValues
+    ? datapointsAdvertiser.find((d) => d.weekNumber === hoveredValues?.week)
+    : null;
+
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
       style="width: 100%; height: 100%; border: 1px solid transparent;"
+      onmouseleave="${() => setHoveredValues(null)}"
+      onmousemove="${(event) => {
+        if (
+          !chartUserData ||
+          chartUserData.length === 0 ||
+          !chartAdvertiserData ||
+          chartAdvertiserData.length === 0
+        )
+          return;
+        const pointer = d3.pointer(event);
+
+        const leftSide = margin.left;
+        const rightSide = leftSide + innerWidth;
+
+        if (
+          pointer[0] >= leftSide &&
+          pointer[0] <= rightSide &&
+          pointer[1] >= margin.top &&
+          pointer[1] <= height - margin.bottom
+        ) {
+          const innerX = pointer[0] - margin.left;
+
+          const index = Math.floor(innerX / weekScale.step());
+          const hoveredWeek = weekScale.domain()[index];
+
+          // get value for hoveredItem
+          const datapointUser = datapointsUser.find(
+            (d) => d.weekNumber === hoveredWeek
+          );
+
+          let tooltipX = innerX + margin.left;
+          if (tooltipX + 150 > width) {
+            tooltipX = width - 160;
+          }
+          const userVariable = userMetrics.find(
+            (m) => m.value === userMetric
+          ).label;
+          const advertiserVariable = advertiserMetrics.find(
+            (m) => m.value === advertiserMetric
+          ).label;
+
+          setHoveredValues({
+            tooltipX: tooltipX + 20,
+            tooltipY: margin.top + 50,
+            week: hoveredWeek,
+            firstDayOfWeek: datapointUser.week_start || null,
+            userVariable,
+            advertiserVariable,
+            // valuePrev: datapointPrev[metric] || null,
+            // valueCurrent: datapointCurrent[metric] || null,
+          });
+        } else {
+          setHoveredValues(null);
+        }
+      }}"
     >
       <g>
         ${holidays.map((holiday) => {
@@ -824,6 +886,28 @@ function ComparisonChart({ userData, advertiserData }) {
           stroke-linecap="round"
           stroke-linejoin="round"
         />
+        ${hoveredValues && highlightUser
+          ? html`<circle
+              cx="${weekScale(hoveredValues.week)}"
+              cy="${valueUserScale(
+                highlightUser ? highlightUser[userMetric] : 0
+              )}"
+              r="5"
+              fill="#60E2B7"
+              style="transition: all ease 0.3s"
+            />`
+          : ""}
+        ${hoveredValues && highlightAdvertiser
+          ? html`<circle
+              cx="${weekScale(hoveredValues.week)}"
+              cy="${valueAdvertiserScale(
+                highlightAdvertiser ? highlightAdvertiser[advertiserMetric] : 0
+              )}"
+              r="5"
+              fill="#876AFF"
+              style="transition: all ease 0.3s"
+            />`
+          : ""}
 
         <g>
           ${displayMonths.map((month) => {
@@ -855,5 +939,39 @@ function ComparisonChart({ userData, advertiserData }) {
       </g>
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
+    <${TooltipValues} hoveredItem=${hoveredValues} />
+  </div>`;
+}
+
+function TooltipValues({ hoveredItem }) {
+  if (!hoveredItem) return null;
+
+  const formattedDay = hoveredItem.firstDayOfWeek
+    ? d3.utcFormat("%b %d, %Y")(getDateInUTC(hoveredItem.firstDayOfWeek))
+    : null;
+  const formattedYear = formattedDay ? formattedDay.split(", ")[1] : null;
+
+  return html`<div
+    class="tooltip"
+    style="left: ${hoveredItem.tooltipX}px; top: ${hoveredItem.tooltipY}px;"
+  >
+    <p class="tooltip-title">
+      Week ${hoveredItem.week} in ${formattedYear}<br />
+      ${hoveredItem.firstDayOfWeek ? `(starts ${formattedDay})` : ""}
+    </p>
+
+    <div>
+      <p class="tooltip-label">${hoveredItem.userVariable} weekly change</p>
+      <p class="tooltip-value">...</p>
+    </div>
+
+    <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
+
+    <div>
+      <p class="tooltip-label">
+        ${hoveredItem.advertiserVariable} weekly change
+      </p>
+      <p class="tooltip-value">...</p>
+    </div>
   </div>`;
 }
