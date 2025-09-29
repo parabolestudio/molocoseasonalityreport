@@ -260,7 +260,7 @@ function AdvertiserChart({ data }) {
   const width =
     visContainer && visContainer.offsetWidth ? visContainer.offsetWidth : 600;
   const height = 600;
-  const margin = { top: 40, right: 1, bottom: 60, left: 1 };
+  const margin = { top: 50, right: 1, bottom: 60, left: 1 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -303,15 +303,71 @@ function AdvertiserChart({ data }) {
   const prevLine = lineGen(datapointsPrev);
   const currentLine = lineGen(datapointsCurrent);
 
+  const highlightPrev = hoveredValues
+    ? datapointsPrev.find((d) => d.weekNumber === hoveredValues?.week)
+    : null;
+  const highlightCurrent = hoveredValues
+    ? datapointsCurrent.find((d) => d.weekNumber === hoveredValues?.week)
+    : null;
+
   return html`<div style="position: relative;">
-    <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: 100%;">
+    <svg
+      viewBox="0 0 ${width} ${height}"
+      style="width: 100%; height: 100%;"
+      onmouseleave="${() => setHoveredValues(null)}"
+      onmousemove="${(event) => {
+        const pointer = d3.pointer(event);
+
+        const leftSide = margin.left;
+        const rightSide = leftSide + innerWidth;
+
+        if (
+          pointer[0] >= leftSide &&
+          pointer[0] <= rightSide &&
+          pointer[1] >= margin.top &&
+          pointer[1] <= height - margin.bottom
+        ) {
+          const innerX = pointer[0] - margin.left;
+
+          const index = Math.floor(innerX / weekScale.step());
+          const hoveredWeek = weekScale.domain()[index];
+
+          // get value for hoveredItem
+          const datapointPrev =
+            datapointsPrev.find((d) => d.weekNumber === hoveredWeek) || {};
+          const datapointCurrent =
+            datapointsCurrent.find((d) => d.weekNumber === hoveredWeek) || {};
+
+          let tooltipX = innerX + margin.left;
+          if (tooltipX + 150 > width) {
+            tooltipX = width - 160;
+          }
+
+          setHoveredValues({
+            tooltipX: tooltipX + 20,
+            tooltipY: margin.top + 50,
+            week: hoveredWeek,
+            firstDayOfWeekPrev: datapointPrev.week_start || null,
+            firstDayOfWeekCurrent: datapointCurrent.week_start || null,
+            variable: metric,
+            title: metrics.find((m) => m.value === metric).label,
+            valuePrev: datapointPrev[metric] || null,
+            valueCurrent: datapointCurrent[metric] || null,
+          });
+        } else {
+          setHoveredValues(null);
+        }
+      }}"
+    >
       <g>
         ${holidays.map((holiday, index) => {
-          const x = 250 + index * 100;
+          const x = prevTimeScaleUTC(getDateInUTC(holiday.date)) + margin.left;
+          if (isNaN(x) || x < margin.left) return null;
+          if (x > width - margin.right) return null;
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-14,
+              transform="translate(-${35 / 2},
                 5)"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
@@ -381,6 +437,26 @@ function AdvertiserChart({ data }) {
           stroke-width="3"
           style="transition: all ease 0.3s"
         />
+        ${hoveredValues && highlightPrev
+          ? html`<circle
+              cx="${weekScale(hoveredValues.week)}"
+              cy="${valueScale(highlightPrev ? highlightPrev[metric] : 0)}"
+              r="5"
+              fill="#876AFF"
+              style="transition: all ease 0.3s"
+            />`
+          : ""}
+        ${hoveredValues && highlightCurrent
+          ? html`<circle
+              cx="${weekScale(hoveredValues.week)}"
+              cy="${valueScale(
+                highlightCurrent ? highlightCurrent[metric] : 0
+              )}"
+              r="5"
+              fill="#876AFF"
+              style="transition: all ease 0.3s"
+            />`
+          : ""}
       </g>
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
@@ -402,61 +478,32 @@ function TooltipValues({ hoveredItem }) {
     class="tooltip"
     style="left: ${hoveredItem.tooltipX}px; top: ${hoveredItem.tooltipY}px;"
   >
-    <p class="tooltip-title">
-      Week ${hoveredItem.week} in 2024<br />${hoveredItem.firstDayOfWeekPrev
-        ? `(starts ${formattedDayPrev})`
-        : ""}
-    </p>
+    <p class="tooltip-title">${hoveredItem.title} weekly change</p>
+
     <div>
-      <p class="tooltip-label">${hoveredItem.variable1}</p>
-      <p class="tooltip-value">
-        ${hoveredItem.costPrev
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable1]](
-              hoveredItem.costPrev,
-              2
-            )
-          : "-"}
+      <p class="tooltip-label">
+        Week ${hoveredItem.week} in 2025<br />
+        ${hoveredItem.firstDayOfWeekCurrent
+          ? `(starts ${formattedDayCurrent})`
+          : ""}
       </p>
     </div>
-    <div>
-      <p class="tooltip-label">${hoveredItem.variable2}</p>
-      <p class="tooltip-value">
-        ${hoveredItem.spendPrev
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable2]](
-              hoveredItem.spendPrev,
-              0
-            )
-          : "-"}
-      </p>
-    </div>
+
     <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
-    <p class="tooltip-title">
-      Week ${hoveredItem.week} in 2025<br />
-      ${hoveredItem.firstDayOfWeekCurrent
-        ? `(starts ${formattedDayCurrent})`
-        : ""}
-    </p>
+
     <div>
-      <p class="tooltip-label">${hoveredItem.variable1}</p>
-      <p class="tooltip-value">
-        ${hoveredItem.costCurrent
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable1]](
-              hoveredItem.costCurrent,
-              2
-            )
-          : "-"}
-      </p>
-    </div>
-    <div>
-      <p class="tooltip-label">${hoveredItem.variable2}</p>
-      <p class="tooltip-value">
-        ${hoveredItem.spendCurrent
-          ? variableFormatting[buttonToVariableMapping[hoveredItem.variable2]](
-              hoveredItem.spendCurrent,
-              0
-            )
-          : "-"}
+      <p class="tooltip-label">
+        Week ${hoveredItem.week} in 2024<br />${hoveredItem.firstDayOfWeekPrev
+          ? `(starts ${formattedDayPrev})`
+          : ""}
       </p>
     </div>
   </div>`;
 }
+
+//  <p class="tooltip-value">
+//         ${hoveredItem.valueCurrent ? hoveredItem.valueCurrent : "-"}
+//       </p>
+// <p class="tooltip-value">
+//         ${hoveredItem.valuePrev ? hoveredItem.valuePrev : "-"}
+//       </p>

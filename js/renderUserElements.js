@@ -268,11 +268,11 @@ function UserChart({ data }) {
     })
     .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
 
-  // onmouseleave="${() => setHoveredValues(null)}"
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
       style="width: 100%; height: 100%; background-color: transparent"
+      onmouseleave="${() => setHoveredValues(null)}"
       onmousemove="${(event) => {
         const pointer = d3.pointer(event);
 
