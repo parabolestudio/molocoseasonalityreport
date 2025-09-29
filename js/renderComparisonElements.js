@@ -14,8 +14,8 @@ import { getDateInUTC, ASSETS_URL } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 
-export function renderComparisonElements() {
-  console.log("Rendering comparison elements");
+export function renderComparisonElements(userData, advertiserData) {
+  console.log("Rendering comparison elements", userData, advertiserData);
 
   // populate system selector
   populateSystemSelector("vis-comparison-dropdown-systems");
@@ -38,41 +38,49 @@ export function renderComparisonElements() {
   // render period buttons
   renderPeriodButtons();
 
-  // fetch data from google sheet
-  //   fetchGoogleSheetCSV("user-engagement")
-  //     .then((data) => {
-  //       // format data
-  //       handleData(data);
+  if (
+    userData &&
+    userData.length > 0 &&
+    advertiserData &&
+    advertiserData.length > 0
+  ) {
+    // format data
+    handleUserData(userData);
+    handleAdvertiserData(advertiserData);
 
-  //       // populate country selector
-  //       const countries = Array.from(
-  //         new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))
-  //       ).sort();
-  //       populateCountrySelector(countries, "vis-user-dropdown-countries");
+    // populate country selector
+    const countries = Array.from(
+      new Set(userData.map((d) => d["country"]).filter((c) => c && c !== ""))
+    ).sort();
+    populateCountrySelector(countries, "vis-comparison-dropdown-countries");
 
-  //       // render chart with data
-  renderComparisonChart([]);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching sheet data (user engagement):", error);
-  //     });
+    // render chart with data
+    renderComparisonChart(userData, advertiserData);
+  } else {
+    renderComparisonChart([], []);
+  }
 
-  //   function handleData(data) {
-  //     return data.forEach((d) => {
-  //       d["country"] = d["country"];
-  //       d["system"] = d["os"];
-  //       d["category"] =
-  //         d["category"].toLowerCase() === "non-gaming"
-  //           ? "consumer"
-  //           : d["category"].toLowerCase();
-  //       d["vertical"] = d["vertical"].toLowerCase().trim();
-  //       d["wau"] = +d["median_wau"];
-  //       d["downloads"] = +d["total_downloads"];
-  //       d["revenue"] = +d["total_revenue"];
-  //       d["time_spent"] = +d["total_time_spent"].trim();
-  //       d["week_start"] = d["week_start_date"];
-  //     });
-  //   }
+  function handleUserData(userData) {
+    // loop over metrics
+    return userData.forEach((d) => {
+      userMetrics
+        .map((m) => m.value)
+        .forEach((metric) => {
+          d[metric] = d[metric] ? +d[metric] : null;
+        });
+    });
+  }
+
+  function handleAdvertiserData(advertiserData) {
+    // loop over metrics
+    return advertiserData.forEach((d) => {
+      advertiserMetrics
+        .map((m) => m.value)
+        .forEach((metric) => {
+          d[metric] = d[metric] ? +d[metric] : null;
+        });
+    });
+  }
 }
 
 const userMetrics = [
@@ -96,7 +104,7 @@ function renderMetricsButtons(metrics, metricDefault, containerId) {
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
     renderComponent(
@@ -143,7 +151,7 @@ function renderYearButtons() {
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
     renderComponent(html`<${ComparisonYearButtons} />`, containerElement);
@@ -186,7 +194,7 @@ function renderPeriodButtons() {
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
     renderComponent(html`<${ComparisonPeriodButtons} />`, containerElement);
@@ -327,7 +335,7 @@ function renderComparisonChart(data) {
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
     renderComponent(
@@ -363,7 +371,7 @@ function ComparisonChart({ data }) {
     getDropdownValue("vis-comparison-dropdown-systems")
   );
   const [country, setCountry] = useState(
-    getDropdownValue("vis-comparison-dropdown-countries")
+    getDropdownValue("vis-comparison-dropdown-countries") || "USA"
   );
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");

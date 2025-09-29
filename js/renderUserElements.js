@@ -19,31 +19,12 @@ import {
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 
-function handleData(inputData) {
-  return inputData.forEach((d) => {
-    d["country"] = d["country"];
-    d["system"] = d["os"];
-    d["category"] =
-      d["category"].toLowerCase() === "non-gaming"
-        ? "consumer"
-        : d["category"].toLowerCase();
-    d["vertical"] = d["vertical"].toLowerCase().trim();
-    d["wau"] = +d["median_wau"];
-    d["downloads"] = +d["total_downloads"];
-    d["revenue"] = +d["total_revenue"];
-    d["time_spent"] = +d["total_time_spent"].trim();
-    d["week_start"] = d["week_start_date"];
-    d["weekNumber"] = +d["Week Number"].trim();
-  });
-}
-
 export function renderUserElements(data = null) {
   // populate system selector
   populateSystemSelector("vis-user-dropdown-systems");
 
   if (data && data.length > 0) {
     // format data
-    handleData(data);
 
     // populate country selector
     const countries = Array.from(

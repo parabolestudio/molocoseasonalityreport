@@ -20,7 +20,7 @@ import {
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 
-export function renderAdvertiserElements() {
+export function renderAdvertiserElements(data) {
   console.log("Rendering advertiser elements");
 
   // populate system selector
@@ -29,39 +29,25 @@ export function renderAdvertiserElements() {
   // render metrics buttons
   renderMetricsButtons();
 
-  // fetch data from google sheet
-  fetchGoogleSheetCSV("advertiser-kpis")
-    .then((data) => {
-      // format data
-      handleData(data);
+  if (data && data.length > 0) {
+    // format data
+    handleData(data);
 
-      // populate country selector
-      const countries = Array.from(
-        new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))
-      ).sort();
-      populateCountrySelector(countries, "vis-advertiser-dropdown-countries");
+    // populate country selector
+    const countries = Array.from(
+      new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))
+    ).sort();
+    populateCountrySelector(countries, "vis-advertiser-dropdown-countries");
 
-      // render chart with data
-      renderAdvertiserChart(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching sheet data (advertiser KPIs):", error);
-    });
+    // render chart with data
+    renderAdvertiserChart(data);
+  } else {
+    renderAdvertiserChart([]);
+  }
 
   function handleData(data) {
+    // loop over metrics
     return data.forEach((d) => {
-      d["country"] = d["country"];
-      d["system"] = d["os"];
-
-      d["category"] =
-        d["category"].toLowerCase() === "non-gaming"
-          ? "consumer"
-          : d["category"].toLowerCase();
-      d["vertical"] = d["vertical"].toLowerCase().trim();
-
-      d["week_start"] = d["week_start_date"];
-      d["weekNumber"] = +d["Week Number"].trim();
-      // loop over metrics
       metrics
         .map((m) => m.value)
         .forEach((metric) => {
@@ -126,7 +112,7 @@ function renderAdvertiserChart(data) {
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
     renderComponent(
@@ -143,7 +129,7 @@ function AdvertiserChart({ data }) {
     getDropdownValue("vis-advertiser-dropdown-systems")
   );
   const [country, setCountry] = useState(
-    getDropdownValue("vis-advertiser-dropdown-countries")
+    getDropdownValue("vis-advertiser-dropdown-countries") || "USA"
   );
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
@@ -164,7 +150,7 @@ function AdvertiserChart({ data }) {
   }
   useEffect(() => {
     setChartData(filterData(data));
-  }, [system, country, category, vertical]);
+  }, [system, country, category, vertical, data]);
 
   // listen to change in advertiser system dropdown
   useEffect(() => {
@@ -329,6 +315,7 @@ function AdvertiserChart({ data }) {
       style="width: 100%; height: 100%;"
       onmouseleave="${() => setHoveredValues(null)}"
       onmousemove="${(event) => {
+        if (!data || data.length === 0) return;
         const pointer = d3.pointer(event);
 
         const leftSide = margin.left;
@@ -373,7 +360,7 @@ function AdvertiserChart({ data }) {
       }}"
     >
       <g>
-        ${holidays.map((holiday, index) => {
+        ${holidays.map((holiday) => {
           const x = prevTimeScaleUTC(getDateInUTC(holiday.date)) + margin.left;
           if (isNaN(x) || x < margin.left) return null;
           if (x > width - margin.right) return null;
