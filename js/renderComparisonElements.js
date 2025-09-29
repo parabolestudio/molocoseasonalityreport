@@ -769,6 +769,8 @@ function ComparisonChart({ userData, advertiserData }) {
           chartAdvertiserData.length === 0
         )
           return;
+        if (datapointsUser.length === 0 && datapointsAdvertiser.length === 0)
+          return;
         const pointer = d3.pointer(event);
 
         const leftSide = margin.left;
@@ -818,7 +820,7 @@ function ComparisonChart({ userData, advertiserData }) {
     >
       <g>
         ${holidays.map((holiday) => {
-          const x = timeScale(getDateInUTC(holiday.date)) + margin.left;
+          const x = timeScale(getDateInUTC(holiday.date[year])) + margin.left;
           if (isNaN(x) || x < margin.left) return null;
           if (x > width - margin.right) return null;
           return html`<g transform="translate(${x}, 0)">

@@ -363,7 +363,8 @@ function AdvertiserChart({ data }) {
     >
       <g>
         ${holidays.map((holiday) => {
-          const x = prevTimeScaleUTC(getDateInUTC(holiday.date)) + margin.left;
+          const x =
+            prevTimeScaleUTC(getDateInUTC(holiday.date.past)) + margin.left;
           if (isNaN(x) || x < margin.left) return null;
           if (x > width - margin.right) return null;
           return html`<g transform="translate(${x}, 0)">

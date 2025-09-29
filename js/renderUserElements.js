@@ -328,7 +328,7 @@ function UserChart({ data }) {
       <g>
         ${holidays.map((holiday) => {
           const x =
-            prevTimeScaleUTC(getDateInUTC(holiday.date)) +
+            prevTimeScaleUTC(getDateInUTC(holiday.date.past)) +
             margin.left +
             chartMargin.left;
           if (isNaN(x) || x < margin.left + chartMargin.left) return null;
