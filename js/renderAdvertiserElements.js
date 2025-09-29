@@ -1,4 +1,3 @@
-import { fetchGoogleSheetCSV } from "./googleSheets.js";
 import {
   populateCountrySelector,
   populateSystemSelector,
@@ -11,11 +10,11 @@ import {
   useEffect,
 } from "./utils/preact-htm.js";
 import {
-  valueFormatting,
   prevTimeScaleUTC,
   currentTimeScaleUTC,
   getDateInUTC,
   ASSETS_URL,
+  isMobile,
 } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
@@ -370,8 +369,9 @@ function AdvertiserChart({ data }) {
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-${35 / 2},
-                5)"
+              transform="translate(-${35 / 2}, 5)"
+              width="${isMobile ? 20 : 35}"
+              height="${isMobile ? 20 : 35}"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({

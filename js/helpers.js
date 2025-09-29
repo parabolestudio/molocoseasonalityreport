@@ -58,3 +58,4 @@ export function getDateInUTC(dateString) {
   const dateUTC = Date.UTC(year, month - 1, day); // month is 0-based
   return dateUTC;
 }
+export const isMobile = window.innerWidth <= 480;

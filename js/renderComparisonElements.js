@@ -1,4 +1,3 @@
-import { fetchGoogleSheetCSV } from "./googleSheets.js";
 import {
   populateCountrySelector,
   populateSystemSelector,
@@ -10,7 +9,7 @@ import {
   useState,
   useEffect,
 } from "./utils/preact-htm.js";
-import { getDateInUTC, ASSETS_URL } from "./helpers.js";
+import { getDateInUTC, ASSETS_URL, isMobile } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 
@@ -719,19 +718,24 @@ function ComparisonChart({ userData, advertiserData }) {
     })
     .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
 
+  const minUserValue = d3.min(chartUserData, (d) => d[userMetric]);
   const maxUserValue = d3.max(chartUserData, (d) => d[userMetric]);
   const valueUserScale = d3
     .scaleLinear()
-    .domain([0, maxUserValue])
+    .domain([minUserValue, maxUserValue])
     .range([innerHeight, 0]);
 
+  const minAdvertiserValue = d3.min(
+    chartAdvertiserData,
+    (d) => d[advertiserMetric]
+  );
   const maxAdvertiserValue = d3.max(
     chartAdvertiserData,
     (d) => d[advertiserMetric]
   );
   const valueAdvertiserScale = d3
     .scaleLinear()
-    .domain([0, maxAdvertiserValue])
+    .domain([minAdvertiserValue, maxAdvertiserValue])
     .range([innerHeight, 0]);
 
   const lineUserGen = d3
@@ -826,8 +830,9 @@ function ComparisonChart({ userData, advertiserData }) {
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-${35 / 2},
-                    5)"
+              transform="translate(-${35 / 2}, 5)"
+              width="${isMobile ? 20 : 35}"
+              height="${isMobile ? 20 : 35}"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({

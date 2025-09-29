@@ -15,6 +15,7 @@ import {
   currentTimeScaleUTC,
   getDateInUTC,
   ASSETS_URL,
+  isMobile,
 } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
@@ -336,8 +337,7 @@ function UserChart({ data }) {
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-${35 / 2},
-            5)"
+              transform="translate(-${isMobile ? 20 / 2 : 35 / 2}, 5)"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
@@ -348,6 +348,8 @@ function UserChart({ data }) {
                   align: "top",
                 });
               }}"
+              width="${isMobile ? 20 : 35}"
+              height="${isMobile ? 20 : 35}"
               style="cursor: pointer;"
             />
             <line
@@ -363,8 +365,12 @@ function UserChart({ data }) {
             />
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-${35 / 2}, ${height - margin.bottom + 5})"
+              transform="translate(-${isMobile ? 20 / 2 : 35 / 2}, ${height -
+              margin.bottom +
+              5})"
               style="cursor: pointer;"
+              width="${isMobile ? 20 : 35}"
+              height="${isMobile ? 20 : 35}"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
