@@ -289,16 +289,77 @@ const periods = [
     title: "Peak season",
     subtitle: "Late November to December 25",
     icon: "",
-    startWeek: "48",
-    endWeek: "51",
+    start: {
+      past: {
+        day: "25",
+        month: "11",
+        year: "2024",
+        week: "48",
+        full: "2024-11-25",
+      },
+      current: {
+        day: "24",
+        month: "11",
+        year: "2025",
+        week: "48",
+        full: "2025-11-24",
+      },
+    },
+    end: {
+      past: {
+        day: "30",
+        month: "12",
+        year: "2024",
+        week: "1",
+        full: "2024-12-30",
+      },
+      current: {
+        day: "29",
+        month: "12",
+        year: "2025",
+        week: "1",
+        full: "2025-12-29",
+      },
+    },
   },
   {
     value: "post-holiday",
     title: "Post-holiday Q5",
     subtitle: "December 26 to March",
     icon: "",
-    startWeek: "52",
-    endWeek: "14",
+    start: {
+      past: {
+        day: "30",
+        month: "12",
+        year: "2024",
+        week: "1",
+        full: "2024-12-30",
+      },
+      current: {
+        day: "29",
+        month: "12",
+        year: "2025",
+        week: "1",
+        full: "2025-12-29",
+      },
+    },
+    end: {
+      past: {
+        day: "31",
+        month: "3",
+        year: "2025",
+        week: "14",
+        full: "2025-03-31",
+      },
+
+      current: {
+        day: "30",
+        month: "3",
+        year: "2026",
+        week: "14",
+        full: "2026-03-30",
+      },
+    },
   },
 ];
 
@@ -609,18 +670,30 @@ function ComparisonChart({ userData, advertiserData }) {
     { name: "March", begin: "2026-03-01", end: "2026-03-31", year: "current" },
   ];
   // months display
-  const displayMonths = months.filter((month) => {
-    const monthStart = getDateInUTC(month.begin);
-    const monthEnd = getDateInUTC(month.end);
-    const periodObj = periods.find((p) => p.value === period);
-    if (!periodObj) return false;
+  const displayMonths = months
+    .map((month) => {
+      const monthStart = getDateInUTC(month.begin);
+      const monthEnd = getDateInUTC(month.end);
+      const periodObj = periods.find((p) => p.value === period);
+      if (!periodObj) return false;
 
-    let periodStart = getDateInUTC(periodObj.start[year].full);
-    let periodEnd = getDateInUTC(periodObj.end[year].full);
-    return (
-      monthEnd >= periodStart && monthStart <= periodEnd && year === month.year
-    );
-  });
+      let periodStart = getDateInUTC(periodObj.start[year].full);
+      let periodEnd = getDateInUTC(periodObj.end[year].full);
+      if (
+        monthEnd >= periodStart &&
+        monthStart <= periodEnd &&
+        year === month.year
+      ) {
+        return {
+          ...month,
+          begin:
+            monthStart < periodStart ? periodObj.start[year].full : month.begin,
+          end: monthEnd > periodEnd ? periodObj.end[year].full : month.end,
+        };
+      }
+      return null;
+    })
+    .filter((m) => m !== null);
 
   // scales
   const timeScale = getTimeScale(year, period).range([0, innerWidth]);
@@ -731,7 +804,7 @@ function ComparisonChart({ userData, advertiserData }) {
           width="${innerWidth}"
           height="${innerHeight}"
           fill="none"
-          stroke="black"
+          stroke="none"
         />
         <path
           d="${userLine}"
@@ -756,7 +829,6 @@ function ComparisonChart({ userData, advertiserData }) {
           ${displayMonths.map((month) => {
             const xBegin = timeScale(getDateInUTC(month.begin)) || null;
             const xEnd = timeScale(getDateInUTC(month.end)) || null;
-            if (xBegin === null || xEnd === null) return null;
             return html`<g key=${month.name}>
               <rect
                 x="${xBegin}"
@@ -773,6 +845,7 @@ function ComparisonChart({ userData, advertiserData }) {
                 y="${innerHeight + 20 + 22}"
                 text-anchor="middle"
                 class="charts-text-body"
+                fill-opacity="${(xEnd - xBegin) / 2 < 30 ? 0 : 1}"
               >
                 ${month.name}
               </text>
