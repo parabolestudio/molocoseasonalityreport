@@ -268,11 +268,11 @@ function UserChart({ data }) {
     })
     .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
 
+  // onmouseleave="${() => setHoveredValues(null)}"
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
       style="width: 100%; height: 100%; background-color: transparent"
-      onmouseleave="${() => setHoveredValues(null)}"
       onmousemove="${(event) => {
         const pointer = d3.pointer(event);
 
@@ -317,7 +317,7 @@ function UserChart({ data }) {
 
           const tooltipY = margin.top + metricIndex * chartHeight;
 
-          const index = Math.floor(innerX / weekScale.step());
+          const index = Math.floor(innerX / weekScale.step()) - 1;
           const hoveredWeek = weekScale.domain()[index];
 
           // get value for hoveredItem
@@ -348,12 +348,17 @@ function UserChart({ data }) {
       }}"
     >
       <g>
-        ${holidays.map((holiday, index) => {
-          const x = 250 + index * 100;
+        ${holidays.map((holiday) => {
+          const x =
+            prevTimeScaleUTC(getDateInUTC(holiday.date)) +
+            margin.left +
+            chartMargin.left;
+          if (isNaN(x) || x < margin.left + chartMargin.left) return null;
+          if (x > width - margin.right) return null;
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-14,
+              transform="translate(-${35 / 2},
             5)"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
@@ -380,7 +385,7 @@ function UserChart({ data }) {
             />
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-14, ${height - margin.bottom + 5})"
+              transform="translate(-${35 / 2}, ${height - margin.bottom + 5})"
               style="cursor: pointer;"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
@@ -423,6 +428,7 @@ function UserChart({ data }) {
                 value: d[chart.value],
                 weekNumber: d.weekNumber,
               }))}
+              hoveredValues=${hoveredValues}
             />`
         )}
       </g>
@@ -441,6 +447,7 @@ function SingleChart({
   weekScale,
   datapointsPrev,
   datapointsCurrent,
+  hoveredValues,
 }) {
   // console.log(
   //   "Rendering single chart:",
@@ -464,6 +471,13 @@ function SingleChart({
   const prevLine = lineGen(datapointsPrev);
   const currentLine = lineGen(datapointsCurrent);
 
+  const highlightPrev = hoveredValues
+    ? datapointsPrev.find((d) => d.weekNumber === hoveredValues?.week)
+    : null;
+  const highlightCurrent = hoveredValues
+    ? datapointsCurrent.find((d) => d.weekNumber === hoveredValues?.week)
+    : null;
+
   return html`<g transform="translate(0, ${index * dim.chartHeight})">
     <rect
       x="0"
@@ -482,7 +496,32 @@ function SingleChart({
         fill="orange"
         fill-opacity="0"
       />
-
+      <line x1="0" y1="0" x2="0" y2="${dim.chartInnerHeight}" stroke="black" />
+      <line
+        x1="0"
+        y1="${dim.chartInnerHeight}"
+        x2="${dim.chartWidth}"
+        y2="${dim.chartInnerHeight}"
+        stroke="black"
+      />
+      ${hoveredValues && highlightPrev
+        ? html`<circle
+            cx="${weekScale(hoveredValues.week)}"
+            cy="${valueScale(highlightPrev ? highlightPrev.value : 0)}"
+            r="5"
+            fill="${chartColors[index % chartColors.length]}"
+            style="transition: all ease 0.3s"
+          />`
+        : ""}
+      ${hoveredValues && highlightCurrent
+        ? html`<circle
+            cx="${weekScale(hoveredValues.week)}"
+            cy="${valueScale(highlightCurrent ? highlightCurrent.value : 0)}"
+            r="5"
+            fill="${chartColors[index % chartColors.length]}"
+            style="transition: all ease 0.3s"
+          />`
+        : ""}
       <path
         d="${prevLine}"
         fill="none"
@@ -500,14 +539,7 @@ function SingleChart({
         stroke-width="3"
         style="transition: all ease 0.3s"
       />
-      <line x1="0" y1="0" x2="0" y2="${dim.chartInnerHeight}" stroke="black" />
-      <line
-        x1="0"
-        y1="${dim.chartInnerHeight}"
-        x2="${dim.chartWidth}"
-        y2="${dim.chartInnerHeight}"
-        stroke="black"
-      />
+
       <text y=${dim.chartInnerHeight + 20} class="charts-text-body"
         >October</text
       >
