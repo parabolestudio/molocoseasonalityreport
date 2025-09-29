@@ -63,7 +63,7 @@ function renderMetricsButtons() {
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
     renderComponent(html`<${AdvertiserMetricsButtons} />`, containerElement);
