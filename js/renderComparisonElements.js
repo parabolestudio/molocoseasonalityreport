@@ -98,7 +98,7 @@ const advertiserMetrics = [
   { value: "roas_d7_p50", label: "ROAS" },
   { value: "arppu_d7_p50", label: "ARRPU" },
 ];
-const advertiserMetricDefault = advertiserMetrics[0];
+const advertiserMetricDefault = advertiserMetrics[1];
 
 function renderMetricsButtons(metrics, metricDefault, containerId) {
   const containerElement = document.getElementById(containerId);
@@ -330,7 +330,7 @@ function ComparisonPeriodButtons() {
   return html`<div class="vis-period-buttons-container">${buttons}</div>`;
 }
 
-function renderComparisonChart(data) {
+function renderComparisonChart(userData, advertiserData) {
   const containerId = "vis-comparison-container";
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
@@ -339,7 +339,10 @@ function renderComparisonChart(data) {
 
     // Render chart as a component so hooks work
     renderComponent(
-      html`<${ComparisonChart} data=${data} />`,
+      html`<${ComparisonChart}
+        userData=${userData}
+        advertiserData=${advertiserData}
+      />`,
       containerElement
     );
   } else {
@@ -361,12 +364,23 @@ function getTimeScale(year = "past", period) {
 
   const start = Date.UTC(startY, startMonth - 1, startDay);
   const end = Date.UTC(endY, endMonth - 1, endDay);
-  console.log("getTimeScale:", { year, period, start, end });
 
   return d3.scaleLinear().domain([start, end]);
 }
 
-function ComparisonChart({ data }) {
+function getWeekNumberArray(year = "past", period) {
+  const periodObj = periods.find((p) => p.value === period);
+  let startWeek = periodObj.start[year].week || null;
+  let endWeek = periodObj.end[year].week || null;
+
+  // const weekNumberArray = d3.range(40, 53).concat(d3.range(1, 15));
+  if (endWeek < startWeek) {
+    return d3.range(startWeek, 53).concat(d3.range(1, Number(endWeek) + 1));
+  }
+  return d3.range(startWeek, Number(endWeek) + 1);
+}
+
+function ComparisonChart({ userData, advertiserData }) {
   const [system, setSystem] = useState(
     getDropdownValue("vis-comparison-dropdown-systems")
   );
@@ -384,7 +398,10 @@ function ComparisonChart({ data }) {
   const [hoveredHoliday, setHoveredHoliday] = useState(null);
   const [hoveredValues, setHoveredValues] = useState(null);
 
-  const [chartData, setChartData] = useState(filterData(data));
+  const [chartUserData, setChartUserData] = useState(filterData(userData));
+  const [chartAdvertiserData, setChartAdvertiserData] = useState(
+    filterData(advertiserData)
+  );
 
   function filterData(inputData) {
     return inputData.filter(
@@ -396,8 +413,9 @@ function ComparisonChart({ data }) {
     );
   }
   useEffect(() => {
-    setChartData(filterData(data));
-  }, [system, country, category, vertical]);
+    setChartUserData(filterData(userData));
+    setChartAdvertiserData(filterData(advertiserData));
+  }, [system, country, category, vertical, userData, advertiserData]);
 
   // listen to change in comparison system dropdown
   useEffect(() => {
@@ -523,7 +541,8 @@ function ComparisonChart({ data }) {
 
   console.log(
     "Rendering comparison chart",
-    chartData,
+    chartUserData,
+    chartAdvertiserData,
     system,
     country,
     category,
@@ -587,10 +606,7 @@ function ComparisonChart({ data }) {
     },
     { name: "March", begin: "2026-03-01", end: "2026-03-31", year: "current" },
   ];
-
-  // scales
-  const timeScale = getTimeScale(year, period).range([0, innerWidth]);
-
+  // months display
   const displayMonths = months.filter((month) => {
     const monthStart = getDateInUTC(month.begin);
     const monthEnd = getDateInUTC(month.end);
@@ -603,6 +619,60 @@ function ComparisonChart({ data }) {
       monthEnd >= periodStart && monthStart <= periodEnd && year === month.year
     );
   });
+
+  // scales
+  const timeScale = getTimeScale(year, period).range([0, innerWidth]);
+  const weekNumberArray = getWeekNumberArray(year, period);
+
+  const weekScale = d3
+    .scalePoint()
+    .domain(weekNumberArray)
+    .range([0, innerWidth]);
+
+  // lines
+  const datapointsUser = chartUserData
+    .filter((d) => {
+      const date = getDateInUTC(d.week_start);
+      return date >= timeScale.domain()[0] && date <= timeScale.domain()[1];
+    })
+    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+
+  const datapointsAdvertiser = chartAdvertiserData
+    .filter((d) => {
+      const date = getDateInUTC(d.week_start);
+      return date >= timeScale.domain()[0] && date <= timeScale.domain()[1];
+    })
+    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+
+  const maxUserValue = d3.max(chartUserData, (d) => d[userMetric]);
+  const valueUserScale = d3
+    .scaleLinear()
+    .domain([0, maxUserValue])
+    .range([innerHeight, 0]);
+
+  const maxAdvertiserValue = d3.max(
+    chartAdvertiserData,
+    (d) => d[advertiserMetric]
+  );
+  const valueAdvertiserScale = d3
+    .scaleLinear()
+    .domain([0, maxAdvertiserValue])
+    .range([innerHeight, 0]);
+
+  const lineUserGen = d3
+    .line()
+    .y((d) => valueUserScale(d[userMetric]))
+    .x((d) => weekScale(d.weekNumber))
+    .defined((d) => d[userMetric] !== null);
+
+  const lineAdvertiserGen = d3
+    .line()
+    .y((d) => valueAdvertiserScale(d[advertiserMetric]))
+    .x((d) => weekScale(d.weekNumber))
+    .defined((d) => d[advertiserMetric] !== null);
+
+  const userLine = lineUserGen(datapointsUser);
+  const advertiserLine = lineAdvertiserGen(datapointsAdvertiser);
 
   return html`<div style="position: relative;">
     <svg
@@ -660,6 +730,24 @@ function ComparisonChart({ data }) {
           height="${innerHeight}"
           fill="none"
           stroke="black"
+        />
+        <path
+          d="${userLine}"
+          fill="none"
+          stroke="#60E2B7"
+          stroke-width="3"
+          style="transition: all ease 0.3s"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="${advertiserLine}"
+          fill="none"
+          stroke="#876AFF"
+          stroke-width="3"
+          style="transition: all ease 0.3s"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
 
         <g>
