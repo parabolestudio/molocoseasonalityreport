@@ -286,3 +286,19 @@ Tooltip for multiple visualizations
     font-family: "Spacegrotesk", "Space Grotesk", sans-serif;
   }
 }
+
+.loader-overlay {
+  position: absolute;
+  /* top is set dynamically inline */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+
+  width: 100px;
+  height: 100px;
+}
+
+/* border: 8px solid #f3f3f3; 
+animation: spin 1s linear infinite;
+border-top: 8px solid #040078;
+border-radius: 50%; */

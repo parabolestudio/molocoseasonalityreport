@@ -17,6 +17,7 @@ import {
 } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
+import Loader from "./Loader.js";
 
 export function renderComparisonElements(userData, advertiserData) {
   console.log("Rendering comparison elements", userData, advertiserData);
@@ -63,7 +64,7 @@ export function renderComparisonElements(userData, advertiserData) {
     // render chart with data
     renderComparisonChart(userData, advertiserData);
   } else {
-    renderComparisonChart([], []);
+    renderComparisonChart(null, null);
   }
 
   function handleUserData(userData) {
@@ -476,6 +477,7 @@ function ComparisonChart({ userData, advertiserData }) {
   );
 
   function filterData(inputData) {
+    if (!inputData || inputData.length === 0) return null;
     return inputData.filter(
       (d) =>
         d.system === system &&
@@ -715,34 +717,40 @@ function ComparisonChart({ userData, advertiserData }) {
 
   // lines
   const datapointsUser = chartUserData
-    .filter((d) => {
-      const date = getDateInUTC(d.week_start);
-      return date >= timeScale.domain()[0] && date <= timeScale.domain()[1];
-    })
-    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+    ? chartUserData
+        .filter((d) => {
+          const date = getDateInUTC(d.week_start);
+          return date >= timeScale.domain()[0] && date <= timeScale.domain()[1];
+        })
+        .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
+    : [];
 
   const datapointsAdvertiser = chartAdvertiserData
-    .filter((d) => {
-      const date = getDateInUTC(d.week_start);
-      return date >= timeScale.domain()[0] && date <= timeScale.domain()[1];
-    })
-    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+    ? chartAdvertiserData
+        .filter((d) => {
+          const date = getDateInUTC(d.week_start);
+          return date >= timeScale.domain()[0] && date <= timeScale.domain()[1];
+        })
+        .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
+    : [];
 
-  const minUserValue = d3.min(chartUserData, (d) => d[userMetric]);
-  const maxUserValue = d3.max(chartUserData, (d) => d[userMetric]);
+  const minUserValue = chartUserData
+    ? d3.min(chartUserData, (d) => d[userMetric])
+    : 0;
+  const maxUserValue = chartUserData
+    ? d3.max(chartUserData, (d) => d[userMetric])
+    : 0;
   const valueUserScale = d3
     .scaleLinear()
     .domain([minUserValue, maxUserValue])
     .range([innerHeight, 0]);
 
-  const minAdvertiserValue = d3.min(
-    chartAdvertiserData,
-    (d) => d[advertiserMetric]
-  );
-  const maxAdvertiserValue = d3.max(
-    chartAdvertiserData,
-    (d) => d[advertiserMetric]
-  );
+  const minAdvertiserValue = chartAdvertiserData
+    ? d3.min(chartAdvertiserData, (d) => d[advertiserMetric])
+    : 0;
+  const maxAdvertiserValue = chartAdvertiserData
+    ? d3.max(chartAdvertiserData, (d) => d[advertiserMetric])
+    : 0;
   const valueAdvertiserScale = d3
     .scaleLinear()
     .domain([minAdvertiserValue, maxAdvertiserValue])
@@ -821,34 +829,6 @@ function ComparisonChart({ userData, advertiserData }) {
     .x((d) => d.x)
     .y0((d) => d.userY)
     .y1((d) => d.advertiserY);
-
-  let labelPositions = {};
-
-  if (datapointsUser.length > 0 && datapointsUser[0][userMetric]) {
-    labelPositions.user = {
-      x: 0,
-      y: valueUserScale(datapointsUser[0][userMetric]),
-    };
-  }
-  if (
-    datapointsAdvertiser.length > 0 &&
-    datapointsAdvertiser[0][advertiserMetric]
-  ) {
-    labelPositions.advertiser = {
-      x: 0,
-      y: valueAdvertiserScale(datapointsAdvertiser[0][advertiserMetric]),
-    };
-  }
-  if (labelPositions.user && labelPositions.advertiser) {
-    // If both user and advertiser labels are present, position them accordingly
-    if (labelPositions.user.y < labelPositions.advertiser.y) {
-      labelPositions.user.y -= 35;
-      labelPositions.advertiser.y += 35;
-    } else {
-      labelPositions.user.y += 35;
-      labelPositions.advertiser.y -= 35;
-    }
-  }
 
   return html`<div style="position: relative;">
     <svg
@@ -1062,28 +1042,6 @@ function ComparisonChart({ userData, advertiserData }) {
           stroke-linecap="round"
           stroke-linejoin="round"
         />
-        ${labelPositions &&
-        labelPositions.user &&
-        html`<text
-          x="${labelPositions.user.x}"
-          y="${labelPositions.user.y}"
-          class="charts-text-body-bold"
-          fill="#12976B"
-          style="transition: all ease 0.3s"
-        >
-          ${userMetrics.find((m) => m.value === userMetric).label}
-        </text>`})
-        ${labelPositions &&
-        labelPositions.advertiser &&
-        html`<text
-          x="${labelPositions.advertiser.x}"
-          y="${labelPositions.advertiser.y}"
-          class="charts-text-body-bold"
-          fill="#876AFF"
-          style="transition: all ease 0.3s"
-        >
-          ${advertiserMetrics.find((m) => m.value === advertiserMetric).label}
-        </text>`})
         ${hoveredValues && highlightUser
           ? html`<circle
               cx="${weekScale(hoveredValues.week)}"
@@ -1110,6 +1068,10 @@ function ComparisonChart({ userData, advertiserData }) {
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
     <${TooltipValues} hoveredItem=${hoveredValues} />
+    <${Loader}
+      isLoading=${chartUserData === null || chartAdvertiserData === null}
+      y=${innerHeight / 2}
+    />
   </div>`;
 }
 

@@ -18,6 +18,7 @@ import {
 } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
+import Loader from "./Loader.js";
 
 export function renderAdvertiserElements(data) {
   console.log("Rendering advertiser elements");
@@ -43,7 +44,7 @@ export function renderAdvertiserElements(data) {
     // render chart with data
     renderAdvertiserChart(data);
   } else {
-    renderAdvertiserChart([]);
+    renderAdvertiserChart(null);
   }
 
   function handleData(data) {
@@ -150,6 +151,7 @@ function AdvertiserChart({ data }) {
   const [hoveredValues, setHoveredValues] = useState(null);
 
   function filterData(inputData) {
+    if (!inputData || inputData.length === 0) return null;
     return inputData.filter(
       (d) =>
         d.system === system &&
@@ -271,20 +273,26 @@ function AdvertiserChart({ data }) {
     .range([0, innerWidth]);
 
   const datapointsPrev = chartData
-    .filter((d) => {
-      const date = getDateInUTC(d.week_start);
-      return date >= prevTime.domain()[0] && date <= prevTime.domain()[1];
-    })
-    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+    ? chartData
+        .filter((d) => {
+          const date = getDateInUTC(d.week_start);
+          return date >= prevTime.domain()[0] && date <= prevTime.domain()[1];
+        })
+        .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
+    : [];
 
   const datapointsCurrent = chartData
-    .filter((d) => {
-      const date = getDateInUTC(d.week_start);
-      return date >= currentTime.domain()[0] && date <= currentTime.domain()[1];
-    })
-    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+    ? chartData
+        .filter((d) => {
+          const date = getDateInUTC(d.week_start);
+          return (
+            date >= currentTime.domain()[0] && date <= currentTime.domain()[1]
+          );
+        })
+        .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
+    : [];
 
-  const maxValue = d3.max(chartData, (d) => d[metric]);
+  const maxValue = chartData ? d3.max(chartData, (d) => d[metric]) : 0;
   const valueScale = d3
     .scaleLinear()
     .domain([0, maxValue])
@@ -520,6 +528,7 @@ function AdvertiserChart({ data }) {
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
     <${TooltipValues} hoveredItem=${hoveredValues} />
+    <${Loader} isLoading=${data === null} y=${innerHeight / 2} />
   </div>`;
 }
 

@@ -19,6 +19,7 @@ import {
 } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
+import Loader from "./Loader.js";
 
 export function renderUserElements(data = null) {
   // populate system selector
@@ -35,7 +36,7 @@ export function renderUserElements(data = null) {
     // render chart with data
     renderUserChart(data);
   } else {
-    renderUserChart([]);
+    renderUserChart(null);
   }
 }
 
@@ -54,7 +55,6 @@ function renderUserChart(data) {
 }
 
 function UserChart({ data }) {
-  // return html`<p>test</p>`;
   const [system, setSystem] = useState(
     getDropdownValue("vis-user-dropdown-systems")
   );
@@ -69,7 +69,7 @@ function UserChart({ data }) {
   const [hoveredValues, setHoveredValues] = useState(null);
 
   function filterData(inputData) {
-    if (!inputData || inputData.length === 0) return [];
+    if (!inputData || inputData.length === 0) return null;
     return inputData.filter(
       (d) =>
         d.system === system &&
@@ -162,34 +162,42 @@ function UserChart({ data }) {
       title: "WAU",
       value: "wau",
       tooltipTitle: "Weekly Active Users (WAU)",
-      data: chartData.map((d) => ({ week_start: d.week_start, value: d.wau })),
+      data: chartData
+        ? chartData.map((d) => ({ week_start: d.week_start, value: d.wau }))
+        : [],
     },
     {
       title: "Downloads",
       value: "downloads",
       tooltipTitle: "Downloads",
-      data: chartData.map((d) => ({
-        week_start: d.week_start,
-        value: d.downloads,
-      })),
+      data: chartData
+        ? chartData.map((d) => ({
+            week_start: d.week_start,
+            value: d.downloads,
+          }))
+        : [],
     },
     {
       title: "Revenue",
       value: "revenue",
       tooltipTitle: "Revenue",
-      data: chartData.map((d) => ({
-        week_start: d.week_start,
-        value: d.revenue,
-      })),
+      data: chartData
+        ? chartData.map((d) => ({
+            week_start: d.week_start,
+            value: d.revenue,
+          }))
+        : [],
     },
     {
       title: "Time spent",
       value: "time_spent",
       tooltipTitle: "Time Spent",
-      data: chartData.map((d) => ({
-        week_start: d.week_start,
-        value: d.time_spent,
-      })),
+      data: chartData
+        ? chartData.map((d) => ({
+            week_start: d.week_start,
+            value: d.time_spent,
+          }))
+        : [],
     },
   ];
 
@@ -232,18 +240,24 @@ function UserChart({ data }) {
     .range([0, chartWidth]);
 
   const datapointsPrev = chartData
-    .filter((d) => {
-      const date = getDateInUTC(d.week_start);
-      return date >= prevTime.domain()[0] && date <= prevTime.domain()[1];
-    })
-    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+    ? chartData
+        .filter((d) => {
+          const date = getDateInUTC(d.week_start);
+          return date >= prevTime.domain()[0] && date <= prevTime.domain()[1];
+        })
+        .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
+    : [];
 
   const datapointsCurrent = chartData
-    .filter((d) => {
-      const date = getDateInUTC(d.week_start);
-      return date >= currentTime.domain()[0] && date <= currentTime.domain()[1];
-    })
-    .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start));
+    ? chartData
+        .filter((d) => {
+          const date = getDateInUTC(d.week_start);
+          return (
+            date >= currentTime.domain()[0] && date <= currentTime.domain()[1]
+          );
+        })
+        .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
+    : [];
 
   return html`<div style="position: relative;">
     <svg
@@ -460,6 +474,7 @@ function UserChart({ data }) {
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
     <${TooltipValues} hoveredItem=${hoveredValues} />
+    <${Loader} isLoading=${data === null} y=${150} />
   </div>`;
 }
 
