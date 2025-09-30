@@ -922,10 +922,10 @@ function ComparisonChart({ userData, advertiserData }) {
                     0,
                     holidays.findIndex((h) => h.name === holiday.name) - 1
                   )
-                ].date.past
+                ].date[year]
               )
             ) + margin.left;
-          if (x - prevX < 40 && index !== 0 && !isMobile) offsetX = 40;
+          if (x - prevX < 40 && index !== 0 && !isMobile) offsetX = 32;
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
@@ -938,7 +938,7 @@ function ComparisonChart({ userData, advertiserData }) {
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDate,
+                  date: holiday.displayDate[year],
                   tooltipX: x + 20,
                   tooltipY: 0 + 20,
                 });

@@ -343,7 +343,7 @@ function UserChart({ data }) {
       <g>
         ${holidays.map((holiday, index) => {
           const x =
-            prevTimeScaleUTC(getDateInUTC(holiday.date.past)) +
+            currentTimeScaleUTC(getDateInUTC(holiday.date.current)) +
             margin.left +
             chartMargin.left;
           if (isNaN(x) || x < margin.left + chartMargin.left) return null;
@@ -351,14 +351,14 @@ function UserChart({ data }) {
 
           let offsetX = 0;
           const prevX =
-            prevTimeScaleUTC(
+            currentTimeScaleUTC(
               getDateInUTC(
                 holidays[
                   Math.max(
                     0,
                     holidays.findIndex((h) => h.name === holiday.name) - 1
                   )
-                ].date.past
+                ].date.current
               )
             ) +
             margin.left +
@@ -375,7 +375,7 @@ function UserChart({ data }) {
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDate,
+                  date: holiday.displayDateMerged,
                   tooltipX: x + 20,
                   tooltipY: 0 + 20,
                   align: "top",
@@ -430,7 +430,7 @@ function UserChart({ data }) {
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDate,
+                  date: holiday.displayDateMerged,
                   tooltipX: x + 20,
                   tooltipY: 0 + 40,
                   align: "bottom",

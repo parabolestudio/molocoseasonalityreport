@@ -24,9 +24,8 @@
 }
 
 #vis-vertical-filter {
-  .vis-filter-container {
-    margin-left: 10px; // just for testing, remove later
-  }
+  /* .vis-filter-container {
+  } */
   .vis-filter-category-container {
     position: relative;
     display: flex;
@@ -42,6 +41,10 @@
       justify-content: center;
       gap: 12px;
 
+      @media (max-width: 480px) {
+        padding: 6px 24px;
+      }
+
       &:first-child {
         border-radius: 100px 0px 0px 100px;
       }
@@ -51,6 +54,9 @@
 
       p {
         margin: 0;
+        @media (max-width: 480px) {
+          font-size: 14px;
+        }
       }
 
       &.selected {

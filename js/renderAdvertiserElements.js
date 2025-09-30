@@ -380,20 +380,21 @@ function AdvertiserChart({ data }) {
       <g>
         ${holidays.map((holiday, index) => {
           const x =
-            prevTimeScaleUTC(getDateInUTC(holiday.date.past)) + margin.left;
+            currentTimeScaleUTC(getDateInUTC(holiday.date.current)) +
+            margin.left;
           if (isNaN(x) || x < margin.left) return null;
           if (x > width - margin.right) return null;
 
           let offsetX = 0;
           const prevX =
-            prevTimeScaleUTC(
+            currentTimeScaleUTC(
               getDateInUTC(
                 holidays[
                   Math.max(
                     0,
                     holidays.findIndex((h) => h.name === holiday.name) - 1
                   )
-                ].date.past
+                ].date.current
               )
             ) + margin.left;
           if (x - prevX < 40 && index !== 0 && !isMobile) offsetX = 40;
@@ -410,7 +411,7 @@ function AdvertiserChart({ data }) {
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDate,
+                  date: holiday.displayDateMerged,
                   tooltipX: x + 20,
                   tooltipY: 0 + 20,
                 });
