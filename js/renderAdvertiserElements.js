@@ -52,7 +52,12 @@ export function renderAdvertiserElements(data) {
       metrics
         .map((m) => m.value)
         .forEach((metric) => {
-          d[metric] = d[metric] ? +d[metric].replaceAll(",", "") : null;
+          // replace all commas in numbers before converting to numeric to handle bid requests like "1,234,567"
+          d[metric] = d[metric]
+            ? typeof d[metric] === "string" && d[metric].includes(",")
+              ? +d[metric].replaceAll(",", "")
+              : +d[metric]
+            : null;
           // d[metric + "_wow"] = d[metric + "_wow_pct_change"]
           //   ? +d[metric + "_wow_pct_change"]
           //   : null;
