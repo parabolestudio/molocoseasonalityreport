@@ -203,7 +203,7 @@ function UserChart({ data }) {
   const innerWidth = width - margin.left - margin.right;
   const chartWidth = innerWidth - chartMargin.left - chartMargin.right;
 
-  const chartInnerHeight = 165;
+  const chartInnerHeight = 200;
   const chartHeight = chartInnerHeight + chartMargin.top + chartMargin.bottom;
   const innerHeight = charts.length * chartHeight;
 
