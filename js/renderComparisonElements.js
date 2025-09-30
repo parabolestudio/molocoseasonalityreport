@@ -220,7 +220,7 @@ const periods = [
     value: "all",
     title: "Show all",
     subtitle: "October to March",
-    icon: "",
+    icon: null,
     start: {
       past: {
         day: "30",
@@ -259,7 +259,7 @@ const periods = [
     value: "pre-holiday",
     title: "Pre-holiday",
     subtitle: "October to late November",
-    icon: "",
+    icon: "halloween_white.svg",
     start: {
       past: {
         day: "30",
@@ -298,7 +298,7 @@ const periods = [
     value: "peak-season",
     title: "Peak season",
     subtitle: "Late November to December 25",
-    icon: "",
+    icon: "christmas_white.svg",
     start: {
       past: {
         day: "25",
@@ -336,7 +336,7 @@ const periods = [
     value: "post-holiday",
     title: "Post-holiday Q5",
     subtitle: "December 26 to March",
-    icon: "",
+    icon: "new-year_white.svg",
     start: {
       past: {
         day: "30",
@@ -393,6 +393,9 @@ function ComparisonPeriodButtons() {
         : ""}"
       onclick=${() => handlePeriodChange(btn.value)}
     >
+      ${btn.icon && selectedPeriod === btn.value
+        ? html` <img src="${ASSETS_URL}/${btn.icon}" alt="${btn.icon} icon" />`
+        : null}
       <div class="vis-period-button-text">
         <span class="vis-period-title">${btn.title}</span>
         <span class="vis-period-subtitle">${btn.subtitle}</span>
