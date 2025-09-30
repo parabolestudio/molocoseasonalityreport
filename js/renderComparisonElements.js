@@ -387,6 +387,11 @@ function ComparisonPeriodButtons() {
   };
 
   const buttons = periods.map((btn) => {
+    // If subtitle contains "to", add a <br> after "to"
+    let subtitle = btn.subtitle;
+    if (subtitle.includes("to")) {
+      subtitle = subtitle.replace(/\bto\b/, "to<br>");
+    }
     return html`<div
       class="vis-period-button ${selectedPeriod === btn.value
         ? "selected"
@@ -396,10 +401,17 @@ function ComparisonPeriodButtons() {
       ${btn.icon && selectedPeriod === btn.value
         ? html` <img src="${ASSETS_URL}/${btn.icon}" alt="${btn.icon} icon" />`
         : null}
+
       <div class="vis-period-button-text">
         <span class="vis-period-title">${btn.title}</span>
-        <span class="vis-period-subtitle">${btn.subtitle}</span>
+        <span
+          class="vis-period-subtitle"
+          dangerouslySetInnerHTML=${{ __html: subtitle }}
+        ></span>
       </div>
+      ${!btn.icon && selectedPeriod === btn.value
+        ? html` <div style="width: 35px; height: 35px;"></div>`
+        : null}
     </div>`;
   });
 

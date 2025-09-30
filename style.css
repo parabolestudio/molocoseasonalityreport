@@ -201,6 +201,13 @@
       flex-direction: row;
       align-items: center;
       gap: 12px;
+      transition: all 0.3s ease;
+
+      img {
+        width: 35px;
+        height: 35px;
+        object-fit: contain;
+      }
 
       .vis-period-button-text {
         display: flex;
