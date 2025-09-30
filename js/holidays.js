@@ -78,7 +78,7 @@ export const holidays = [
     icon: "christmas.svg",
   },
   {
-    name: "New Year's Eve",
+    name: "New Year",
     date: {
       past: "2025-01-01",
       current: "2026-01-01",

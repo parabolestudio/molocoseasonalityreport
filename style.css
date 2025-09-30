@@ -184,10 +184,15 @@
   }
 }
 #vis-comparison-periods {
+  flex-grow: 1;
+  width: 100%;
+
   .vis-period-buttons-container {
     display: flex;
     flex-direction: row;
     gap: 12px;
+    height: 100%;
+    width: 100%;
 
     @media (max-width: 480px) {
       flex-direction: row;
@@ -208,6 +213,7 @@
       align-items: center;
       gap: 12px;
       transition: all 0.3s ease;
+      flex-grow: 1;
 
       img {
         width: 35px;
