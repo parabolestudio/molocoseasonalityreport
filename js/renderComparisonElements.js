@@ -368,7 +368,7 @@ const periods = [
 ];
 
 function ComparisonPeriodButtons() {
-  const [selectedPeriod, setSelectedPeriod] = useState("peak-season");
+  const [selectedPeriod, setSelectedPeriod] = useState("pre-holiday");
 
   const handlePeriodChange = (period) => {
     setSelectedPeriod(period);
@@ -457,7 +457,7 @@ function ComparisonChart({ userData, advertiserData }) {
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
   const [year, setYear] = useState("past");
-  const [period, setPeriod] = useState("peak-season");
+  const [period, setPeriod] = useState("pre-holiday");
   const [userMetric, setUserMetric] = useState(userMetricDefault.value);
   const [advertiserMetric, setAdvertiserMetric] = useState(
     advertiserMetricDefault.value

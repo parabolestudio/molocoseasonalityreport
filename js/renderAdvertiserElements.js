@@ -52,7 +52,10 @@ export function renderAdvertiserElements(data) {
       metrics
         .map((m) => m.value)
         .forEach((metric) => {
-          d[metric] = d[metric] ? +d[metric] : null;
+          d[metric] = d[metric] ? +d[metric].replaceAll(",", "") : null;
+          // d[metric + "_wow"] = d[metric + "_wow_pct_change"]
+          //   ? +d[metric + "_wow_pct_change"]
+          //   : null;
         });
     });
   }
@@ -126,6 +129,7 @@ function renderAdvertiserChart(data) {
 }
 
 function AdvertiserChart({ data }) {
+  console.log("Rendering advertiser chart component", data);
   const [system, setSystem] = useState(
     getDropdownValue("vis-advertiser-dropdown-systems")
   );
@@ -316,7 +320,7 @@ function AdvertiserChart({ data }) {
       style="width: 100%; height: 100%;"
       onmouseleave="${() => setHoveredValues(null)}"
       onmousemove="${(event) => {
-        if (!data || data.length === 0) return;
+        if (!chartData || chartData.length === 0) return;
         const pointer = d3.pointer(event);
 
         const leftSide = margin.left;
