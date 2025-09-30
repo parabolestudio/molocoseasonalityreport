@@ -83,7 +83,8 @@ export function renderComparisonElements(userData, advertiserData) {
       advertiserMetrics
         .map((m) => m.value)
         .forEach((metric) => {
-          d[metric] = d[metric] ? +d[metric] : null;
+          // replace all commas in numbers before converting to numeric to handle bid requests like "1,234,567"
+          d[metric] = d[metric] ? +d[metric].replaceAll(",", "") : null;
         });
     });
   }
