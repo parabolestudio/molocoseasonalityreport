@@ -153,6 +153,10 @@
     justify-content: start;
     align-items: start;
 
+    @media (max-width: 480px) {
+      flex-direction: row;
+    }
+
     .vis-year-button {
       font-family: "Montserrat", sans-serif;
       font-size: 16px;
@@ -178,6 +182,10 @@
     display: flex;
     flex-direction: row;
     gap: 12px;
+
+    @media (max-width: 480px) {
+      flex-direction: row;
+    }
 
     .vis-period-button {
       font-family: "Montserrat", sans-serif;
@@ -214,6 +222,7 @@
 .vis-metrics-buttons-container {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 
   .vis-metrics-button {
     padding: 5px 15px;

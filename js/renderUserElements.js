@@ -327,17 +327,36 @@ function UserChart({ data }) {
       }}"
     >
       <g>
-        ${holidays.map((holiday) => {
+        ${holidays.map((holiday, index) => {
           const x =
             prevTimeScaleUTC(getDateInUTC(holiday.date.past)) +
             margin.left +
             chartMargin.left;
           if (isNaN(x) || x < margin.left + chartMargin.left) return null;
           if (x > width - margin.right) return null;
+
+          let offsetX = 0;
+          const prevX =
+            prevTimeScaleUTC(
+              getDateInUTC(
+                holidays[
+                  Math.max(
+                    0,
+                    holidays.findIndex((h) => h.name === holiday.name) - 1
+                  )
+                ].date.past
+              )
+            ) +
+            margin.left +
+            chartMargin.left;
+          if (x - prevX < 40 && index !== 0 && !isMobile) offsetX = 40;
+
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-${isMobile ? 20 / 2 : 35 / 2}, 5)"
+              transform="translate(${isMobile
+                ? -20 / 2
+                : -35 / 2 + offsetX}, 5)"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
@@ -363,11 +382,33 @@ function UserChart({ data }) {
               stroke-linecap="round"
               stroke-linejoin="round"
             />
+            <line
+              x1="0"
+              x2="${offsetX}"
+              y1="${margin.top}"
+              y2="${margin.top}"
+              stroke="#D5D5D5"
+              stroke-width="1.5"
+              stroke-dasharray="4,4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <line
+              x1="0"
+              x2="${offsetX}"
+              y1="${height - margin.bottom}"
+              y2="${height - margin.bottom}"
+              stroke="#D5D5D5"
+              stroke-width="1.5"
+              stroke-dasharray="4,4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(-${isMobile ? 20 / 2 : 35 / 2}, ${height -
-              margin.bottom +
-              5})"
+              transform="translate(${isMobile
+                ? -20 / 2
+                : -35 / 2 + offsetX}, ${height - margin.bottom + 5})"
               style="cursor: pointer;"
               width="${isMobile ? 20 : 35}"
               height="${isMobile ? 20 : 35}"
