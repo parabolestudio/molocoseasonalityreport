@@ -817,6 +817,34 @@ function ComparisonChart({ userData, advertiserData }) {
     .y0((d) => d.userY)
     .y1((d) => d.advertiserY);
 
+  let labelPositions = {};
+
+  if (datapointsUser.length > 0 && datapointsUser[0][userMetric]) {
+    labelPositions.user = {
+      x: 0,
+      y: valueUserScale(datapointsUser[0][userMetric]),
+    };
+  }
+  if (
+    datapointsAdvertiser.length > 0 &&
+    datapointsAdvertiser[0][advertiserMetric]
+  ) {
+    labelPositions.advertiser = {
+      x: 0,
+      y: valueAdvertiserScale(datapointsAdvertiser[0][advertiserMetric]),
+    };
+  }
+  if (labelPositions.user && labelPositions.advertiser) {
+    // If both user and advertiser labels are present, position them accordingly
+    if (labelPositions.user.y < labelPositions.advertiser.y) {
+      labelPositions.user.y -= 35;
+      labelPositions.advertiser.y += 35;
+    } else {
+      labelPositions.user.y += 35;
+      labelPositions.advertiser.y -= 35;
+    }
+  }
+
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
@@ -932,6 +960,33 @@ function ComparisonChart({ userData, advertiserData }) {
           fill="none"
           stroke="none"
         />
+        <g>
+          ${displayMonths.map((month) => {
+            const xBegin = timeScale(getDateInUTC(month.begin)) || null;
+            const xEnd = timeScale(getDateInUTC(month.end)) || null;
+            return html`<g key=${month.name}>
+              <rect
+                x="${xBegin}"
+                y="${innerHeight + 20}"
+                width="${xEnd - xBegin}"
+                height="33"
+                fill="#f0f0f0"
+                fill-opacity="0.8"
+                rx="10"
+                ry="10"
+              />
+              <text
+                x="${(xBegin + xEnd) / 2}"
+                y="${innerHeight + 20 + 22}"
+                text-anchor="middle"
+                class="charts-text-body"
+                fill-opacity="${(xEnd - xBegin) / 2 < 30 ? 0 : 1}"
+              >
+                ${month.name}
+              </text>
+            </g>`;
+          })}
+        </g>
         <!-- Area between the two lines with different shading -->
         ${userAboveSegments.map(
           (segment) => html`
@@ -974,6 +1029,28 @@ function ComparisonChart({ userData, advertiserData }) {
           stroke-linecap="round"
           stroke-linejoin="round"
         />
+        ${labelPositions &&
+        labelPositions.user &&
+        html`<text
+          x="${labelPositions.user.x}"
+          y="${labelPositions.user.y}"
+          class="charts-text-body-bold"
+          fill="#12976B"
+          style="transition: all ease 0.3s"
+        >
+          ${userMetrics.find((m) => m.value === userMetric).label}
+        </text>`})
+        ${labelPositions &&
+        labelPositions.advertiser &&
+        html`<text
+          x="${labelPositions.advertiser.x}"
+          y="${labelPositions.advertiser.y}"
+          class="charts-text-body-bold"
+          fill="#876AFF"
+          style="transition: all ease 0.3s"
+        >
+          ${advertiserMetrics.find((m) => m.value === advertiserMetric).label}
+        </text>`})
         ${hoveredValues && highlightUser
           ? html`<circle
               cx="${weekScale(hoveredValues.week)}"
@@ -996,34 +1073,6 @@ function ComparisonChart({ userData, advertiserData }) {
               style="transition: all ease 0.3s"
             />`
           : ""}
-
-        <g>
-          ${displayMonths.map((month) => {
-            const xBegin = timeScale(getDateInUTC(month.begin)) || null;
-            const xEnd = timeScale(getDateInUTC(month.end)) || null;
-            return html`<g key=${month.name}>
-              <rect
-                x="${xBegin}"
-                y="${innerHeight + 20}"
-                width="${xEnd - xBegin}"
-                height="33"
-                fill="#f0f0f0"
-                fill-opacity="0.8"
-                rx="10"
-                ry="10"
-              />
-              <text
-                x="${(xBegin + xEnd) / 2}"
-                y="${innerHeight + 20 + 22}"
-                text-anchor="middle"
-                class="charts-text-body"
-                fill-opacity="${(xEnd - xBegin) / 2 < 30 ? 0 : 1}"
-              >
-                ${month.name}
-              </text>
-            </g>`;
-          })}
-        </g>
       </g>
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
