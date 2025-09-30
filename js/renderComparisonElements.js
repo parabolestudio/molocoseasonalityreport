@@ -1070,7 +1070,7 @@ function ComparisonChart({ userData, advertiserData }) {
     <${TooltipValues} hoveredItem=${hoveredValues} />
     <${Loader}
       isLoading=${chartUserData === null || chartAdvertiserData === null}
-      y=${innerHeight / 2}
+      y=${innerHeight / 2 + 50}
     />
   </div>`;
 }

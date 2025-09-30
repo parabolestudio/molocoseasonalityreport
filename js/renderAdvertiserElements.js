@@ -528,7 +528,7 @@ function AdvertiserChart({ data }) {
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
     <${TooltipValues} hoveredItem=${hoveredValues} />
-    <${Loader} isLoading=${data === null} y=${innerHeight / 2} />
+    <${Loader} isLoading=${data === null} y=${innerHeight / 2 + 50} />
   </div>`;
 }
 

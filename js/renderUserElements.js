@@ -474,7 +474,7 @@ function UserChart({ data }) {
     </svg>
     <${TooltipHoliday} hoveredItem=${hoveredHoliday} />
     <${TooltipValues} hoveredItem=${hoveredValues} />
-    <${Loader} isLoading=${data === null} y=${150} />
+    <${Loader} isLoading=${data === null} y=${180} />
   </div>`;
 }
 
