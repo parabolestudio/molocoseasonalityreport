@@ -182,7 +182,7 @@ function VerticalSelector() {
           }}
         >
           <div
-            class="category-icon"
+            class="category-icon gaming"
             dangerouslySetInnerHTML=${{ __html: svgCache["gaming.svg"] || "" }}
           ></div>
           <p class="charts-text-big-bold">Gaming</p>
@@ -216,7 +216,7 @@ function VerticalSelector() {
           onclick=${() => handleCategoryChange("consumer", position)}
         >
           <div
-            class="category-icon"
+            class="category-icon consumer"
             dangerouslySetInnerHTML=${{
               __html: svgCache["consumer.svg"] || "",
             }}

@@ -58,6 +58,21 @@
         }
       }
 
+      .category-icon svg {
+        height: 28px;
+      }
+      .category-icon.consumer svg {
+        height: 32px;
+      }
+      @media (max-width: 480px) {
+        .category-icon svg {
+          height: 20px;
+        }
+        .category-icon.consumer svg {
+          height: 24px;
+        }
+      }
+
       &.selected {
         background-color: #040078;
         p {
