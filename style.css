@@ -130,6 +130,11 @@
       list-style: none;
       padding: 0;
 
+      @media (max-width: 480px) {
+        gap: 8px;
+        margin-top: 8px;
+      }
+
       .vertical-item {
         display: flex;
         align-items: center;
@@ -142,6 +147,9 @@
         cursor: pointer;
         white-space: nowrap;
         transition: all 0.3s ease-in-out;
+        @media (max-width: 480px) {
+          font-size: 14px;
+        }
 
         .vertical-icon {
           width: auto;
@@ -199,7 +207,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0px;
+
+  @media (max-width: 480px) {
+    bottom: 4px;
+  }
 
   .vis-filter-floating-trigger {
     display: flex;
@@ -217,6 +228,9 @@
     font-size: 18px;
     font-weight: 700;
     text-align: center;
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
 
     img {
       transition: transform 0.3s ease;
