@@ -619,6 +619,7 @@ function SingleChart({
       x="0"
       y=${dim.chartMargin.top - 20}
       class="charts-text-big-bold"
+      font-size="${isMobile ? 14 : 18}"
       dominant-baseline="middle"
     >
       ${chart.title}

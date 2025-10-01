@@ -39,7 +39,10 @@ const categoryIcons = [
 function VerticalSelector() {
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [inlineMenuOpen, setInlineMenuOpen] = useState(false);
+  const [fixedMenuOpen, setFixedMenuOpen] = useState(false);
+
+  const [pageOverlayOpen, setPageOverlayOpen] = useState(false);
 
   const [svgCache, setSvgCache] = useState({});
 
@@ -74,7 +77,7 @@ function VerticalSelector() {
     }
   }, []);
 
-  function handleCategoryChange(newCategory) {
+  function handleCategoryChange(newCategory, position) {
     if (newCategory !== category) {
       console.log("Changing category to:", newCategory);
       setCategory(newCategory);
@@ -82,8 +85,11 @@ function VerticalSelector() {
       console.log("Resetting vertical to 'all'");
       setVertical("all");
 
-      if (!menuOpen) {
-        setMenuOpen(true);
+      // Open the menu for the clicked position
+      if (position === "inline") {
+        setInlineMenuOpen(true);
+      } else if (position === "fixed") {
+        setFixedMenuOpen(true);
       }
 
       // Dispatch custom event to notify other components
@@ -98,37 +104,49 @@ function VerticalSelector() {
         })
       );
     } else {
-      // click on same category
-      setMenuOpen(!menuOpen);
+      // click on same category - toggle menu for the clicked position
+      if (position === "inline") {
+        setInlineMenuOpen(!inlineMenuOpen);
+      } else if (position === "fixed") {
+        setFixedMenuOpen(!fixedMenuOpen);
+      }
     }
   }
 
   const verticalSet =
     category === "gaming" ? gamingVerticals : consumerVerticals;
-  const verticalItems = verticalSet.map((item) => {
-    const svgContent = svgCache[item.icon];
 
-    return html`<li
-      class="vertical-item ${vertical === item.value ? "active" : "inactive"}"
-      onClick="${() => {
-        setVertical(item.value);
-        setMenuOpen(false);
+  const getVerticalItems = (position) => {
+    return verticalSet.map((item) => {
+      const svgContent = svgCache[item.icon];
 
-        // Dispatch custom event to notify other components
-        document.dispatchEvent(
-          new CustomEvent(`${containerId}-vertical-changed`, {
-            detail: { selectedVertical: item.value },
-          })
-        );
-      }}"
-    >
-      <div
-        class="vertical-icon"
-        dangerouslySetInnerHTML=${{ __html: svgContent || "" }}
-      ></div>
-      <span>${item.label}</span>
-    </li>`;
-  });
+      return html`<li
+        class="vertical-item ${vertical === item.value ? "active" : "inactive"}"
+        onClick="${() => {
+          setVertical(item.value);
+          // Close the menu for the specific position
+          if (position === "inline") {
+            setInlineMenuOpen(false);
+          } else if (position === "fixed") {
+            setFixedMenuOpen(false);
+          }
+
+          // Dispatch custom event to notify other components
+          document.dispatchEvent(
+            new CustomEvent(`${containerId}-vertical-changed`, {
+              detail: { selectedVertical: item.value },
+            })
+          );
+        }}"
+      >
+        <div
+          class="vertical-icon"
+          dangerouslySetInnerHTML=${{ __html: svgContent || "" }}
+        ></div>
+        <span>${item.label}</span>
+      </li>`;
+    });
+  };
 
   console.log(
     "Rendering VerticalSelector with category:",
@@ -137,11 +155,26 @@ function VerticalSelector() {
     vertical
   );
 
-  return html`<div class="vis-filter-container">
-    <div class="vis-filter-category-container">
+  function getCategoryContainer(position) {
+    const isMenuOpen = position === "inline" ? inlineMenuOpen : fixedMenuOpen;
+
+    return html`<div class="vis-filter-category-container ${position}">
       <div
-        class=${`vis-filter-item ${category === "gaming" ? "selected" : ""}`}
-        onclick=${() => handleCategoryChange("gaming")}
+        class=${`vis-filter-item ${
+          category === "gaming" ? "selected" : ""
+        } ${position}`}
+        data-position=${position}
+        onclick=${(event) => {
+          console.log(
+            "Clicked gaming category",
+            event.currentTarget.getAttribute("data-position")
+          );
+          const clickedPosition =
+            event.currentTarget.getAttribute("data-position");
+          if (clickedPosition === position) {
+            handleCategoryChange("gaming", position);
+          }
+        }}
       >
         <div
           class="category-icon"
@@ -154,7 +187,7 @@ function VerticalSelector() {
           viewBox="0 0 23 22"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          transform="rotate(${menuOpen && category === "gaming" ? 180 : 0})"
+          transform="rotate(${isMenuOpen && category === "gaming" ? 180 : 0})"
           style="transition: transform 0.3s ease;"
         >
           <circle
@@ -173,7 +206,7 @@ function VerticalSelector() {
       </div>
       <div
         class=${`vis-filter-item ${category === "consumer" ? "selected" : ""}`}
-        onclick=${() => handleCategoryChange("consumer")}
+        onclick=${() => handleCategoryChange("consumer", position)}
       >
         <div
           class="category-icon"
@@ -186,7 +219,7 @@ function VerticalSelector() {
           viewBox="0 0 23 22"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          transform="rotate(${menuOpen && category === "consumer" ? 180 : 0})"
+          transform="rotate(${isMenuOpen && category === "consumer" ? 180 : 0})"
           style="transition: transform 0.3s ease;"
         >
           <circle
@@ -203,13 +236,38 @@ function VerticalSelector() {
           />
         </svg>
       </div>
-      ${menuOpen &&
-      html` <div class="vis-filter-menu-container">
+      ${isMenuOpen &&
+      html` <div class="vis-filter-menu-container ${position}">
         <p>Select sub-vertical</p>
         <ul class="vertical-list">
-          ${verticalItems}
+          ${getVerticalItems(position)}
         </ul>
       </div>`}
+    </div>`;
+  }
+
+  return html`<div class="vis-filter-container">
+    ${getCategoryContainer("inline")}
+    <div class="vis-filter-floating-container">
+      <div
+        class="vis-filter-floating-trigger"
+        onclick=${() => setPageOverlayOpen(!pageOverlayOpen)}
+      >
+        <span>${pageOverlayOpen ? "Hide filters" : "Change vertical"}</span
+        ><img
+          src="${ASSETS_URL}/double_arrow.svg"
+          alt="double arrow icon"
+          style="transform: rotate(${pageOverlayOpen ? 180 : 0}deg)"
+        />
+      </div>
+
+      <div
+        class="vis-filter-floating-content ${pageOverlayOpen
+          ? "open"
+          : "closed"}"
+      >
+        <div>${getCategoryContainer("fixed")}</div>
+      </div>
     </div>
   </div>`;
 }
