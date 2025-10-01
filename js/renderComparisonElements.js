@@ -41,7 +41,7 @@ export function renderComparisonElements(userData, advertiserData) {
   renderYearButtons();
 
   // render period buttons
-  renderPeriodButtons();
+  renderPeriodButtons("past");
 
   populateCountrySelector(["USA"], "vis-comparison-dropdown-countries");
 
@@ -183,6 +183,8 @@ function ComparisonYearButtons() {
         detail: { selectedYear: year },
       })
     );
+
+    renderPeriodButtons(year);
   };
 
   return html`<div class="vis-year-buttons-container">
@@ -201,7 +203,7 @@ function ComparisonYearButtons() {
   </div>`;
 }
 
-function renderPeriodButtons() {
+function renderPeriodButtons(year) {
   const containerId = "vis-comparison-periods";
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
@@ -209,7 +211,10 @@ function renderPeriodButtons() {
     // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
-    renderComponent(html`<${ComparisonPeriodButtons} />`, containerElement);
+    renderComponent(
+      html`<${ComparisonPeriodButtons} year=${year} />`,
+      containerElement
+    );
   } else {
     console.error(`Could not find container element with id ${containerId}`);
   }
@@ -219,7 +224,10 @@ const periods = [
   {
     value: "all",
     title: "Show all",
-    subtitle: "October to March",
+    subtitle: {
+      past: "October to March",
+      current: "October to March",
+    },
     icon: null,
     start: {
       past: {
@@ -258,7 +266,10 @@ const periods = [
   {
     value: "pre-holiday",
     title: "Pre-holiday",
-    subtitle: "October to November 25",
+    subtitle: {
+      past: "October to November 24",
+      current: "October to November 23",
+    },
     icon: "halloween_white.svg",
     start: {
       past: {
@@ -297,7 +308,10 @@ const periods = [
   {
     value: "peak-season",
     title: "Peak season",
-    subtitle: "November 25 to December 25",
+    subtitle: {
+      past: "November 25 to December 25",
+      current: "November 24 to December 25",
+    },
     icon: "christmas_white.svg",
     start: {
       past: {
@@ -335,7 +349,10 @@ const periods = [
   {
     value: "post-holiday",
     title: "Post-holiday Q5",
-    subtitle: "December 26 to March",
+    subtitle: {
+      past: "December 26 to March",
+      current: "December 25 to March",
+    },
     icon: "new-year_white.svg",
     start: {
       past: {
@@ -373,7 +390,7 @@ const periods = [
   },
 ];
 
-function ComparisonPeriodButtons() {
+function ComparisonPeriodButtons({ year }) {
   const [selectedPeriod, setSelectedPeriod] = useState("all");
 
   const handlePeriodChange = (period) => {
@@ -386,10 +403,12 @@ function ComparisonPeriodButtons() {
     );
   };
 
+  console.log("Rendering period buttons for year", year);
+
   const buttons = periods.map((btn) => {
     // If subtitle contains "to", add a <br> after "to"
-    let subtitle = btn.subtitle;
-    if (subtitle.includes("to")) {
+    let subtitle = btn.subtitle[year];
+    if (subtitle.includes("to") && !isMobile) {
       subtitle = subtitle.replace(/\bto\b/, "to<br>");
     }
     return html`<div

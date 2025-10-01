@@ -140,22 +140,22 @@
         }
 
         &.active {
-          background-color: black;
+          background-color: #040078;
           color: #ffffff;
 
           .vertical-icon svg circle {
-            fill: black;
+            fill: #040078;
           }
           .vertical-icon svg path {
             fill: white;
           }
         }
         &:hover {
-          background-color: #000;
+          background-color: #040078;
           color: #ffffff;
 
           .vertical-icon svg circle {
-            fill: #000;
+            fill: #040078;
           }
           .vertical-icon svg path {
             fill: white;
