@@ -258,7 +258,7 @@ const periods = [
   {
     value: "pre-holiday",
     title: "Pre-holiday",
-    subtitle: "October to late November",
+    subtitle: "October to November 25",
     icon: "halloween_white.svg",
     start: {
       past: {
@@ -297,7 +297,7 @@ const periods = [
   {
     value: "peak-season",
     title: "Peak season",
-    subtitle: "Late November to December 25",
+    subtitle: "November 25 to December 25",
     icon: "christmas_white.svg",
     start: {
       past: {
@@ -647,7 +647,7 @@ function ComparisonChart({ userData, advertiserData }) {
   const width =
     visContainer && visContainer.offsetWidth ? visContainer.offsetWidth : 600;
   const height = 600;
-  const margin = { top: 50, right: 1, bottom: 60, left: 1 };
+  const margin = { top: 60, right: 1, bottom: 60, left: 1 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -948,7 +948,7 @@ function ComparisonChart({ userData, advertiserData }) {
             <line
               x1="0"
               x2="0"
-              y1="${margin.top}"
+              y1="${45}"
               y2="${height - margin.bottom}"
               stroke="#D5D5D5"
               stroke-width="1.5"
@@ -959,8 +959,8 @@ function ComparisonChart({ userData, advertiserData }) {
             <line
               x1="0"
               x2="${offsetX}"
-              y1="${margin.top}"
-              y2="${margin.top}"
+              y1="${45}"
+              y2="${45}"
               stroke="#D5D5D5"
               stroke-width="1.5"
               stroke-dasharray="4,4"

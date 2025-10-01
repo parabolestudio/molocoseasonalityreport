@@ -258,7 +258,7 @@ function AdvertiserChart({ data }) {
   const width =
     visContainer && visContainer.offsetWidth ? visContainer.offsetWidth : 600;
   const height = 600;
-  const margin = { top: 50, right: 1, bottom: 60, left: 1 };
+  const margin = { top: 60, right: 1, bottom: 60, left: 1 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -292,10 +292,20 @@ function AdvertiserChart({ data }) {
         .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
     : [];
 
-  const maxValue = chartData ? d3.max(chartData, (d) => d[metric]) : 0;
+  // const maxValue = chartData ? d3.max(chartData, (d) => d[metric]) : 0;
+
+  const allDatapoints = chartData
+    ? [...datapointsPrev, ...datapointsCurrent].filter(
+        (d) => d[metric] !== null && d[metric] !== undefined
+      )
+    : [];
+  const maxValue = d3.max(allDatapoints, (d) => d[metric]);
+  const minValue = d3.min(allDatapoints, (d) => d[metric]);
+  const minValueWithPadding = minValue - (maxValue - minValue) * 0.1;
+
   const valueScale = d3
     .scaleLinear()
-    .domain([0, maxValue])
+    .domain([minValueWithPadding, maxValue])
     .range([innerHeight, 0]);
 
   const lineGen = d3
@@ -421,7 +431,7 @@ function AdvertiserChart({ data }) {
             <line
               x1="0"
               x2="0"
-              y1="${margin.top}"
+              y1="${45}"
               y2="${height - margin.bottom}"
               stroke="#D5D5D5"
               stroke-width="1.5"
@@ -432,8 +442,8 @@ function AdvertiserChart({ data }) {
             <line
               x1="0"
               x2="${offsetX}"
-              y1="${margin.top}"
-              y2="${margin.top}"
+              y1="${45}"
+              y2="${45}"
               stroke="#D5D5D5"
               stroke-width="1.5"
               stroke-dasharray="4,4"

@@ -489,17 +489,23 @@ function SingleChart({
   datapointsCurrent,
   hoveredValues,
 }) {
-  // console.log(
-  //   "Rendering single chart:",
-  //   chart,
-  //   datapointsPrev,
-  //   datapointsCurrent
-  // );
+  console.log(
+    "Rendering single chart:",
+    chart,
+    datapointsPrev,
+    datapointsCurrent
+  );
+  const allDatapoints = [...datapointsPrev, ...datapointsCurrent].filter(
+    (d) => d.value !== null && d.value !== undefined
+  );
 
-  const maxValue = d3.max(chart.data, (d) => d.value);
+  const maxValue = d3.max(allDatapoints, (d) => d.value);
+  const minValue = d3.min(allDatapoints, (d) => d.value);
+  const minValueWithPadding = minValue - (maxValue - minValue) * 0.2;
+
   const valueScale = d3
     .scaleLinear()
-    .domain([0, maxValue])
+    .domain([minValueWithPadding, maxValue])
     .range([dim.chartInnerHeight, 0]);
 
   const lineGen = d3
@@ -593,11 +599,11 @@ function SingleChart({
       ${chart.data.length > 0 &&
       html` <text
         x="-10"
-        y=${valueScale(0) - 8}
+        y=${valueScale(minValueWithPadding) - 8}
         class="charts-text-body"
         text-anchor="end"
         dominant-baseline="middle"
-        >0</text
+        >${valueFormatting[chart.value](minValueWithPadding)}</text
       >`}
       ${chart.data.length > 0 &&
       html`<text
