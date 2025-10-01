@@ -673,46 +673,88 @@ function ComparisonChart({ userData, advertiserData }) {
   const months = [
     {
       name: "October",
+      shortName: "Oct",
       begin: "2024-10-01",
       end: "2024-10-31",
       year: "past",
     },
-    { name: "November", begin: "2024-11-01", end: "2024-11-30", year: "past" },
-    { name: "December", begin: "2024-12-01", end: "2024-12-31", year: "past" },
-    { name: "January", begin: "2025-01-01", end: "2025-01-31", year: "past" },
-    { name: "February", begin: "2025-02-01", end: "2025-02-28", year: "past" },
-    { name: "March", begin: "2025-03-01", end: "2025-03-31", year: "past" },
+    {
+      name: "November",
+      shortName: "Nov",
+      begin: "2024-11-01",
+      end: "2024-11-30",
+      year: "past",
+    },
+    {
+      name: "December",
+      shortName: "Dec",
+      begin: "2024-12-01",
+      end: "2024-12-31",
+      year: "past",
+    },
+    {
+      name: "January",
+      shortName: "Jan",
+      begin: "2025-01-01",
+      end: "2025-01-31",
+      year: "past",
+    },
+    {
+      name: "February",
+      shortName: "Feb",
+      begin: "2025-02-01",
+      end: "2025-02-28",
+      year: "past",
+    },
+    {
+      name: "March",
+      shortName: "Mar",
+      begin: "2025-03-01",
+      end: "2025-03-31",
+      year: "past",
+    },
     {
       name: "October",
+      shortName: "Oct",
       begin: "2025-10-01",
       end: "2025-10-31",
       year: "current",
     },
     {
       name: "November",
+      shortName: "Nov",
       begin: "2025-11-01",
       end: "2025-11-30",
       year: "current",
     },
     {
       name: "December",
+      shortName: "Dec",
       begin: "2025-12-01",
       end: "2025-12-31",
       year: "current",
     },
     {
       name: "January",
+      shortName: "Jan",
       begin: "2026-01-01",
       end: "2026-01-31",
       year: "current",
     },
     {
       name: "February",
+      shortName: "Feb",
       begin: "2026-02-01",
       end: "2026-02-28",
       year: "current",
     },
-    { name: "March", begin: "2026-03-01", end: "2026-03-31", year: "current" },
+    {
+      name: "March",
+      shortName: "Mar",
+      begin: "2026-03-01",
+      end: "2026-03-31",
+      year: "current",
+    },
   ];
   // months display
   const displayMonths = months
@@ -1053,11 +1095,9 @@ function ComparisonChart({ userData, advertiserData }) {
                 y="${innerHeight + 20 + 22}"
                 text-anchor="middle"
                 class="charts-text-body"
-                fill-opacity="${!isMobile && (xEnd - xBegin) / 2 < 30
-                  ? 0.5
-                  : 1}"
+                fill-opacity="${xEnd - xBegin < 30 ? 0 : 1}"
               >
-                ${month.name}
+                ${isMobile ? month.shortName : month.name}
               </text>
             </g>`;
           })}
