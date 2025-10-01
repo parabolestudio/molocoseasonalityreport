@@ -146,6 +146,16 @@
             fill: white;
           }
         }
+        &:hover {
+          background-color: #000;
+          color: #ffffff;
+
+          .vertical-icon svg circle {
+            fill: #000;
+          }
+          .vertical-icon svg path {
+            fill: white;
+          }
       }
     }
   }

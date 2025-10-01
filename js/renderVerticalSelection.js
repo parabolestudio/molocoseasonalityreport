@@ -82,7 +82,9 @@ function VerticalSelector() {
       console.log("Resetting vertical to 'all'");
       setVertical("all");
 
-      if (menuOpen) setMenuOpen(false);
+      if (!menuOpen) {
+        setMenuOpen(true);
+      }
 
       // Dispatch custom event to notify other components
       document.dispatchEvent(
@@ -95,16 +97,8 @@ function VerticalSelector() {
           detail: { selectedVertical: "all" },
         })
       );
-    }
-  }
-
-  function handleSelectorClick(e, selectorCategory) {
-    e.stopPropagation();
-
-    if (selectorCategory !== category) {
-      handleCategoryChange(selectorCategory);
-      setMenuOpen(true);
     } else {
+      // click on same category
       setMenuOpen(!menuOpen);
     }
   }
@@ -160,7 +154,6 @@ function VerticalSelector() {
           viewBox="0 0 23 22"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          onclick=${(e) => handleSelectorClick(e, "gaming")}
           transform="rotate(${menuOpen && category === "gaming" ? 180 : 0})"
           style="transition: transform 0.3s ease;"
         >
@@ -193,7 +186,6 @@ function VerticalSelector() {
           viewBox="0 0 23 22"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          onclick=${(e) => handleSelectorClick(e, "consumer")}
           transform="rotate(${menuOpen && category === "consumer" ? 180 : 0})"
           style="transition: transform 0.3s ease;"
         >

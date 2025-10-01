@@ -489,12 +489,12 @@ function SingleChart({
   datapointsCurrent,
   hoveredValues,
 }) {
-  console.log(
-    "Rendering single chart:",
-    chart,
-    datapointsPrev,
-    datapointsCurrent
-  );
+  // console.log(
+  //   "Rendering single chart:",
+  //   chart,
+  //   datapointsPrev,
+  //   datapointsCurrent
+  // );
   const allDatapoints = [...datapointsPrev, ...datapointsCurrent].filter(
     (d) => d.value !== null && d.value !== undefined
   );
