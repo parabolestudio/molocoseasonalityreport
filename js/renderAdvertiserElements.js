@@ -327,6 +327,7 @@ function AdvertiserChart({ data }) {
   const months = [
     {
       name: "October",
+      shortName: "Oct",
       begin: "2024-10-01",
       end: "2024-10-31",
     },
@@ -334,7 +335,7 @@ function AdvertiserChart({ data }) {
     { name: "December", begin: "2024-12-01", end: "2024-12-31" },
     { name: "January", begin: "2025-01-01", end: "2025-01-31" },
     { name: "February", begin: "2025-02-01", end: "2025-02-28" },
-    { name: "March", begin: "2025-03-01", end: "2025-03-31" },
+    { name: "March", shortName: "Mar", begin: "2025-03-01", end: "2025-03-31" },
   ];
 
   return html`<div style="position: relative;">
@@ -463,7 +464,7 @@ function AdvertiserChart({ data }) {
       </g>
       <g transform="translate(${margin.left},${margin.top})">
         <g>
-          ${months.map((month) => {
+          ${months.map((month, i) => {
             const xBegin = prevTimeScaleUTC(getDateInUTC(month.begin)) || null;
             const xEnd = prevTimeScaleUTC(getDateInUTC(month.end)) || null;
             if (xBegin === null || xEnd === null) return null;
@@ -483,8 +484,13 @@ function AdvertiserChart({ data }) {
                 y="${innerHeight + 20 + 22}"
                 text-anchor="middle"
                 class="charts-text-body"
+                fill-opacity="${isMobile
+                  ? i === 0 || i === months.length - 1
+                    ? 1
+                    : 0
+                  : 1}"
               >
-                ${month.name}
+                ${isMobile ? month.shortName : month.name}
               </text>
             </g>`;
           })}

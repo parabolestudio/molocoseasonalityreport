@@ -203,7 +203,12 @@ function UserChart({ data }) {
 
   // set up vis dimensions
   const margin = { top: 50, right: 1, bottom: 50, left: 1 };
-  const chartMargin = { top: 40, right: 1, bottom: 35, left: 60 };
+  const chartMargin = {
+    top: 40,
+    right: 1,
+    bottom: 35,
+    left: isMobile ? 40 : 50,
+  };
 
   const visContainer = document.querySelector(`#vis-user-container`);
   const width =
@@ -618,8 +623,7 @@ function SingleChart({
     <text
       x="0"
       y=${dim.chartMargin.top - 20}
-      class="charts-text-big-bold"
-      font-size="${isMobile ? 14 : 18}"
+      class="${isMobile ? "charts-text-body-bold" : "charts-text-big-bold"}"
       dominant-baseline="middle"
     >
       ${chart.title}
