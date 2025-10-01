@@ -268,7 +268,10 @@ function UserChart({ data }) {
   const holidayPositions = getPrecalculatedHolidayPositions(
     currentTime,
     "current",
-    margin,
+    {
+      left: margin.left + chartMargin.left,
+      right: margin.right + chartMargin.right,
+    },
     width
   );
 
@@ -342,55 +345,15 @@ function UserChart({ data }) {
       }}"
     >
       <g>
-        ${holidays.map((holiday, index) => {
-          const x =
-            currentTimeScaleUTC(getDateInUTC(holiday.date.current)) +
-            margin.left +
-            chartMargin.left;
-          if (isNaN(x) || x < margin.left + chartMargin.left) return null;
-          if (x > width - margin.right) return null;
-
-          let offsetX = 0;
-          const prevX =
-            currentTimeScaleUTC(
-              getDateInUTC(
-                holidays[
-                  Math.max(
-                    0,
-                    holidays.findIndex((h) => h.name === holiday.name) - 1
-                  )
-                ].date.current
-              )
-            ) +
-            margin.left +
-            chartMargin.left;
-          if (x - prevX < 40 && index !== 0 && !isMobile) offsetX = 40;
-
+        ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
           return html`<g transform="translate(${x}, 0)">
-            <image
-              href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(${isMobile
-                ? -20 / 2
-                : -35 / 2 + offsetX}, 5)"
-              onmouseleave="${() => setHoveredHoliday(null)}"
-              onmouseenter="${() => {
-                setHoveredHoliday({
-                  name: holiday.name,
-                  date: holiday.displayDateMerged,
-                  tooltipX: x + 20,
-                  tooltipY: 0 + 20,
-                  align: "top",
-                });
-              }}"
-              width="${isMobile ? 20 : 35}"
-              height="${isMobile ? 20 : 35}"
-              style="cursor: pointer;"
-            />
             <line
               x1="0"
               x2="0"
-              y1="${margin.top}"
-              y2="${height - margin.bottom}"
+              y1="${isMobile
+                ? 45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)
+                : 45}"
+              y2="${height - margin.bottom + (isMobile ? 5 : 10)}"
               stroke="#D5D5D5"
               stroke-width="1.5"
               stroke-dasharray="4,4"
@@ -400,8 +363,8 @@ function UserChart({ data }) {
             <line
               x1="0"
               x2="${offsetX}"
-              y1="${margin.top}"
-              y2="${margin.top}"
+              y1="${45}"
+              y2="${45}"
               stroke="#D5D5D5"
               stroke-width="1.5"
               stroke-dasharray="4,4"
@@ -411,8 +374,8 @@ function UserChart({ data }) {
             <line
               x1="0"
               x2="${offsetX}"
-              y1="${height - margin.bottom}"
-              y2="${height - margin.bottom}"
+              y1="${height - margin.bottom + 10}"
+              y2="${height - margin.bottom + 10}"
               stroke="#D5D5D5"
               stroke-width="1.5"
               stroke-dasharray="4,4"
@@ -422,21 +385,41 @@ function UserChart({ data }) {
             <image
               href="${ASSETS_URL}${holiday.icon}"
               transform="translate(${isMobile
-                ? -20 / 2
-                : -35 / 2 + offsetX}, ${height - margin.bottom + 5})"
-              style="cursor: pointer;"
+                ? -20 / 2 + offsetX
+                : -35 / 2 + offsetX}, ${offsetY})"
               width="${isMobile ? 20 : 35}"
               height="${isMobile ? 20 : 35}"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDateMerged,
+                  date: holiday.displayDate[year],
                   tooltipX: x + 20,
-                  tooltipY: 0 + 40,
-                  align: "bottom",
+                  tooltipY: 0 + 20,
                 });
               }}"
+              style="cursor: pointer;"
+            />
+            <image
+              href="${ASSETS_URL}${holiday.icon}"
+              transform="translate(${isMobile
+                ? -20 / 2 + offsetX
+                : -35 / 2 + offsetX}, ${height -
+              margin.bottom +
+              20 +
+              -1 * offsetY})"
+              width="${isMobile ? 20 : 35}"
+              height="${isMobile ? 20 : 35}"
+              onmouseleave="${() => setHoveredHoliday(null)}"
+              onmouseenter="${() => {
+                setHoveredHoliday({
+                  name: holiday.name,
+                  date: holiday.displayDate[year],
+                  tooltipX: x + 20,
+                  tooltipY: 0 + 20,
+                });
+              }}"
+              style="cursor: pointer;"
             />
           </g>`;
         })}
