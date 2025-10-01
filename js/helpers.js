@@ -213,3 +213,309 @@ export function createAreaSegments(alignedData) {
 
   return { userAboveSegments, userBelowSegments };
 }
+
+export const monthsTwoYears = [
+  {
+    name: "October",
+    shortName: "Oct",
+    begin: "2024-10-01",
+    end: "2024-10-31",
+    year: "past",
+  },
+  {
+    name: "November",
+    shortName: "Nov",
+    begin: "2024-11-01",
+    end: "2024-11-30",
+    year: "past",
+  },
+  {
+    name: "December",
+    shortName: "Dec",
+    begin: "2024-12-01",
+    end: "2024-12-31",
+    year: "past",
+  },
+  {
+    name: "January",
+    shortName: "Jan",
+    begin: "2025-01-01",
+    end: "2025-01-31",
+    year: "past",
+  },
+  {
+    name: "February",
+    shortName: "Feb",
+    begin: "2025-02-01",
+    end: "2025-02-28",
+    year: "past",
+  },
+  {
+    name: "March",
+    shortName: "Mar",
+    begin: "2025-03-01",
+    end: "2025-03-31",
+    year: "past",
+  },
+  {
+    name: "October",
+    shortName: "Oct",
+    begin: "2025-10-01",
+    end: "2025-10-31",
+    year: "current",
+  },
+  {
+    name: "November",
+    shortName: "Nov",
+    begin: "2025-11-01",
+    end: "2025-11-30",
+    year: "current",
+  },
+  {
+    name: "December",
+    shortName: "Dec",
+    begin: "2025-12-01",
+    end: "2025-12-31",
+    year: "current",
+  },
+  {
+    name: "January",
+    shortName: "Jan",
+    begin: "2026-01-01",
+    end: "2026-01-31",
+    year: "current",
+  },
+  {
+    name: "February",
+    shortName: "Feb",
+    begin: "2026-02-01",
+    end: "2026-02-28",
+    year: "current",
+  },
+  {
+    name: "March",
+    shortName: "Mar",
+    begin: "2026-03-01",
+    end: "2026-03-31",
+    year: "current",
+  },
+];
+
+export const monthsPastYear = monthsTwoYears.filter((m) => m.year === "past");
+
+export const periods = [
+  {
+    value: "all",
+    title: "Show all",
+    subtitle: {
+      past: "October to March",
+      current: "October to March",
+    },
+    icon: null,
+    start: {
+      past: {
+        day: "30",
+        month: "9",
+        year: "2024",
+        week: "40",
+        full: "2024-09-30",
+      },
+      current: {
+        day: "29",
+        month: "9",
+        year: "2025",
+        week: "40",
+        full: "2025-09-29",
+      },
+    },
+    end: {
+      past: {
+        day: "31",
+        month: "3",
+        year: "2025",
+        week: "14",
+        full: "2025-03-31",
+      },
+
+      current: {
+        day: "30",
+        month: "3",
+        year: "2026",
+        week: "14",
+        full: "2026-03-30",
+      },
+    },
+  },
+  {
+    value: "pre-holiday",
+    title: "Pre-holiday",
+    subtitle: {
+      past: "October to November 24",
+      current: "October to November 23",
+    },
+    icon: "halloween_white.svg",
+    start: {
+      past: {
+        day: "30",
+        month: "9",
+        year: "2024",
+        week: "40",
+        full: "2024-09-30",
+      },
+      current: {
+        day: "29",
+        month: "9",
+        year: "2025",
+        week: "40",
+        full: "2025-09-29",
+      },
+    },
+    end: {
+      past: {
+        day: "25",
+        month: "11",
+        year: "2024",
+        week: "48",
+        full: "2024-11-25",
+      },
+
+      current: {
+        day: "24",
+        month: "11",
+        year: "2025",
+        week: "48",
+        full: "2025-11-24",
+      },
+    },
+  },
+  {
+    value: "peak-season",
+    title: "Peak season",
+    subtitle: {
+      past: "November 25 to December 25",
+      current: "November 24 to December 25",
+    },
+    icon: "christmas_white.svg",
+    start: {
+      past: {
+        day: "25",
+        month: "11",
+        year: "2024",
+        week: "48",
+        full: "2024-11-25",
+      },
+      current: {
+        day: "24",
+        month: "11",
+        year: "2025",
+        week: "48",
+        full: "2025-11-24",
+      },
+    },
+    end: {
+      past: {
+        day: "30",
+        month: "12",
+        year: "2024",
+        week: "1",
+        full: "2024-12-30",
+      },
+      current: {
+        day: "29",
+        month: "12",
+        year: "2025",
+        week: "1",
+        full: "2025-12-29",
+      },
+    },
+  },
+  {
+    value: "post-holiday",
+    title: "Post-holiday Q5",
+    subtitle: {
+      past: "December 26 to March",
+      current: "December 25 to March",
+    },
+    icon: "new-year_white.svg",
+    start: {
+      past: {
+        day: "30",
+        month: "12",
+        year: "2024",
+        week: "1",
+        full: "2024-12-30",
+      },
+      current: {
+        day: "29",
+        month: "12",
+        year: "2025",
+        week: "1",
+        full: "2025-12-29",
+      },
+    },
+    end: {
+      past: {
+        day: "31",
+        month: "3",
+        year: "2025",
+        week: "14",
+        full: "2025-03-31",
+      },
+
+      current: {
+        day: "30",
+        month: "3",
+        year: "2026",
+        week: "14",
+        full: "2026-03-30",
+      },
+    },
+  },
+];
+
+// Precalculate positions and offsets for all holidays
+import { holidays } from "./holidays.js";
+export function getPrecalculatedHolidayPositions(
+  timeScale,
+  year,
+  margin,
+  width
+) {
+  const holidayPositions = holidays
+    .map((holiday, index) => {
+      const x = timeScale(getDateInUTC(holiday.date[year])) + margin.left;
+      if (isNaN(x) || x < margin.left || x > width - margin.right) return null;
+      return { holiday, index, x };
+    })
+    .filter((item) => item !== null)
+    .sort((a, b) => a.x - b.x);
+
+  // Calculate offsets based on proximity to previous holidays (including their offsets)
+  holidayPositions.forEach((item, i) => {
+    let offsetX = 0;
+    let offsetY = 5;
+    if (i > 0 && !isMobile) {
+      const prevItem = holidayPositions[i - 1];
+      const prevFinalX = prevItem.x + prevItem.offsetX; // Consider previous holiday's final position
+      if (item.x - prevFinalX < 35) {
+        offsetX = 35;
+      }
+    }
+    if (isMobile && i % 2 === 1) {
+      offsetY = 30;
+    }
+    if (item.holiday.name === "New Year") {
+      offsetX = 10;
+      offsetY = 12;
+    }
+    if (item.holiday.name === "Valentine's day") {
+      offsetX = 0;
+      offsetY = 30;
+    }
+
+    item.offsetX = offsetX;
+    item.offsetY = offsetY;
+  });
+
+  return holidayPositions;
+}

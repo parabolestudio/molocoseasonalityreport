@@ -15,8 +15,9 @@ import {
   getDateInUTC,
   ASSETS_URL,
   isMobile,
+  monthsPastYear,
+  getPrecalculatedHolidayPositions,
 } from "./helpers.js";
-import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
 
@@ -324,19 +325,12 @@ function AdvertiserChart({ data }) {
     ? datapointsCurrent.find((d) => d.weekNumber === hoveredValues?.week)
     : null;
 
-  const months = [
-    {
-      name: "October",
-      shortName: "Oct",
-      begin: "2024-10-01",
-      end: "2024-10-31",
-    },
-    { name: "November", begin: "2024-11-01", end: "2024-11-30" },
-    { name: "December", begin: "2024-12-01", end: "2024-12-31" },
-    { name: "January", begin: "2025-01-01", end: "2025-01-31" },
-    { name: "February", begin: "2025-02-01", end: "2025-02-28" },
-    { name: "March", shortName: "Mar", begin: "2025-03-01", end: "2025-03-31" },
-  ];
+  const holidayPositions = getPrecalculatedHolidayPositions(
+    currentTime,
+    "current",
+    margin,
+    width
+  );
 
   return html`<div style="position: relative;">
     <svg
@@ -389,50 +383,12 @@ function AdvertiserChart({ data }) {
       }}"
     >
       <g>
-        ${holidays.map((holiday, index) => {
-          const x =
-            currentTimeScaleUTC(getDateInUTC(holiday.date.current)) +
-            margin.left;
-          if (isNaN(x) || x < margin.left) return null;
-          if (x > width - margin.right) return null;
-
-          let offsetX = 0;
-          const prevX =
-            currentTimeScaleUTC(
-              getDateInUTC(
-                holidays[
-                  Math.max(
-                    0,
-                    holidays.findIndex((h) => h.name === holiday.name) - 1
-                  )
-                ].date.current
-              )
-            ) + margin.left;
-          if (x - prevX < 40 && index !== 0 && !isMobile) offsetX = 40;
-
+        ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
           return html`<g transform="translate(${x}, 0)">
-            <image
-              href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(${isMobile
-                ? -20 / 2
-                : -35 / 2 + offsetX}, 5)"
-              width="${isMobile ? 20 : 35}"
-              height="${isMobile ? 20 : 35}"
-              onmouseleave="${() => setHoveredHoliday(null)}"
-              onmouseenter="${() => {
-                setHoveredHoliday({
-                  name: holiday.name,
-                  date: holiday.displayDateMerged,
-                  tooltipX: x + 20,
-                  tooltipY: 0 + 20,
-                });
-              }}"
-              style="cursor: pointer;"
-            />
             <line
               x1="0"
               x2="0"
-              y1="${45}"
+              y1="${45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)}"
               y2="${height - margin.bottom}"
               stroke="#D5D5D5"
               stroke-width="1.5"
@@ -451,6 +407,24 @@ function AdvertiserChart({ data }) {
               stroke-linecap="round"
               stroke-linejoin="round"
             />
+            <image
+              href="${ASSETS_URL}${holiday.icon}"
+              transform="translate(${isMobile
+                ? -20 / 2 + offsetX
+                : -35 / 2 + offsetX}, ${offsetY})"
+              width="${isMobile ? 20 : 35}"
+              height="${isMobile ? 20 : 35}"
+              onmouseleave="${() => setHoveredHoliday(null)}"
+              onmouseenter="${() => {
+                setHoveredHoliday({
+                  name: holiday.name,
+                  date: holiday.displayDate[year],
+                  tooltipX: x + 20,
+                  tooltipY: 0 + 20,
+                });
+              }}"
+              style="cursor: pointer;"
+            />
             <rect
               x="-5"
               y="${height - margin.bottom + 5}"
@@ -464,7 +438,7 @@ function AdvertiserChart({ data }) {
       </g>
       <g transform="translate(${margin.left},${margin.top})">
         <g>
-          ${months.map((month, i) => {
+          ${monthsPastYear.map((month, i) => {
             const xBegin = prevTimeScaleUTC(getDateInUTC(month.begin)) || null;
             const xEnd = prevTimeScaleUTC(getDateInUTC(month.end)) || null;
             if (xBegin === null || xEnd === null) return null;
@@ -485,7 +459,7 @@ function AdvertiserChart({ data }) {
                 text-anchor="middle"
                 class="charts-text-body"
                 fill-opacity="${isMobile
-                  ? i === 0 || i === months.length - 1
+                  ? i === 0 || i === monthsPastYear.length - 1
                     ? 1
                     : 0
                   : 1}"
