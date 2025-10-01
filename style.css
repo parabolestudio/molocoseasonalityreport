@@ -41,7 +41,8 @@
       gap: 12px;
 
       @media (max-width: 480px) {
-        padding: 6px 24px;
+        padding: 6px 12px;
+        gap: 8px;
       }
 
       &:first-child {
@@ -98,9 +99,17 @@
     width: 100%;
     padding: 60px 26px 26px 26px;
 
+    @media (max-width: 480px) {
+      padding: 30px 12px 12px 12px;
+    }
+
     &.fixed {
       position: relative;
       top: -36px;
+
+      @media (max-width: 480px) {
+        top: -18px;
+      }
     }
 
     p {
@@ -231,6 +240,10 @@
       justify-content: center;
       align-items: center;
       width: 551px;
+
+      @media (max-width: 480px) {
+        width: 345px;
+      }
     }
   }
 }
