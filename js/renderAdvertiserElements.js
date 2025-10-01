@@ -388,7 +388,9 @@ function AdvertiserChart({ data }) {
             <line
               x1="0"
               x2="0"
-              y1="${45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)}"
+              y1="${isMobile
+                ? 45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)
+                : 45}"
               y2="${height - margin.bottom}"
               stroke="#D5D5D5"
               stroke-width="1.5"

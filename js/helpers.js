@@ -504,11 +504,11 @@ export function getPrecalculatedHolidayPositions(
     if (isMobile && i % 2 === 1) {
       offsetY = 30;
     }
-    if (item.holiday.name === "New Year") {
+    if (item.holiday.name === "New Year" && isMobile) {
       offsetX = 10;
       offsetY = 12;
     }
-    if (item.holiday.name === "Valentine's day") {
+    if (item.holiday.name === "Valentine's day" && isMobile) {
       offsetX = 0;
       offsetY = 30;
     }

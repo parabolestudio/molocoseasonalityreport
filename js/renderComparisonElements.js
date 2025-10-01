@@ -722,12 +722,14 @@ function ComparisonChart({ userData, advertiserData }) {
       }}"
     >
       <g>
-        ${holidayPositions.map(({ holiday, index, x, offsetX, offsetY }) => {
+        ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
           return html`<g transform="translate(${x}, 0)">
             <line
               x1="0"
               x2="0"
-              y1="${45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)}"
+              y1="${isMobile
+                ? 45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)
+                : 45}"
               y2="${height - margin.bottom}"
               stroke="#D5D5D5"
               stroke-width="1.5"

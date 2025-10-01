@@ -16,6 +16,7 @@ import {
   getDateInUTC,
   ASSETS_URL,
   isMobile,
+  getPrecalculatedHolidayPositions,
 } from "./helpers.js";
 import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
@@ -264,6 +265,13 @@ function UserChart({ data }) {
         .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
     : [];
 
+  const holidayPositions = getPrecalculatedHolidayPositions(
+    currentTime,
+    "current",
+    margin,
+    width
+  );
+
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
@@ -282,30 +290,18 @@ function UserChart({ data }) {
 
           // figure out which chart the pointer is in
           let metricIndex = null;
-          if (
-            margin.top + chartMargin.top <= pointer[1] &&
-            pointer[1] < margin.top + chartMargin.top + chartInnerHeight
-          ) {
-            metricIndex = 0;
-          } else if (
-            margin.top + chartHeight + chartMargin.top <= pointer[1] &&
-            pointer[1] <=
-              margin.top + chartHeight + chartMargin.top + chartInnerHeight
-          ) {
-            metricIndex = 1;
-          } else if (
-            margin.top + chartHeight * 2 + chartMargin.top <= pointer[1] &&
-            pointer[1] <=
-              margin.top + chartHeight * 2 + chartMargin.top + chartInnerHeight
-          ) {
-            metricIndex = 2;
-          } else if (
-            margin.top + chartHeight * 3 + chartMargin.top <= pointer[1] &&
-            pointer[1] <=
-              margin.top + chartHeight * 3 + chartMargin.top + chartInnerHeight
-          ) {
-            metricIndex = 3;
-          }
+          // Calculate which chart the pointer is in based on Y position
+          const chartTopPositions = charts.map(
+            (_, i) => margin.top + chartHeight * i + chartMargin.top
+          );
+          const chartBottomPositions = chartTopPositions.map(
+            (top) => top + chartInnerHeight
+          );
+
+          metricIndex = chartTopPositions.findIndex(
+            (top, i) =>
+              pointer[1] >= top && pointer[1] < chartBottomPositions[i]
+          );
 
           const chart = charts[metricIndex];
           if (!chart) {
