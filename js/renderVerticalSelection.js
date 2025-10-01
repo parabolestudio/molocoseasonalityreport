@@ -125,11 +125,16 @@ function VerticalSelector() {
         onClick="${() => {
           setVertical(item.value);
           // Close the menu for the specific position
-          if (position === "inline") {
-            setInlineMenuOpen(false);
-          } else if (position === "fixed") {
-            setFixedMenuOpen(false);
-          }
+
+          // add small delay to allow user to see selection before menu closes
+          setTimeout(() => {
+            if (position === "inline") {
+              setInlineMenuOpen(false);
+            } else if (position === "fixed") {
+              setFixedMenuOpen(false);
+              setPageOverlayOpen(false);
+            }
+          }, 250);
 
           // Dispatch custom event to notify other components
           document.dispatchEvent(
@@ -266,7 +271,10 @@ function VerticalSelector() {
     <div class="vis-filter-floating-container">
       <div
         class="vis-filter-floating-trigger"
-        onclick=${() => setPageOverlayOpen(!pageOverlayOpen)}
+        onclick=${() => {
+          setPageOverlayOpen(!pageOverlayOpen);
+          setFixedMenuOpen(true);
+        }}
       >
         <span>${pageOverlayOpen ? "Hide filters" : "Change vertical"}</span
         ><img
