@@ -927,75 +927,86 @@ function ComparisonChart({ userData, advertiserData }) {
       }}"
     >
       <g>
-        ${holidays.map((holiday, index) => {
-          const x = timeScale(getDateInUTC(holiday.date[year])) + margin.left;
-          if (isNaN(x) || x < margin.left) return null;
-          if (x > width - margin.right) return null;
+        ${(() => {
+          // Precalculate positions and offsets for all holidays
+          const holidayPositions = holidays
+            .map((holiday, index) => {
+              const x =
+                timeScale(getDateInUTC(holiday.date[year])) + margin.left;
+              if (isNaN(x) || x < margin.left || x > width - margin.right)
+                return null;
+              return { holiday, index, x };
+            })
+            .filter((item) => item !== null)
+            .sort((a, b) => a.x - b.x);
 
-          let offsetX = 0;
-          const prevX =
-            timeScale(
-              getDateInUTC(
-                holidays[
-                  Math.max(
-                    0,
-                    holidays.findIndex((h) => h.name === holiday.name) - 1
-                  )
-                ].date[year]
-              )
-            ) + margin.left;
-          if (x - prevX < 40 && index !== 0 && !isMobile) offsetX = 32;
-          return html`<g transform="translate(${x}, 0)">
-            <image
-              href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(${isMobile
-                ? -20 / 2
-                : -35 / 2 + offsetX}, 5)"
-              width="${isMobile ? 20 : 35}"
-              height="${isMobile ? 20 : 35}"
-              onmouseleave="${() => setHoveredHoliday(null)}"
-              onmouseenter="${() => {
-                setHoveredHoliday({
-                  name: holiday.name,
-                  date: holiday.displayDate[year],
-                  tooltipX: x + 20,
-                  tooltipY: 0 + 20,
-                });
-              }}"
-              style="cursor: pointer;"
-            />
-            <line
-              x1="0"
-              x2="0"
-              y1="${45}"
-              y2="${height - margin.bottom}"
-              stroke="#D5D5D5"
-              stroke-width="1.5"
-              stroke-dasharray="4,4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <line
-              x1="0"
-              x2="${offsetX}"
-              y1="${45}"
-              y2="${45}"
-              stroke="#D5D5D5"
-              stroke-width="1.5"
-              stroke-dasharray="4,4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <rect
-              x="-5"
-              y="${height - margin.bottom + 5}"
-              width="10"
-              height="10"
-              fill="#040078"
-              stroke="#F8F8F8"
-            />
-          </g>`;
-        })}
+          // Calculate offsets based on proximity to previous holidays (including their offsets)
+          holidayPositions.forEach((item, i) => {
+            let offsetX = 0;
+            if (i > 0 && !isMobile) {
+              const prevItem = holidayPositions[i - 1];
+              const prevFinalX = prevItem.x + prevItem.offsetX; // Consider previous holiday's final position
+              if (item.x - prevFinalX < 35) {
+                offsetX = 35;
+              }
+            }
+            item.offsetX = offsetX;
+          });
+
+          return holidayPositions.map(({ holiday, index, x, offsetX }) => {
+            console.log("Holiday", holiday.name, x, offsetX);
+            return html`<g transform="translate(${x}, 0)">
+              <image
+                href="${ASSETS_URL}${holiday.icon}"
+                transform="translate(${isMobile
+                  ? -20 / 2
+                  : -35 / 2 + offsetX}, 5)"
+                width="${isMobile ? 20 : 35}"
+                height="${isMobile ? 20 : 35}"
+                onmouseleave="${() => setHoveredHoliday(null)}"
+                onmouseenter="${() => {
+                  setHoveredHoliday({
+                    name: holiday.name,
+                    date: holiday.displayDate[year],
+                    tooltipX: x + 20,
+                    tooltipY: 0 + 20,
+                  });
+                }}"
+                style="cursor: pointer;"
+              />
+              <line
+                x1="0"
+                x2="0"
+                y1="${45}"
+                y2="${height - margin.bottom}"
+                stroke="#D5D5D5"
+                stroke-width="1.5"
+                stroke-dasharray="4,4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <line
+                x1="0"
+                x2="${offsetX}"
+                y1="${45}"
+                y2="${45}"
+                stroke="#D5D5D5"
+                stroke-width="1.5"
+                stroke-dasharray="4,4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <rect
+                x="-5"
+                y="${height - margin.bottom + 5}"
+                width="10"
+                height="10"
+                fill="#040078"
+                stroke="#F8F8F8"
+              />
+            </g>`;
+          });
+        })()}
       </g>
 
       <g transform="translate(${margin.left},${margin.top})">
