@@ -256,13 +256,15 @@
       width: 551px;
 
       @media (max-width: 480px) {
-        width: 345px;
+        width: 330px;
       }
     }
   }
 }
 
 #vis-comparison-years {
+  width: 100%;
+
   .vis-year-buttons-container {
     display: flex;
     flex-direction: column;
