@@ -24,8 +24,6 @@
 }
 
 #vis-vertical-filter {
-  /* .vis-filter-container {
-  } */
   .vis-filter-category-container {
     position: relative;
     display: flex;
@@ -35,6 +33,7 @@
       z-index: 11;
       padding: 12px 50px;
       border: 1px solid #040078;
+      background-color: #fff;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -83,6 +82,11 @@
     border-radius: 0px 0px 10px 10px;
     width: 100%;
     padding: 60px 26px 26px 26px;
+
+    &.fixed {
+      position: relative;
+      top: -36px;
+    }
 
     p {
       margin: 0;
@@ -163,7 +167,7 @@
 }
 .vis-filter-floating-container {
   position: fixed;
-  bottom: 0px;
+  bottom: 8px;
   right: 50%;
   transform: translateX(50%);
   z-index: 3;
@@ -176,34 +180,42 @@
   .vis-filter-floating-trigger {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     cursor: pointer;
     background-color: #040078;
     color: white;
     padding: 10px 20px;
-    border-radius: 10px 10px 0 0;
-    width: fit-content;
+    width: 225px;
+    border-radius: 100px;
+    border: 1px solid #fff;
     font-family: "Montserrat", sans-serif;
     font-size: 18px;
     font-weight: 700;
+    text-align: center;
 
     img {
       transition: transform 0.3s ease;
     }
   }
   .vis-filter-floating-content {
-    background-color: white;
-    border: 1px solid #000;
-    border-radius: 10px;
     padding: 16px;
     transition: all 0.3s ease;
-    height: 445px;
 
     &.open {
       display: block;
     }
     &.closed {
       display: none;
+    }
+
+    .vis-filter-floating-content-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      justify-content: center;
+      align-items: center;
+      width: 551px;
     }
   }
 }

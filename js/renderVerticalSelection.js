@@ -159,91 +159,106 @@ function VerticalSelector() {
     const isMenuOpen = position === "inline" ? inlineMenuOpen : fixedMenuOpen;
 
     return html`<div class="vis-filter-category-container ${position}">
-      <div
-        class=${`vis-filter-item ${
-          category === "gaming" ? "selected" : ""
-        } ${position}`}
-        data-position=${position}
-        onclick=${(event) => {
-          console.log(
-            "Clicked gaming category",
-            event.currentTarget.getAttribute("data-position")
-          );
-          const clickedPosition =
-            event.currentTarget.getAttribute("data-position");
-          if (clickedPosition === position) {
-            handleCategoryChange("gaming", position);
-          }
-        }}
-      >
         <div
-          class="category-icon"
-          dangerouslySetInnerHTML=${{ __html: svgCache["gaming.svg"] || "" }}
-        ></div>
-        <p class="charts-text-big-bold">Gaming</p>
-        <svg
-          width="23"
-          height="22"
-          viewBox="0 0 23 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          transform="rotate(${isMenuOpen && category === "gaming" ? 180 : 0})"
-          style="transition: transform 0.3s ease;"
+          class=${`vis-filter-item ${
+            category === "gaming" ? "selected" : ""
+          } ${position}`}
+          data-position=${position}
+          onclick=${(event) => {
+            console.log(
+              "Clicked gaming category",
+              event.currentTarget.getAttribute("data-position")
+            );
+            const clickedPosition =
+              event.currentTarget.getAttribute("data-position");
+            if (clickedPosition === position) {
+              handleCategoryChange("gaming", position);
+            }
+          }}
         >
-          <circle
-            cx="11.9265"
-            cy="11"
-            r="11"
-            fill="${category === "gaming" ? "white" : "#040078"}"
-          />
-          <path
-            d="M7.23413 8.90234C7.34553 8.89042 7.45696 8.92688 7.54468 9.01758H7.54565L11.9421 13.04L16.3074 9.01758C16.3952 8.92652 16.5073 8.8904 16.6189 8.90234C16.73 8.91429 16.8347 8.97257 16.9148 9.05859C17.0046 9.15511 17.0345 9.28424 17.0242 9.40039C17.0141 9.51344 16.9637 9.62686 16.8748 9.70117L16.8757 9.70215L12.2107 14.002L12.2097 14.001C12.1763 14.0338 12.1287 14.0573 12.0896 14.0713C12.0452 14.0872 11.9915 14.0996 11.9431 14.0996C11.8947 14.0996 11.8415 14.088 11.7957 14.0732C11.7485 14.058 11.7016 14.0374 11.6628 14.0166L11.6511 14.0107L11.6423 14.002L6.97729 9.70215L6.97144 9.69727C6.8145 9.52852 6.75833 9.25203 6.93823 9.05859C7.01833 8.97257 7.12306 8.91429 7.23413 8.90234Z"
-            stroke="${category === "gaming" ? "#040078" : "white"}"
-            fill="${category === "gaming" ? "#040078" : "white"}"
-            stroke-width="0.2"
-          />
-        </svg>
-      </div>
-      <div
-        class=${`vis-filter-item ${category === "consumer" ? "selected" : ""}`}
-        onclick=${() => handleCategoryChange("consumer", position)}
-      >
+          <div
+            class="category-icon"
+            dangerouslySetInnerHTML=${{ __html: svgCache["gaming.svg"] || "" }}
+          ></div>
+          <p class="charts-text-big-bold">Gaming</p>
+          <svg
+            width="23"
+            height="22"
+            viewBox="0 0 23 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            transform="rotate(${isMenuOpen && category === "gaming" ? 180 : 0})"
+            style="transition: transform 0.3s ease;"
+          >
+            <circle
+              cx="11.9265"
+              cy="11"
+              r="11"
+              fill="${category === "gaming" ? "white" : "#040078"}"
+            />
+            <path
+              d="M7.23413 8.90234C7.34553 8.89042 7.45696 8.92688 7.54468 9.01758H7.54565L11.9421 13.04L16.3074 9.01758C16.3952 8.92652 16.5073 8.8904 16.6189 8.90234C16.73 8.91429 16.8347 8.97257 16.9148 9.05859C17.0046 9.15511 17.0345 9.28424 17.0242 9.40039C17.0141 9.51344 16.9637 9.62686 16.8748 9.70117L16.8757 9.70215L12.2107 14.002L12.2097 14.001C12.1763 14.0338 12.1287 14.0573 12.0896 14.0713C12.0452 14.0872 11.9915 14.0996 11.9431 14.0996C11.8947 14.0996 11.8415 14.088 11.7957 14.0732C11.7485 14.058 11.7016 14.0374 11.6628 14.0166L11.6511 14.0107L11.6423 14.002L6.97729 9.70215L6.97144 9.69727C6.8145 9.52852 6.75833 9.25203 6.93823 9.05859C7.01833 8.97257 7.12306 8.91429 7.23413 8.90234Z"
+              stroke="${category === "gaming" ? "#040078" : "white"}"
+              fill="${category === "gaming" ? "#040078" : "white"}"
+              stroke-width="0.2"
+            />
+          </svg>
+        </div>
         <div
-          class="category-icon"
-          dangerouslySetInnerHTML=${{ __html: svgCache["consumer.svg"] || "" }}
-        ></div>
-        <p class="charts-text-big-bold">Consumer</p>
-        <svg
-          width="23"
-          height="22"
-          viewBox="0 0 23 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          transform="rotate(${isMenuOpen && category === "consumer" ? 180 : 0})"
-          style="transition: transform 0.3s ease;"
+          class=${`vis-filter-item ${
+            category === "consumer" ? "selected" : ""
+          }`}
+          onclick=${() => handleCategoryChange("consumer", position)}
         >
-          <circle
-            cx="11.9265"
-            cy="11"
-            r="11"
-            fill="${category === "consumer" ? "white" : "#040078"}"
-          />
-          <path
-            d="M7.23413 8.90234C7.34553 8.89042 7.45696 8.92688 7.54468 9.01758H7.54565L11.9421 13.04L16.3074 9.01758C16.3952 8.92652 16.5073 8.8904 16.6189 8.90234C16.73 8.91429 16.8347 8.97257 16.9148 9.05859C17.0046 9.15511 17.0345 9.28424 17.0242 9.40039C17.0141 9.51344 16.9637 9.62686 16.8748 9.70117L16.8757 9.70215L12.2107 14.002L12.2097 14.001C12.1763 14.0338 12.1287 14.0573 12.0896 14.0713C12.0452 14.0872 11.9915 14.0996 11.9431 14.0996C11.8947 14.0996 11.8415 14.088 11.7957 14.0732C11.7485 14.058 11.7016 14.0374 11.6628 14.0166L11.6511 14.0107L11.6423 14.002L6.97729 9.70215L6.97144 9.69727C6.8145 9.52852 6.75833 9.25203 6.93823 9.05859C7.01833 8.97257 7.12306 8.91429 7.23413 8.90234Z"
-            stroke="${category === "consumer" ? "#040078" : "white"}"
-            fill="${category === "consumer" ? "#040078" : "white"}"
-            stroke-width="0.2"
-          />
-        </svg>
+          <div
+            class="category-icon"
+            dangerouslySetInnerHTML=${{
+              __html: svgCache["consumer.svg"] || "",
+            }}
+          ></div>
+          <p class="charts-text-big-bold">Consumer</p>
+          <svg
+            width="23"
+            height="22"
+            viewBox="0 0 23 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            transform="rotate(${isMenuOpen && category === "consumer"
+              ? 180
+              : 0})"
+            style="transition: transform 0.3s ease;"
+          >
+            <circle
+              cx="11.9265"
+              cy="11"
+              r="11"
+              fill="${category === "consumer" ? "white" : "#040078"}"
+            />
+            <path
+              d="M7.23413 8.90234C7.34553 8.89042 7.45696 8.92688 7.54468 9.01758H7.54565L11.9421 13.04L16.3074 9.01758C16.3952 8.92652 16.5073 8.8904 16.6189 8.90234C16.73 8.91429 16.8347 8.97257 16.9148 9.05859C17.0046 9.15511 17.0345 9.28424 17.0242 9.40039C17.0141 9.51344 16.9637 9.62686 16.8748 9.70117L16.8757 9.70215L12.2107 14.002L12.2097 14.001C12.1763 14.0338 12.1287 14.0573 12.0896 14.0713C12.0452 14.0872 11.9915 14.0996 11.9431 14.0996C11.8947 14.0996 11.8415 14.088 11.7957 14.0732C11.7485 14.058 11.7016 14.0374 11.6628 14.0166L11.6511 14.0107L11.6423 14.002L6.97729 9.70215L6.97144 9.69727C6.8145 9.52852 6.75833 9.25203 6.93823 9.05859C7.01833 8.97257 7.12306 8.91429 7.23413 8.90234Z"
+              stroke="${category === "consumer" ? "#040078" : "white"}"
+              fill="${category === "consumer" ? "#040078" : "white"}"
+              stroke-width="0.2"
+            />
+          </svg>
+        </div>
+        ${isMenuOpen &&
+        position === "inline" &&
+        html` <div class="vis-filter-menu-container ${position}">
+          <p>Select sub-vertical</p>
+          <ul class="vertical-list">
+            ${getVerticalItems(position)}
+          </ul>
+        </div>`}
       </div>
       ${isMenuOpen &&
+      position === "fixed" &&
       html` <div class="vis-filter-menu-container ${position}">
         <p>Select sub-vertical</p>
         <ul class="vertical-list">
           ${getVerticalItems(position)}
         </ul>
-      </div>`}
-    </div>`;
+      </div>`} `;
   }
 
   return html`<div class="vis-filter-container">
@@ -266,7 +281,9 @@ function VerticalSelector() {
           ? "open"
           : "closed"}"
       >
-        <div>${getCategoryContainer("fixed")}</div>
+        <div class="vis-filter-floating-content-inner">
+          ${getCategoryContainer("fixed")}
+        </div>
       </div>
     </div>
   </div>`;
