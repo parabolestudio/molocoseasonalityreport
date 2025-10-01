@@ -943,6 +943,7 @@ function ComparisonChart({ userData, advertiserData }) {
           // Calculate offsets based on proximity to previous holidays (including their offsets)
           holidayPositions.forEach((item, i) => {
             let offsetX = 0;
+            let offsetY = 5;
             if (i > 0 && !isMobile) {
               const prevItem = holidayPositions[i - 1];
               const prevFinalX = prevItem.x + prevItem.offsetX; // Consider previous holiday's final position
@@ -950,62 +951,76 @@ function ComparisonChart({ userData, advertiserData }) {
                 offsetX = 35;
               }
             }
+            if (isMobile && i % 2 === 1) {
+              offsetY = 30;
+            }
+            if (item.holiday.name === "New Year") {
+              offsetX = 10;
+              offsetY = 12;
+            }
+            if (item.holiday.name === "Valentine's day") {
+              offsetX = 0;
+              offsetY = 30;
+            }
+
             item.offsetX = offsetX;
+            item.offsetY = offsetY;
           });
 
-          return holidayPositions.map(({ holiday, index, x, offsetX }) => {
-            console.log("Holiday", holiday.name, x, offsetX);
-            return html`<g transform="translate(${x}, 0)">
-              <image
-                href="${ASSETS_URL}${holiday.icon}"
-                transform="translate(${isMobile
-                  ? -20 / 2
-                  : -35 / 2 + offsetX}, 5)"
-                width="${isMobile ? 20 : 35}"
-                height="${isMobile ? 20 : 35}"
-                onmouseleave="${() => setHoveredHoliday(null)}"
-                onmouseenter="${() => {
-                  setHoveredHoliday({
-                    name: holiday.name,
-                    date: holiday.displayDate[year],
-                    tooltipX: x + 20,
-                    tooltipY: 0 + 20,
-                  });
-                }}"
-                style="cursor: pointer;"
-              />
-              <line
-                x1="0"
-                x2="0"
-                y1="${45}"
-                y2="${height - margin.bottom}"
-                stroke="#D5D5D5"
-                stroke-width="1.5"
-                stroke-dasharray="4,4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <line
-                x1="0"
-                x2="${offsetX}"
-                y1="${45}"
-                y2="${45}"
-                stroke="#D5D5D5"
-                stroke-width="1.5"
-                stroke-dasharray="4,4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <rect
-                x="-5"
-                y="${height - margin.bottom + 5}"
-                width="10"
-                height="10"
-                fill="#040078"
-                stroke="#F8F8F8"
-              />
-            </g>`;
-          });
+          return holidayPositions.map(
+            ({ holiday, index, x, offsetX, offsetY }) => {
+              return html`<g transform="translate(${x}, 0)">
+                <line
+                  x1="0"
+                  x2="0"
+                  y1="${45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)}"
+                  y2="${height - margin.bottom}"
+                  stroke="#D5D5D5"
+                  stroke-width="1.5"
+                  stroke-dasharray="4,4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <line
+                  x1="0"
+                  x2="${offsetX}"
+                  y1="${45}"
+                  y2="${45}"
+                  stroke="#D5D5D5"
+                  stroke-width="1.5"
+                  stroke-dasharray="4,4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <image
+                  href="${ASSETS_URL}${holiday.icon}"
+                  transform="translate(${isMobile
+                    ? -20 / 2 + offsetX
+                    : -35 / 2 + offsetX}, ${offsetY})"
+                  width="${isMobile ? 20 : 35}"
+                  height="${isMobile ? 20 : 35}"
+                  onmouseleave="${() => setHoveredHoliday(null)}"
+                  onmouseenter="${() => {
+                    setHoveredHoliday({
+                      name: holiday.name,
+                      date: holiday.displayDate[year],
+                      tooltipX: x + 20,
+                      tooltipY: 0 + 20,
+                    });
+                  }}"
+                  style="cursor: pointer;"
+                />
+                <rect
+                  x="-5"
+                  y="${height - margin.bottom + 5}"
+                  width="10"
+                  height="10"
+                  fill="#040078"
+                  stroke="#F8F8F8"
+                />
+              </g>`;
+            }
+          );
         })()}
       </g>
 
@@ -1038,7 +1053,9 @@ function ComparisonChart({ userData, advertiserData }) {
                 y="${innerHeight + 20 + 22}"
                 text-anchor="middle"
                 class="charts-text-body"
-                fill-opacity="${(xEnd - xBegin) / 2 < 30 ? 0 : 1}"
+                fill-opacity="${!isMobile && (xEnd - xBegin) / 2 < 30
+                  ? 0.5
+                  : 1}"
               >
                 ${month.name}
               </text>
