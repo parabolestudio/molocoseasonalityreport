@@ -393,7 +393,7 @@ function UserChart({ data }) {
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDate[year],
+                  date: holiday.displayDate["current"],
                   tooltipX: x + 20,
                   tooltipY: 0 + 20,
                 });
@@ -414,7 +414,7 @@ function UserChart({ data }) {
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDate[year],
+                  date: holiday.displayDate["current"],
                   tooltipX: x + 20,
                   tooltipY: 0 + 20,
                 });

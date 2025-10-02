@@ -38,6 +38,14 @@ export const valueFormatting = {
       ? (value / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
       : value;
   },
+  wow: (value) => {
+    const percent = value * 100;
+    return percent > 0
+      ? "+" + percent.toFixed(1).replace(/\.0$/, "") + "%"
+      : percent < 0
+      ? percent.toFixed(1).replace(/\.0$/, "") + "%"
+      : "0%";
+  },
 };
 
 // time scales

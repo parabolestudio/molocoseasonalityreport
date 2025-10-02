@@ -38,7 +38,7 @@ const categoryIcons = [
 
 function VerticalSelector() {
   const [category, setCategory] = useState("gaming");
-  const [vertical, setVertical] = useState("all");
+  const [vertical, setVertical] = useState("match"); // TODO: change back to "all" for launch
   const [inlineMenuOpen, setInlineMenuOpen] = useState(false);
   const [fixedMenuOpen, setFixedMenuOpen] = useState(false);
 

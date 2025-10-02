@@ -49,9 +49,10 @@ const SHEET_ID =
   "2PACX-1vQV_fJ4xrBe0Wvwmk92stpzuxnCUxpmm5l7wz-HJ-N0DzRH0tyT2gS8SEQs0mNef3k8aImO2NVwyiS7";
 
 const SHEET_TAB_IDS = {
-  "user-engagement": "2041233709",
-  // "advertiser-kpis": "1295386751", // with WOW changes
-  "advertiser-kpis": "367086481", // without WOW changes
+  "user-engagement": "2041233709", // without WOW changes
+  // "user-engagement": "996352335", // with WOW changes
+  "advertiser-kpis": "1295386751", // with WOW changes
+  // "advertiser-kpis": "367086481", // without WOW changes
 };
 
 function getSheetUrl(tabName) {

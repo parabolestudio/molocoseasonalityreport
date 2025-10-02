@@ -10,6 +10,7 @@ import {
   useEffect,
 } from "./utils/preact-htm.js";
 import {
+  valueFormatting,
   prevTimeScaleUTC,
   currentTimeScaleUTC,
   getDateInUTC,
@@ -60,9 +61,9 @@ export function renderAdvertiserElements(data) {
               ? +d[metric].replaceAll(",", "")
               : +d[metric]
             : null;
-          // d[metric + "_wow"] = d[metric + "_wow_pct_change"]
-          //   ? +d[metric + "_wow_pct_change"]
-          //   : null;
+          d[metric + "_wow"] = d[metric + "_wow_pct_change"]
+            ? +d[metric + "_wow_pct_change"].replace(/%/, "") / 100
+            : null;
         });
     });
   }
@@ -83,13 +84,13 @@ function renderMetricsButtons() {
 }
 
 const metrics = [
-  { value: "bids_p50", label: "Bid Requests" },
+  { value: "bids", label: "Bid Requests" },
   { value: "cpm_p50", label: "CPM" },
   { value: "cpi_p50", label: "CPI" },
   { value: "roas_d7_p50", label: "ROAS" },
   { value: "arppu_d7_p50", label: "ARRPU" },
 ];
-const metricDefault = metrics[1];
+const metricDefault = metrics[0];
 
 function AdvertiserMetricsButtons() {
   const [selectedMetric, setSelectedMetric] = useState(metricDefault.value);
@@ -144,7 +145,7 @@ function AdvertiserChart({ data }) {
     getDropdownValue("vis-advertiser-dropdown-countries") || "USA"
   );
   const [category, setCategory] = useState("gaming");
-  const [vertical, setVertical] = useState("all");
+  const [vertical, setVertical] = useState("match"); //TODO: change back to "all" for launch
   const [metric, setMetric] = useState(metricDefault.value);
   const [chartData, setChartData] = useState(filterData(data));
 
@@ -374,8 +375,8 @@ function AdvertiserChart({ data }) {
             firstDayOfWeekCurrent: datapointCurrent.week_start || null,
             variable: metric,
             title: metrics.find((m) => m.value === metric).label,
-            valuePrev: datapointPrev[metric] || null,
-            valueCurrent: datapointCurrent[metric] || null,
+            valuePrev: datapointPrev[metric + "_wow"] || null,
+            valueCurrent: datapointCurrent[metric + "_wow"] || null,
           });
         } else {
           setHoveredValues(null);
@@ -420,7 +421,7 @@ function AdvertiserChart({ data }) {
               onmouseenter="${() => {
                 setHoveredHoliday({
                   name: holiday.name,
-                  date: holiday.displayDate[year],
+                  date: holiday.displayDate["current"],
                   tooltipX: x + 20,
                   tooltipY: 0 + 20,
                 });
@@ -548,6 +549,11 @@ function TooltipValues({ hoveredItem }) {
           ? `(starts ${formattedDayCurrent})`
           : ""}
       </p>
+      <p class="tooltip-value">
+        ${hoveredItem.valuePrev
+          ? valueFormatting.wow(hoveredItem.valuePrev)
+          : "-"}
+      </p>
     </div>
 
     <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
@@ -558,13 +564,9 @@ function TooltipValues({ hoveredItem }) {
           ? `(starts ${formattedDayPrev})`
           : ""}
       </p>
+      <p class="tooltip-value">
+        ${hoveredItem.valueCurrent ? hoveredItem.valueCurrent : "-"}
+      </p>
     </div>
   </div>`;
 }
-
-//  <p class="tooltip-value">
-//         ${hoveredItem.valueCurrent ? hoveredItem.valueCurrent : "-"}
-//       </p>
-// <p class="tooltip-value">
-//         ${hoveredItem.valuePrev ? hoveredItem.valuePrev : "-"}
-//       </p>

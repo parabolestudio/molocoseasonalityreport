@@ -10,6 +10,7 @@ import {
   useEffect,
 } from "./utils/preact-htm.js";
 import {
+  valueFormatting,
   getDateInUTC,
   ASSETS_URL,
   isMobile,
@@ -76,6 +77,10 @@ export function renderComparisonElements(userData, advertiserData) {
         .map((m) => m.value)
         .forEach((metric) => {
           d[metric] = d[metric] ? +d[metric] : null;
+
+          d[metric + "_wow"] = d[metric + "_wow_pct_change"]
+            ? +d[metric + "_wow_pct_change"].replace(/%/, "") / 100
+            : null;
         });
     });
   }
@@ -92,13 +97,17 @@ export function renderComparisonElements(userData, advertiserData) {
               ? +d[metric].replaceAll(",", "")
               : +d[metric]
             : null;
+
+          d[metric + "_wow"] = d[metric + "_wow_pct_change"]
+            ? +d[metric + "_wow_pct_change"].replace(/%/, "") / 100
+            : null;
         });
     });
   }
 }
 
 const userMetrics = [
-  { value: "median_wau", label: "WAU" },
+  // { value: "median_wau", label: "WAU" },
   { value: "total_downloads", label: "Downloads" },
   { value: "total_revenue", label: "Revenue" },
   { value: "total_time_spent", label: "Time Spent" },
@@ -106,13 +115,13 @@ const userMetrics = [
 const userMetricDefault = userMetrics[0];
 
 const advertiserMetrics = [
-  { value: "bids_p50", label: "Bid Requests" },
+  { value: "bids", label: "Bid Requests" },
   { value: "cpm_p50", label: "CPM" },
   { value: "cpi_p50", label: "CPI" },
   { value: "roas_d7_p50", label: "ROAS" },
   { value: "arppu_d7_p50", label: "ARRPU" },
 ];
-const advertiserMetricDefault = advertiserMetrics[1];
+const advertiserMetricDefault = advertiserMetrics[0];
 
 function renderMetricsButtons(metrics, metricDefault, containerId) {
   const containerElement = document.getElementById(containerId);
@@ -327,7 +336,7 @@ function ComparisonChart({ userData, advertiserData }) {
     getDropdownValue("vis-comparison-dropdown-countries") || "USA"
   );
   const [category, setCategory] = useState("gaming");
-  const [vertical, setVertical] = useState("all");
+  const [vertical, setVertical] = useState("match"); //TODO: change back to "all" for launch
   const [year, setYear] = useState("past");
   const [period, setPeriod] = useState("all");
   const [userMetric, setUserMetric] = useState(userMetricDefault.value);
@@ -694,6 +703,10 @@ function ComparisonChart({ userData, advertiserData }) {
           const datapointUser = datapointsUser.find(
             (d) => d.weekNumber === hoveredWeek
           );
+          const datapointAdvertiser =
+            datapointsAdvertiser && datapointsAdvertiser.length > 0
+              ? datapointsAdvertiser.find((d) => d.weekNumber === hoveredWeek)
+              : [];
 
           let tooltipX = innerX + margin.left;
           if (tooltipX + 150 > width) {
@@ -713,8 +726,12 @@ function ComparisonChart({ userData, advertiserData }) {
             firstDayOfWeek: datapointUser.week_start || null,
             userVariable,
             advertiserVariable,
-            // valuePrev: datapointPrev[metric] || null,
-            // valueCurrent: datapointCurrent[metric] || null,
+            userValue: datapointUser[userMetric + "_wow"] || null,
+            advertiserValue:
+              datapointAdvertiser &&
+              datapointAdvertiser[advertiserMetric + "_wow"]
+                ? datapointAdvertiser[advertiserMetric + "_wow"]
+                : null,
           });
         } else {
           setHoveredValues(null);
@@ -908,7 +925,11 @@ function TooltipValues({ hoveredItem }) {
 
     <div>
       <p class="tooltip-label">${hoveredItem.userVariable} weekly change</p>
-      <p class="tooltip-value">...</p>
+      <p class="tooltip-value">
+        ${hoveredItem.userValue
+          ? valueFormatting.wow(hoveredItem.userValue)
+          : "-"}
+      </p>
     </div>
 
     <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
@@ -917,7 +938,11 @@ function TooltipValues({ hoveredItem }) {
       <p class="tooltip-label">
         ${hoveredItem.advertiserVariable} weekly change
       </p>
-      <p class="tooltip-value">...</p>
+      <p class="tooltip-value">
+        ${hoveredItem.advertiserValue
+          ? valueFormatting.wow(hoveredItem.advertiserValue)
+          : "-"}
+      </p>
     </div>
   </div>`;
 }
