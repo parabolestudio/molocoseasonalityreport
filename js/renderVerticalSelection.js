@@ -83,9 +83,9 @@ function VerticalSelector() {
     const handleScroll = () => {
       const scrollY = window.scrollY || window.pageYOffset;
 
-      const userContainer = document.querySelector("#vis-user-container");
-      if (userContainer) {
-        const { top } = userContainer.getBoundingClientRect();
+      const container = document.querySelector("#vis-floating-filter-start");
+      if (container) {
+        const { top } = container.getBoundingClientRect();
         console.log(
           "User container top position:",
           scrollY,
