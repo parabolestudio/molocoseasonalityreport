@@ -159,14 +159,14 @@ function UserChart({ data }) {
   }, []);
 
   const charts = [
-    {
-      title: "WAU",
-      value: "wau",
-      tooltipTitle: "Weekly Active Users (WAU)",
-      data: chartData
-        ? chartData.map((d) => ({ week_start: d.week_start, value: d.wau }))
-        : [],
-    },
+    // {
+    //   title: "WAU",
+    //   value: "wau",
+    //   tooltipTitle: "Weekly Active Users (WAU)",
+    //   data: chartData
+    //     ? chartData.map((d) => ({ week_start: d.week_start, value: d.wau }))
+    //     : [],
+    // },
     {
       title: "Downloads",
       value: "downloads",
@@ -217,7 +217,7 @@ function UserChart({ data }) {
   const innerWidth = width - margin.left - margin.right;
   const chartWidth = innerWidth - chartMargin.left - chartMargin.right;
 
-  const chartInnerHeight = 200;
+  const chartInnerHeight = 250;
   const chartHeight = chartInnerHeight + chartMargin.top + chartMargin.bottom;
   const innerHeight = charts.length * chartHeight;
 
