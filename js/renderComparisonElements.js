@@ -766,6 +766,18 @@ function ComparisonChart({ userData, advertiserData }) {
               stroke-linecap="round"
               stroke-linejoin="round"
             />
+            <rect
+              x="-5"
+              y="${height - margin.bottom + 5}"
+              width="10"
+              height="10"
+              fill="#040078"
+              stroke="#F8F8F8"
+            />
+          </g>`;
+        })}
+        ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
+          return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
               transform="translate(${isMobile
@@ -783,14 +795,6 @@ function ComparisonChart({ userData, advertiserData }) {
                 });
               }}"
               style="cursor: pointer;"
-            />
-            <rect
-              x="-5"
-              y="${height - margin.bottom + 5}"
-              width="10"
-              height="10"
-              fill="#040078"
-              stroke="#F8F8F8"
             />
           </g>`;
         })}

@@ -374,6 +374,10 @@ function UserChart({ data }) {
               stroke-linecap="round"
               stroke-linejoin="round"
             />
+          </g>`;
+        })}
+        ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
+          return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
               transform="translate(${isMobile
