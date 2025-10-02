@@ -43,6 +43,7 @@ function VerticalSelector() {
   const [fixedMenuOpen, setFixedMenuOpen] = useState(false);
 
   const [pageOverlayOpen, setPageOverlayOpen] = useState(false);
+  const [onCorrectPagePart, setOnCorrectPagePart] = useState(false);
 
   const [svgCache, setSvgCache] = useState({});
 
@@ -75,6 +76,34 @@ function VerticalSelector() {
     for (const iconPath of iconPaths) {
       await fetchSvgContent(iconPath);
     }
+  }, []);
+
+  // listen to scroll of page
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || window.pageYOffset;
+
+      const userContainer = document.querySelector("#vis-user-container");
+      if (userContainer) {
+        const { top } = userContainer.getBoundingClientRect();
+        console.log(
+          "User container top position:",
+          scrollY,
+          window.scrollY + top
+        );
+
+        if (scrollY >= window.scrollY + top) {
+          setOnCorrectPagePart(true);
+        } else {
+          setOnCorrectPagePart(false);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   function handleCategoryChange(newCategory, position) {
@@ -268,7 +297,8 @@ function VerticalSelector() {
 
   return html`<div class="vis-filter-container">
     ${getCategoryContainer("inline")}
-    <div class="vis-filter-floating-container">
+    ${onCorrectPagePart &&
+    html` <div class="vis-filter-floating-container">
       <div
         class="vis-filter-floating-trigger"
         onclick=${() => {
@@ -293,6 +323,6 @@ function VerticalSelector() {
           ${getCategoryContainer("fixed")}
         </div>
       </div>
-    </div>
+    </div>`}
   </div>`;
 }
