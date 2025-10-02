@@ -527,3 +527,11 @@ export function getPrecalculatedHolidayPositions(
 
   return holidayPositions;
 }
+
+export const holidayStyles = {
+  line: {
+    stroke: "#D5D5D5",
+    "stroke-width": "1",
+    "stroke-dasharray": "",
+  },
+};

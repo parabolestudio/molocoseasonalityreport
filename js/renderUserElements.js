@@ -17,8 +17,8 @@ import {
   ASSETS_URL,
   isMobile,
   getPrecalculatedHolidayPositions,
+  holidayStyles,
 } from "./helpers.js";
-import { holidays } from "./holidays.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
 
@@ -159,14 +159,6 @@ function UserChart({ data }) {
   }, []);
 
   const charts = [
-    // {
-    //   title: "WAU",
-    //   value: "wau",
-    //   tooltipTitle: "Weekly Active Users (WAU)",
-    //   data: chartData
-    //     ? chartData.map((d) => ({ week_start: d.week_start, value: d.wau }))
-    //     : [],
-    // },
     {
       title: "Downloads",
       value: "downloads",
@@ -217,7 +209,7 @@ function UserChart({ data }) {
   const innerWidth = width - margin.left - margin.right;
   const chartWidth = innerWidth - chartMargin.left - chartMargin.right;
 
-  const chartInnerHeight = 250;
+  const chartInnerHeight = isMobile ? 200 : 250;
   const chartHeight = chartInnerHeight + chartMargin.top + chartMargin.bottom;
   const innerHeight = charts.length * chartHeight;
 
@@ -354,9 +346,9 @@ function UserChart({ data }) {
                 ? 45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)
                 : 45}"
               y2="${height - margin.bottom + (isMobile ? 5 : 10)}"
-              stroke="#D5D5D5"
-              stroke-width="1.5"
-              stroke-dasharray="4,4"
+              stroke="${holidayStyles.line.stroke}"
+              stroke-width="${holidayStyles.line["stroke-width"]}"
+              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
               stroke-linecap="round"
               stroke-linejoin="round"
             />
@@ -365,9 +357,9 @@ function UserChart({ data }) {
               x2="${offsetX}"
               y1="${45}"
               y2="${45}"
-              stroke="#D5D5D5"
-              stroke-width="1.5"
-              stroke-dasharray="4,4"
+              stroke="${holidayStyles.line.stroke}"
+              stroke-width="${holidayStyles.line["stroke-width"]}"
+              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
               stroke-linecap="round"
               stroke-linejoin="round"
             />
@@ -376,9 +368,9 @@ function UserChart({ data }) {
               x2="${offsetX}"
               y1="${height - margin.bottom + 10}"
               y2="${height - margin.bottom + 10}"
-              stroke="#D5D5D5"
-              stroke-width="1.5"
-              stroke-dasharray="4,4"
+              stroke="${holidayStyles.line.stroke}"
+              stroke-width="${holidayStyles.line["stroke-width"]}"
+              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
               stroke-linecap="round"
               stroke-linejoin="round"
             />

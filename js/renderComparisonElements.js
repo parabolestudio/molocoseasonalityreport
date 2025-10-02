@@ -18,6 +18,7 @@ import {
   monthsTwoYears,
   periods,
   getPrecalculatedHolidayPositions,
+  holidayStyles,
 } from "./helpers.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
@@ -506,7 +507,7 @@ function ComparisonChart({ userData, advertiserData }) {
   const visContainer = document.querySelector(`#vis-comparison-container`);
   const width =
     visContainer && visContainer.offsetWidth ? visContainer.offsetWidth : 600;
-  const height = 600;
+  const height = isMobile ? 400 : 600;
   const margin = { top: 60, right: 1, bottom: 60, left: 1 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
@@ -748,9 +749,9 @@ function ComparisonChart({ userData, advertiserData }) {
                 ? 45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)
                 : 45}"
               y2="${height - margin.bottom}"
-              stroke="#D5D5D5"
-              stroke-width="1.5"
-              stroke-dasharray="4,4"
+              stroke="${holidayStyles.line.stroke}"
+              stroke-width="${holidayStyles.line["stroke-width"]}"
+              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
               stroke-linecap="round"
               stroke-linejoin="round"
             />
@@ -759,9 +760,9 @@ function ComparisonChart({ userData, advertiserData }) {
               x2="${offsetX}"
               y1="${45}"
               y2="${45}"
-              stroke="#D5D5D5"
-              stroke-width="1.5"
-              stroke-dasharray="4,4"
+              stroke="${holidayStyles.line.stroke}"
+              stroke-width="${holidayStyles.line["stroke-width"]}"
+              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
               stroke-linecap="round"
               stroke-linejoin="round"
             />
