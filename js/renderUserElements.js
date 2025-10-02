@@ -589,6 +589,18 @@ function SingleChart({
         October</text
       >
       <text
+        x=${weekScale(1)}
+        y=${dim.chartInnerHeight + 20}
+        class="charts-text-body"
+        font-size="14"
+        font-weight="400"
+        font-family="Montserrat, sans-serif"
+        style="line-height: 1.25"
+        text-anchor="start"
+      >
+        January</text
+      >
+      <text
         x=${dim.chartWidth}
         y=${dim.chartInnerHeight + 20}
         class="charts-text-body"
