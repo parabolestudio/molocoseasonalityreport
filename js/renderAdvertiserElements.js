@@ -85,11 +85,11 @@ function renderMetricsButtons() {
 }
 
 const metrics = [
-  { value: "bids", label: "Bid Requests" },
+  { value: "bids", label: "Ad opportunities" },
   { value: "cpm_p50", label: "CPM" },
   { value: "cpi_p50", label: "CPI" },
   { value: "roas_d7_p50", label: "ROAS" },
-  { value: "arppu_d7_p50", label: "ARRPU" },
+  { value: "arppu_d7_p50", label: "ARPPU" },
 ];
 const metricDefault = metrics[0];
 
@@ -146,7 +146,7 @@ function AdvertiserChart({ data }) {
     getDropdownValue("vis-advertiser-dropdown-countries") || "USA"
   );
   const [category, setCategory] = useState("gaming");
-  const [vertical, setVertical] = useState("match"); //TODO: change back to "all" for launch
+  const [vertical, setVertical] = useState("all");
   const [metric, setMetric] = useState(metricDefault.value);
   const [chartData, setChartData] = useState(filterData(data));
 

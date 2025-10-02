@@ -38,7 +38,7 @@ const categoryIcons = [
 
 function VerticalSelector() {
   const [category, setCategory] = useState("gaming");
-  const [vertical, setVertical] = useState("match"); // TODO: change back to "all" for launch
+  const [vertical, setVertical] = useState("all");
   const [inlineMenuOpen, setInlineMenuOpen] = useState(false);
   const [fixedMenuOpen, setFixedMenuOpen] = useState(false);
 
@@ -82,17 +82,9 @@ function VerticalSelector() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY || window.pageYOffset;
-
       const container = document.querySelector("#vis-floating-filter-start");
       if (container) {
-        const { top } = container.getBoundingClientRect();
-        console.log(
-          "User container top position:",
-          scrollY,
-          window.scrollY + top
-        );
-
-        if (scrollY >= window.scrollY + top) {
+        if (scrollY >= window.scrollY + container.getBoundingClientRect().top) {
           setOnCorrectPagePart(true);
         } else {
           setOnCorrectPagePart(false);

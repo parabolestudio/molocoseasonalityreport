@@ -79,8 +79,8 @@ export function renderComparisonElements(userData, advertiserData) {
         .forEach((metric) => {
           d[metric] = d[metric] ? +d[metric] : null;
 
-          d[metric + "_wow"] = d[metric + "_wow_pct_change"]
-            ? +d[metric + "_wow_pct_change"].replace(/%/, "") / 100
+          d[metric + "_wow"] = d["wow_" + metric + "_pct"]
+            ? +d["wow_" + metric + "_pct"].replace(/%/, "") / 100
             : null;
         });
     });
@@ -108,19 +108,18 @@ export function renderComparisonElements(userData, advertiserData) {
 }
 
 const userMetrics = [
-  // { value: "median_wau", label: "WAU" },
-  { value: "total_downloads", label: "Downloads" },
-  { value: "total_revenue", label: "Revenue" },
-  { value: "total_time_spent", label: "Time Spent" },
+  { value: "downloads", label: "Downloads" },
+  { value: "revenue", label: "Revenue" },
+  { value: "time_spent", label: "Time Spent" },
 ];
 const userMetricDefault = userMetrics[0];
 
 const advertiserMetrics = [
-  { value: "bids", label: "Bid Requests" },
   { value: "cpm_p50", label: "CPM" },
   { value: "cpi_p50", label: "CPI" },
   { value: "roas_d7_p50", label: "ROAS" },
-  { value: "arppu_d7_p50", label: "ARRPU" },
+  { value: "arppu_d7_p50", label: "ARPPU" },
+  { value: "bids", label: "Ad opportunities" },
 ];
 const advertiserMetricDefault = advertiserMetrics[0];
 
@@ -337,7 +336,7 @@ function ComparisonChart({ userData, advertiserData }) {
     getDropdownValue("vis-comparison-dropdown-countries") || "USA"
   );
   const [category, setCategory] = useState("gaming");
-  const [vertical, setVertical] = useState("match"); //TODO: change back to "all" for launch
+  const [vertical, setVertical] = useState("all");
   const [year, setYear] = useState("past");
   const [period, setPeriod] = useState("all");
   const [userMetric, setUserMetric] = useState(userMetricDefault.value);

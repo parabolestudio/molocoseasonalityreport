@@ -28,14 +28,14 @@ function handleUserData(inputData) {
         : d["category"].toLowerCase();
     d["vertical"] = d["vertical"].toLowerCase().trim();
     // d["wau"] = +d["median_wau"];
-    // d["downloads"] = +d["downloads"];
-    // d["revenue"] = +d["revenue"];
-    // d["time_spent"] = +d["time_spent"].trim();
-    d["downloads"] = +d["total_downloads"];
-    d["revenue"] = +d["total_revenue"];
-    d["time_spent"] = +d["total_time_spent"].trim();
+    d["downloads"] = +d["downloads"];
+    d["revenue"] = +d["revenue"];
+    d["time_spent"] = +d["time_spent"].trim();
+    // d["downloads"] = +d["total_downloads"];
+    // d["revenue"] = +d["total_revenue"];
+    // d["time_spent"] = +d["total_time_spent"].trim();
     d["week_start"] = d["week_start_date"];
-    d["weekNumber"] = +d["Week Number"].trim();
+    d["weekNumber"] = +d["Week number"].trim();
   });
 }
 
