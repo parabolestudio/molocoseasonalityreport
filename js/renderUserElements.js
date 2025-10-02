@@ -337,7 +337,7 @@ function UserChart({ data }) {
       }}"
     >
       <g>
-        ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
+        ${holidayPositions.map(({ x, offsetX, offsetY }) => {
           return html`<g transform="translate(${x}, 0)">
             <line
               x1="0"
@@ -376,6 +376,34 @@ function UserChart({ data }) {
             />
           </g>`;
         })}
+        <rect
+          x="${margin.left + chartMargin.left}"
+          y="${margin.top + chartMargin.top + chartInnerHeight}"
+          width="${isMobile ? chartWidth : 0}"
+          height="${isMobile ? margin.bottom : 0}"
+          fill="#f8f8f8"
+        />
+        <rect
+          x="${margin.left + chartMargin.left}"
+          y="${margin.top + chartHeight + chartMargin.top + chartInnerHeight}"
+          width="${isMobile ? chartWidth : 0}"
+          height="${isMobile ? margin.bottom : 0}"
+          fill="#f8f8f8"
+        />
+        <rect
+          x="${margin.left + chartMargin.left}"
+          y="${margin.top + chartHeight}"
+          width="${isMobile ? chartWidth : 0}"
+          height="${isMobile ? chartMargin.top : 0}"
+          fill="#f8f8f8"
+        />
+        <rect
+          x="${margin.left + chartMargin.left}"
+          y="${margin.top + chartHeight * 2}"
+          width="${isMobile ? chartWidth : 0}"
+          height="${isMobile ? chartMargin.top : 0}"
+          fill="#f8f8f8"
+        />
         ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
           return html`<g transform="translate(${x}, 0)">
             <image
