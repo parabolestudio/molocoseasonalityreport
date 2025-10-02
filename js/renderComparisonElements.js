@@ -245,8 +245,6 @@ function ComparisonPeriodButtons({ year }) {
     );
   };
 
-  console.log("Rendering period buttons for year", year);
-
   const buttons = periods.map((btn) => {
     // If subtitle contains "to", add a <br> after "to"
     let subtitle = btn.subtitle[year];
@@ -256,7 +254,7 @@ function ComparisonPeriodButtons({ year }) {
     return html`<div
       class="vis-period-button ${selectedPeriod === btn.value
         ? "selected"
-        : ""}"
+        : ""} ${btn.icon ? "has-icon" : ""}"
       onclick=${() => handlePeriodChange(btn.value)}
     >
       ${btn.icon && selectedPeriod === btn.value
@@ -265,10 +263,12 @@ function ComparisonPeriodButtons({ year }) {
 
       <div class="vis-period-button-text">
         <span class="vis-period-title">${btn.title}</span>
-        <span
-          class="vis-period-subtitle"
-          dangerouslySetInnerHTML=${{ __html: subtitle }}
-        ></span>
+        ${(selectedPeriod === btn.value && isMobile) || !isMobile
+          ? html`<span
+              class="vis-period-subtitle"
+              dangerouslySetInnerHTML=${{ __html: subtitle }}
+            ></span>`
+          : null}
       </div>
       ${!btn.icon && selectedPeriod === btn.value
         ? html` <div style="width: 35px; height: 35px;"></div>`
