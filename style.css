@@ -364,6 +364,13 @@
   }
 }
 
+.single-charts-title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.115rem;
+  line-height: 1.25;
+}
+
 /* used in advertiser and comparison chart */
 .vis-metrics-buttons-container {
   display: flex;

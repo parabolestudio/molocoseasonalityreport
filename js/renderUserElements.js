@@ -602,7 +602,7 @@ function SingleChart({
     <text
       x="0"
       y=${dim.chartMargin.top - 20}
-      class="${isMobile ? "charts-text-body-bold" : "charts-text-big-bold"}"
+      class="single-charts-title"
       dominant-baseline="middle"
     >
       ${chart.title}
