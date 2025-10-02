@@ -466,6 +466,10 @@ function AdvertiserChart({ data }) {
                 y="${innerHeight + 20 + 22}"
                 text-anchor="middle"
                 class="charts-text-body"
+                font-size="14"
+                font-weight="400"
+                font-family="Montserrat, sans-serif"
+                style="line-height: 1.25"
                 fill-opacity="${isMobile
                   ? i === 0 || i === monthsPastYear.length - 1
                     ? 1

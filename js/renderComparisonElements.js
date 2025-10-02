@@ -829,6 +829,10 @@ function ComparisonChart({ userData, advertiserData }) {
                 y="${innerHeight + 20 + 22}"
                 text-anchor="middle"
                 class="charts-text-body"
+                font-size="14"
+                font-weight="400"
+                font-family="Montserrat, sans-serif"
+                style="line-height: 1.25"
                 fill-opacity="${xEnd - xBegin < 30 ? 0 : 1}"
               >
                 ${isMobile ? month.shortName : month.name}

@@ -270,7 +270,7 @@ function UserChart({ data }) {
   return html`<div style="position: relative;">
     <svg
       viewBox="0 0 ${width} ${height}"
-      style="width: 100%; height: 100%; background-color: transparent"
+      style="width: 100%; height: 100%;"
       onmouseleave="${() => setHoveredValues(null)}"
       onmousemove="${(event) => {
         if (!data || data.length === 0) return;
@@ -449,14 +449,6 @@ function UserChart({ data }) {
         })}
       </g>
       <g transform="translate(${margin.left},${margin.top})">
-        <rect
-          x="0"
-          y="0"
-          width="${innerWidth}"
-          height="${innerHeight}"
-          fill="yellow"
-          fill-opacity="0"
-        />
         ${charts.map(
           (chart, i) =>
             html`<${SingleChart}
@@ -533,14 +525,6 @@ function SingleChart({
     : null;
 
   return html`<g transform="translate(0, ${index * dim.chartHeight})">
-    <rect
-      x="0"
-      y="0"
-      width="${dim.innerWidth}"
-      height="${dim.chartHeight}"
-      fill="transparent"
-      fill-opacity="0"
-    />
     <g transform="translate(${dim.chartMargin.left}, ${dim.chartMargin.top})">
       <rect
         x="0"
@@ -594,14 +578,25 @@ function SingleChart({
         style="transition: all ease 0.3s"
       />
 
-      <text y=${dim.chartInnerHeight + 20} class="charts-text-body"
-        >October</text
+      <text
+        y=${dim.chartInnerHeight + 20}
+        class="charts-text-body"
+        font-size="14"
+        font-weight="400"
+        font-family="Montserrat, sans-serif"
+        style="line-height: 1.25"
+      >
+        October</text
       >
       <text
         x=${dim.chartWidth}
         y=${dim.chartInnerHeight + 20}
         class="charts-text-body"
         text-anchor="end"
+        font-size="14"
+        font-weight="400"
+        font-family="Montserrat, sans-serif"
+        style="line-height: 1.25"
         >March</text
       >
       ${chart.data.length > 0 &&
@@ -609,6 +604,10 @@ function SingleChart({
         x="-10"
         y=${valueScale(minValueWithPadding) - 8}
         class="charts-text-body"
+        font-size="14"
+        font-weight="400"
+        font-family="Montserrat, sans-serif"
+        style="line-height: 1.25"
         text-anchor="end"
         dominant-baseline="middle"
         >${valueFormatting[chart.value](minValueWithPadding)}</text
@@ -618,6 +617,10 @@ function SingleChart({
         x="-10"
         y=${valueScale(maxValue) + 8}
         class="charts-text-body"
+        font-size="14"
+        font-weight="400"
+        font-family="Montserrat, sans-serif"
+        style="line-height: 1.25"
         text-anchor="end"
         dominant-baseline="middle"
         >${valueFormatting[chart.value](maxValue)}</text
@@ -628,6 +631,10 @@ function SingleChart({
       y=${dim.chartMargin.top - 20}
       class="single-charts-title"
       dominant-baseline="middle"
+      font-size="17.5"
+      font-weight="400"
+      font-family="Montserrat, sans-serif"
+      style="line-height: 1.25"
     >
       ${chart.title}
     </text>
