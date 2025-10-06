@@ -40,7 +40,7 @@
       justify-content: center;
       gap: 12px;
 
-      @media (max-width: 480px) {
+      @media (max-width: 590px) {
         padding: 6px 12px;
         gap: 8px;
       }
@@ -54,7 +54,7 @@
 
       p {
         margin: 0;
-        @media (max-width: 480px) {
+        @media (max-width: 590px) {
           font-size: 14px;
         }
       }
@@ -65,7 +65,7 @@
       .category-icon.consumer svg {
         height: 32px;
       }
-      @media (max-width: 480px) {
+      @media (max-width: 590px) {
         .category-icon svg {
           height: 20px;
         }
@@ -99,7 +99,7 @@
     width: 100%;
     padding: 60px 26px 26px 26px;
 
-    @media (max-width: 480px) {
+    @media (max-width: 590px) {
       padding: 30px 12px 12px 12px;
     }
 
@@ -107,7 +107,7 @@
       position: relative;
       top: -36px;
 
-      @media (max-width: 480px) {
+      @media (max-width: 590px) {
         top: -18px;
       }
     }
@@ -130,7 +130,7 @@
       list-style: none;
       padding: 0;
 
-      @media (max-width: 480px) {
+      @media (max-width: 590px) {
         gap: 8px;
         margin-top: 8px;
       }
@@ -147,7 +147,7 @@
         cursor: pointer;
         white-space: nowrap;
         transition: all 0.3s ease-in-out;
-        @media (max-width: 480px) {
+        @media (max-width: 590px) {
           font-size: 14px;
         }
 
@@ -208,7 +208,7 @@
   flex-direction: column;
   align-items: center;
 
-  @media (max-width: 480px) {
+  @media (max-width: 590px) {
     bottom: 4px;
   }
 
@@ -228,7 +228,7 @@
     font-size: 18px;
     font-weight: 700;
     text-align: center;
-    @media (max-width: 480px) {
+    @media (max-width: 590px) {
       font-size: 14px;
     }
 
@@ -255,7 +255,7 @@
       align-items: center;
       width: 551px;
 
-      @media (max-width: 480px) {
+      @media (max-width: 590px) {
         width: 330px;
       }
     }
