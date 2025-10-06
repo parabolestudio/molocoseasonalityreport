@@ -67,19 +67,19 @@ function handleAdvertiserData(data) {
   });
 }
 
-// Promise.all([
-//   fetchGoogleSheetCSV("user-engagement"),
-//   fetchGoogleSheetCSV("advertiser-kpis"),
-// ])
-//   .then(([userData, advertiserData]) => {
-//     console.log("Fetched sheet data", userData, advertiserData);
-//     handleUserData(userData);
-//     renderUserElements(userData);
+Promise.all([
+  fetchGoogleSheetCSV("user-engagement"),
+  fetchGoogleSheetCSV("advertiser-kpis"),
+])
+  .then(([userData, advertiserData]) => {
+    console.log("Fetched sheet data", userData, advertiserData);
+    handleUserData(userData);
+    renderUserElements(userData);
 
-//     handleAdvertiserData(advertiserData);
-//     renderAdvertiserElements(advertiserData);
-//     renderComparisonElements(userData, advertiserData);
-//   })
-//   .catch((error) => {
-//     console.error("Error fetching sheet data:", error);
-//   });
+    handleAdvertiserData(advertiserData);
+    renderAdvertiserElements(advertiserData);
+    renderComparisonElements(userData, advertiserData);
+  })
+  .catch((error) => {
+    console.error("Error fetching sheet data:", error);
+  });
