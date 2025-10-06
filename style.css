@@ -262,6 +262,37 @@
   }
 }
 
+#vis-seasonality-timeline {
+  width: 100%;
+
+  .selected-state-pre-hol .state-pre-hol,
+  .selected-state-peak-hol .state-peak-hol,
+  .selected-state-post-hol .state-post-hol {
+    opacity: 1;
+  }
+  .state-pre-hol,
+  .state-peak-hol,
+  .state-post-hol {
+    opacity: 0;
+  }
+
+  path,
+  g,
+  rect,
+  circle,
+  text {
+    pointer-events: none;
+  }
+
+  .click-to-pre,
+  .click-to-peak,
+  .click-to-post {
+    cursor: pointer;
+    pointer-events: all;
+    fill: transparent;
+  }
+}
+
 #vis-comparison-years {
   width: 100%;
 

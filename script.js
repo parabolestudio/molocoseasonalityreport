@@ -1,6 +1,7 @@
 console.log("Seasonality report script loaded");
 
 import { renderVerticalSelection } from "./js/renderVerticalSelection.js";
+import { renderSeasonalityTimeline } from "./js/renderSeasonalityTimeline.js";
 import { renderUserElements } from "./js/renderUserElements.js";
 import { renderAdvertiserElements } from "./js/renderAdvertiserElements.js";
 import { renderComparisonElements } from "./js/renderComparisonElements.js";
@@ -8,6 +9,9 @@ import { fetchGoogleSheetCSV } from "./js/googleSheets.js";
 
 // render page-wide vertical selection
 renderVerticalSelection();
+
+// render seasonality timeline
+renderSeasonalityTimeline();
 
 // render user behavior chart and surrounding elements (filters, legend, etc)
 renderUserElements(null);
@@ -63,19 +67,19 @@ function handleAdvertiserData(data) {
   });
 }
 
-Promise.all([
-  fetchGoogleSheetCSV("user-engagement"),
-  fetchGoogleSheetCSV("advertiser-kpis"),
-])
-  .then(([userData, advertiserData]) => {
-    console.log("Fetched sheet data", userData, advertiserData);
-    handleUserData(userData);
-    renderUserElements(userData);
+// Promise.all([
+//   fetchGoogleSheetCSV("user-engagement"),
+//   fetchGoogleSheetCSV("advertiser-kpis"),
+// ])
+//   .then(([userData, advertiserData]) => {
+//     console.log("Fetched sheet data", userData, advertiserData);
+//     handleUserData(userData);
+//     renderUserElements(userData);
 
-    handleAdvertiserData(advertiserData);
-    renderAdvertiserElements(advertiserData);
-    renderComparisonElements(userData, advertiserData);
-  })
-  .catch((error) => {
-    console.error("Error fetching sheet data:", error);
-  });
+//     handleAdvertiserData(advertiserData);
+//     renderAdvertiserElements(advertiserData);
+//     renderComparisonElements(userData, advertiserData);
+//   })
+//   .catch((error) => {
+//     console.error("Error fetching sheet data:", error);
+//   });
