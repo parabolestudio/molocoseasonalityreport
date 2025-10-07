@@ -486,15 +486,17 @@ function AdvertiserChart({ data }) {
         valueScale &&
         html`
           <g class="y-axis">
-            <text
-              x="${0 - 5}"
-              y="${valueScale(valueScale.domain()[1])}"
-              text-anchor="end"
-              dominant-baseline="middle"
-              class="charts-text-body"
-            >
-              ${valueScale.domain()[1]}
-            </text>
+            ${valueScale.domain()[1] - 5 > 100
+              ? html` <text
+                  x="${0 - 5}"
+                  y="${valueScale(valueScale.domain()[1])}"
+                  text-anchor="end"
+                  dominant-baseline="middle"
+                  class="charts-text-body"
+                >
+                  ${valueScale.domain()[1]}
+                </text>`
+              : ""}
             <line
               x1="0"
               x2="${innerWidth}"
@@ -582,34 +584,30 @@ function TooltipValues({ hoveredItem }) {
     style="left: ${hoveredItem.tooltipX}px; top: ${hoveredItem.tooltipY}px;"
   >
     <p class="tooltip-title">${hoveredItem.title}, indexed</p>
-
-    <div>
-      <p class="tooltip-label">
-        Week ${hoveredItem.week} in 2025<br />
-        ${hoveredItem.firstDayOfWeekCurrent
-          ? `(starts ${formattedDayCurrent})`
-          : ""}
-      </p>
-      <p class="tooltip-value">
-        ${hoveredItem.valuePrev
-          ? valueFormatting.indexed(hoveredItem.valuePrev)
-          : "-"}
-      </p>
-    </div>
-
-    <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
-
-    <div>
-      <p class="tooltip-label">
-        Week ${hoveredItem.week} in 2024<br />${hoveredItem.firstDayOfWeekPrev
-          ? `(starts ${formattedDayPrev})`
-          : ""}
-      </p>
-      <p class="tooltip-value">
-        ${hoveredItem.valueCurrent
-          ? valueFormatting.indexed(hoveredItem.valueCurrent)
-          : "-"}
-      </p>
-    </div>
+    ${hoveredItem.firstDayOfWeekCurrent
+      ? html` <div>
+          <p class="tooltip-label">
+            Week of ${hoveredItem.firstDayOfWeekCurrent}
+          </p>
+          <p class="tooltip-value">
+            ${hoveredItem.valueCurrent
+              ? valueFormatting.indexed(hoveredItem.valueCurrent)
+              : "-"}
+          </p>
+        </div>`
+      : ""}
+    ${hoveredItem.firstDayOfWeekCurrent && hoveredItem.firstDayOfWeekPrev
+      ? html` <div style="border-top: 1px solid #D9D9D9; width: 100%;" />`
+      : ""}
+    ${hoveredItem.firstDayOfWeekPrev
+      ? html` <div>
+          <p class="tooltip-label">Week of ${formattedDayPrev}</p>
+          <p class="tooltip-value">
+            ${hoveredItem.valuePrev
+              ? valueFormatting.indexed(hoveredItem.valuePrev)
+              : "-"}
+          </p>
+        </div>`
+      : ""}
   </div>`;
 }

@@ -508,7 +508,7 @@ function ComparisonChart({ userData, advertiserData }) {
   const width =
     visContainer && visContainer.offsetWidth ? visContainer.offsetWidth : 600;
   const height = isMobile ? 400 : 600;
-  const margin = { top: 60, right: 1, bottom: 60, left: 1 };
+  const margin = { top: 60, right: 1, bottom: 60, left: 30 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -803,15 +803,17 @@ function ComparisonChart({ userData, advertiserData }) {
         valueComparisonScale &&
         html`
           <g class="y-axis">
-            <text
-              x="${0 - 5}"
-              y="${valueComparisonScale(valueComparisonScale.domain()[1])}"
-              text-anchor="end"
-              dominant-baseline="middle"
-              class="charts-text-body"
-            >
-              ${valueComparisonScale.domain()[1]}
-            </text>
+            ${valueComparisonScale.domain()[1] - 5 > 100
+              ? html` <text
+                  x="${0 - 5}"
+                  y="${valueComparisonScale(valueComparisonScale.domain()[1])}"
+                  text-anchor="end"
+                  dominant-baseline="middle"
+                  class="charts-text-body"
+                >
+                  ${valueComparisonScale.domain()[1]}
+                </text>`
+              : ""}
             <line
               x1="0"
               x2="${innerWidth}"
@@ -951,16 +953,12 @@ function TooltipValues({ hoveredItem }) {
   const formattedDay = hoveredItem.firstDayOfWeek
     ? d3.utcFormat("%b %d, %Y")(getDateInUTC(hoveredItem.firstDayOfWeek))
     : null;
-  const formattedYear = formattedDay ? formattedDay.split(", ")[1] : null;
 
   return html`<div
     class="tooltip"
     style="left: ${hoveredItem.tooltipX}px; top: ${hoveredItem.tooltipY}px;"
   >
-    <p class="tooltip-title">
-      Week ${hoveredItem.week} in ${formattedYear}<br />
-      ${hoveredItem.firstDayOfWeek ? `(starts ${formattedDay})` : ""}
-    </p>
+    <p class="tooltip-title">Week of ${formattedDay}</p>
 
     <div>
       <p class="tooltip-label">${hoveredItem.userVariable}, indexed</p>

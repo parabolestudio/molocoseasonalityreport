@@ -657,33 +657,35 @@ function TooltipValues({ hoveredItem }) {
   >
     <p class="tooltip-title">${hoveredItem.title}</p>
 
-    <div>
-      <p class="tooltip-label">
-        Week ${hoveredItem.week} in 2025<br />
-        ${hoveredItem.firstDayOfWeekCurrent
-          ? `(starts ${formattedDayCurrent})`
-          : ""}
-      </p>
-      <p class="tooltip-value">
-        ${hoveredItem.valueCurrent
-          ? valueFormatting[hoveredItem.variable](hoveredItem.valueCurrent, 2)
-          : "-"}
-      </p>
-    </div>
-
-    <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
-
-    <div>
-      <p class="tooltip-label">
-        Week ${hoveredItem.week} in 2024<br />${hoveredItem.firstDayOfWeekPrev
-          ? `(starts ${formattedDayPrev})`
-          : ""}
-      </p>
-      <p class="tooltip-value">
-        ${hoveredItem.valuePrev
-          ? valueFormatting[hoveredItem.variable](hoveredItem.valuePrev, 2)
-          : "-"}
-      </p>
-    </div>
+    ${hoveredItem.firstDayOfWeekCurrent
+      ? html`
+          <div>
+            <p class="tooltip-label">
+              Week of ${hoveredItem.firstDayOfWeekCurrent}
+            </p>
+            <p class="tooltip-value">
+              ${hoveredItem.valueCurrent
+                ? valueFormatting[hoveredItem.variable](
+                    hoveredItem.valueCurrent,
+                    2
+                  )
+                : "-"}
+            </p>
+          </div>
+        `
+      : ""}
+    ${hoveredItem.firstDayOfWeekCurrent && hoveredItem.firstDayOfWeekPrev
+      ? html` <div style="border-top: 1px solid #D9D9D9; width: 100%;" />`
+      : ""}
+    ${hoveredItem.firstDayOfWeekPrev
+      ? html` <div>
+          <p class="tooltip-label">Week of ${formattedDayPrev}</p>
+          <p class="tooltip-value">
+            ${hoveredItem.valuePrev
+              ? valueFormatting[hoveredItem.variable](hoveredItem.valuePrev, 2)
+              : "-"}
+          </p>
+        </div>`
+      : ""}
   </div>`;
 }
