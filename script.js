@@ -42,8 +42,28 @@ function handleUserData(inputData) {
     d["weekNumber"] = +d["Week number"].trim();
   });
 }
+function handleUserDataIndexed(inputData) {
+  return inputData.forEach((d) => {
+    d["country"] = d["country"];
+    d["system"] = d["os"];
+    d["category"] =
+      d["category"].toLowerCase() === "non-gaming"
+        ? "consumer"
+        : d["category"].toLowerCase();
+    d["vertical"] = d["vertical"].toLowerCase().trim();
+    // d["wau"] = +d["median_wau"];
+    d["downloads"] = +d["downloads"];
+    d["revenue"] = +d["revenue"];
+    d["time_spent"] = +d["time_spent"].trim();
+    // d["downloads"] = +d["total_downloads"];
+    // d["revenue"] = +d["total_revenue"];
+    // d["time_spent"] = +d["total_time_spent"].trim();
+    d["week_start"] = d["week_start_date"];
+    d["weekNumber"] = +d["Week Number"].trim();
+  });
+}
 
-function handleAdvertiserData(data) {
+function handleAdvertiserDataIndexed(data) {
   return data.forEach((d) => {
     d["country"] = d["country"];
     d["system"] = d["os"];
@@ -69,17 +89,34 @@ function handleAdvertiserData(data) {
 
 Promise.all([
   fetchGoogleSheetCSV("user-engagement"),
-  fetchGoogleSheetCSV("advertiser-kpis"),
+  fetchGoogleSheetCSV("advertiser-kpis-indexed"),
+  fetchGoogleSheetCSV("user-engagement-indexed"),
+  fetchGoogleSheetCSV("bid-requests-indexed"),
 ])
-  .then(([userData, advertiserData]) => {
-    console.log("Fetched sheet data", userData, advertiserData);
-    handleUserData(userData);
-    renderUserElements(userData);
+  .then(
+    ([
+      userDataNonIndexed,
+      advertiserDataIndexed,
+      userDataIndexed,
+      bidRequestsIndexed,
+    ]) => {
+      console.log(
+        "Fetched sheet data",
+        userDataNonIndexed,
+        advertiserDataIndexed,
+        userDataIndexed,
+        bidRequestsIndexed
+      );
+      handleUserData(userDataNonIndexed);
+      renderUserElements(userDataNonIndexed);
 
-    handleAdvertiserData(advertiserData);
-    renderAdvertiserElements(advertiserData);
-    renderComparisonElements(userData, advertiserData);
-  })
+      handleAdvertiserDataIndexed(advertiserDataIndexed);
+      renderAdvertiserElements(advertiserDataIndexed);
+
+      handleUserDataIndexed(userDataIndexed);
+      renderComparisonElements(userDataIndexed, advertiserDataIndexed);
+    }
+  )
   .catch((error) => {
     console.error("Error fetching sheet data:", error);
   });

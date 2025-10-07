@@ -566,37 +566,35 @@ function ComparisonChart({ userData, advertiserData }) {
         .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
     : [];
 
-  const minUserValue = chartUserData
-    ? d3.min(chartUserData, (d) => d[userMetric])
+  const minUserValue = datapointsUser
+    ? d3.min(datapointsUser, (d) => d[userMetric])
     : 0;
-  const maxUserValue = chartUserData
-    ? d3.max(chartUserData, (d) => d[userMetric])
+  const maxUserValue = datapointsUser
+    ? d3.max(datapointsUser, (d) => d[userMetric])
     : 0;
-  const valueUserScale = d3
+  const minAdvertiserValue = datapointsAdvertiser
+    ? d3.min(datapointsAdvertiser, (d) => d[advertiserMetric])
+    : 0;
+  const maxAdvertiserValue = datapointsAdvertiser
+    ? d3.max(datapointsAdvertiser, (d) => d[advertiserMetric])
+    : 0;
+  const minComparisonValue = Math.min(minUserValue, minAdvertiserValue);
+  const maxComparisonValue = Math.max(maxUserValue, maxAdvertiserValue);
+  const valueComparisonScale = d3
     .scaleLinear()
-    .domain([minUserValue, maxUserValue])
-    .range([innerHeight, 0]);
-
-  const minAdvertiserValue = chartAdvertiserData
-    ? d3.min(chartAdvertiserData, (d) => d[advertiserMetric])
-    : 0;
-  const maxAdvertiserValue = chartAdvertiserData
-    ? d3.max(chartAdvertiserData, (d) => d[advertiserMetric])
-    : 0;
-  const valueAdvertiserScale = d3
-    .scaleLinear()
-    .domain([minAdvertiserValue, maxAdvertiserValue])
-    .range([innerHeight, 0]);
+    .domain([minComparisonValue, maxComparisonValue])
+    .range([innerHeight, 0])
+    .nice();
 
   const lineUserGen = d3
     .line()
-    .y((d) => valueUserScale(d[userMetric]))
+    .y((d) => valueComparisonScale(d[userMetric]))
     .x((d) => weekScale(d.weekNumber))
     .defined((d) => d[userMetric] !== null);
 
   const lineAdvertiserGen = d3
     .line()
-    .y((d) => valueAdvertiserScale(d[advertiserMetric]))
+    .y((d) => valueComparisonScale(d[advertiserMetric]))
     .x((d) => weekScale(d.weekNumber))
     .defined((d) => d[advertiserMetric] !== null);
 
@@ -644,8 +642,8 @@ function ComparisonChart({ userData, advertiserData }) {
       alignedData.push({
         weekNumber: weekNumber,
         x: weekScale(weekNumber),
-        userY: valueUserScale(userPoint[userMetric]),
-        advertiserY: valueAdvertiserScale(advertiserPoint[advertiserMetric]),
+        userY: valueComparisonScale(userPoint[userMetric]),
+        advertiserY: valueComparisonScale(advertiserPoint[advertiserMetric]),
         userValue: userPoint[userMetric],
         advertiserValue: advertiserPoint[advertiserMetric],
         weekStart: userPoint.week_start,
@@ -727,11 +725,10 @@ function ComparisonChart({ userData, advertiserData }) {
             firstDayOfWeek: datapointUser.week_start || null,
             userVariable,
             advertiserVariable,
-            userValue: datapointUser[userMetric + "_wow"] || null,
+            userValue: datapointUser[userMetric] || null,
             advertiserValue:
-              datapointAdvertiser &&
-              datapointAdvertiser[advertiserMetric + "_wow"]
-                ? datapointAdvertiser[advertiserMetric + "_wow"]
+              datapointAdvertiser && datapointAdvertiser[advertiserMetric]
+                ? datapointAdvertiser[advertiserMetric]
                 : null,
           });
         } else {
@@ -801,14 +798,47 @@ function ComparisonChart({ userData, advertiserData }) {
       </g>
 
       <g transform="translate(${margin.left},${margin.top})">
-        <rect
-          x="0"
-          y="0"
-          width="${innerWidth}"
-          height="${innerHeight}"
-          fill="none"
-          stroke="none"
-        />
+        ${minComparisonValue &&
+        maxComparisonValue &&
+        valueComparisonScale &&
+        html`
+          <g class="y-axis">
+            <text
+              x="${0 - 5}"
+              y="${valueComparisonScale(valueComparisonScale.domain()[1])}"
+              text-anchor="end"
+              dominant-baseline="middle"
+              class="charts-text-body"
+            >
+              ${valueComparisonScale.domain()[1]}
+            </text>
+            <line
+              x1="0"
+              x2="${innerWidth}"
+              y1="${valueComparisonScale(100)}"
+              y2="${valueComparisonScale(100)}"
+              stroke="#D5D5D5"
+            />
+            <text
+              x="${0 - 5}"
+              y="${valueComparisonScale(100)}"
+              text-anchor="end"
+              dominant-baseline="middle"
+              class="charts-text-body"
+            >
+              100
+            </text>
+            <text
+              x="${0 - 5}"
+              y="${valueComparisonScale(valueComparisonScale.domain()[0])}"
+              text-anchor="end"
+              dominant-baseline="middle"
+              class="charts-text-body"
+            >
+              ${valueComparisonScale.domain()[0]}
+            </text>
+          </g>
+        `}
         <g>
           ${displayMonths.map((month) => {
             const xBegin = timeScale(getDateInUTC(month.begin)) || null;
@@ -885,7 +915,7 @@ function ComparisonChart({ userData, advertiserData }) {
         ${hoveredValues && highlightUser
           ? html`<circle
               cx="${weekScale(hoveredValues.week)}"
-              cy="${valueUserScale(
+              cy="${valueComparisonScale(
                 highlightUser ? highlightUser[userMetric] : 0
               )}"
               r="5"
@@ -896,7 +926,7 @@ function ComparisonChart({ userData, advertiserData }) {
         ${hoveredValues && highlightAdvertiser
           ? html`<circle
               cx="${weekScale(hoveredValues.week)}"
-              cy="${valueAdvertiserScale(
+              cy="${valueComparisonScale(
                 highlightAdvertiser ? highlightAdvertiser[advertiserMetric] : 0
               )}"
               r="5"
@@ -933,10 +963,10 @@ function TooltipValues({ hoveredItem }) {
     </p>
 
     <div>
-      <p class="tooltip-label">${hoveredItem.userVariable} weekly change</p>
+      <p class="tooltip-label">${hoveredItem.userVariable}, indexed</p>
       <p class="tooltip-value">
         ${hoveredItem.userValue
-          ? valueFormatting.wow(hoveredItem.userValue)
+          ? valueFormatting.indexed(hoveredItem.userValue)
           : "-"}
       </p>
     </div>
@@ -944,12 +974,10 @@ function TooltipValues({ hoveredItem }) {
     <div style="border-top: 1px solid #D9D9D9; width: 100%;" />
 
     <div>
-      <p class="tooltip-label">
-        ${hoveredItem.advertiserVariable} weekly change
-      </p>
+      <p class="tooltip-label">${hoveredItem.advertiserVariable}, indexed</p>
       <p class="tooltip-value">
         ${hoveredItem.advertiserValue
-          ? valueFormatting.wow(hoveredItem.advertiserValue)
+          ? valueFormatting.indexed(hoveredItem.advertiserValue)
           : "-"}
       </p>
     </div>

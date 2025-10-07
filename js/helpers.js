@@ -46,6 +46,9 @@ export const valueFormatting = {
       ? percent.toFixed(1).replace(/\.0$/, "") + "%"
       : "0%";
   },
+  indexed: (value) => {
+    return value.toFixed(0);
+  },
 };
 
 // time scales

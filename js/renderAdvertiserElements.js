@@ -262,7 +262,7 @@ function AdvertiserChart({ data }) {
   const width =
     visContainer && visContainer.offsetWidth ? visContainer.offsetWidth : 600;
   const height = isMobile ? 400 : 600;
-  const margin = { top: 60, right: 1, bottom: 60, left: 1 };
+  const margin = { top: 60, right: 1, bottom: 60, left: 30 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -296,8 +296,6 @@ function AdvertiserChart({ data }) {
         .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
     : [];
 
-  // const maxValue = chartData ? d3.max(chartData, (d) => d[metric]) : 0;
-
   const allDatapoints = chartData
     ? [...datapointsPrev, ...datapointsCurrent].filter(
         (d) => d[metric] !== null && d[metric] !== undefined
@@ -305,12 +303,12 @@ function AdvertiserChart({ data }) {
     : [];
   const maxValue = d3.max(allDatapoints, (d) => d[metric]);
   const minValue = d3.min(allDatapoints, (d) => d[metric]);
-  const minValueWithPadding = minValue - (maxValue - minValue) * 0.1;
 
   const valueScale = d3
     .scaleLinear()
-    .domain([minValueWithPadding, maxValue])
-    .range([innerHeight, 0]);
+    .domain([minValue, maxValue])
+    .range([innerHeight, 0])
+    .nice();
 
   const lineGen = d3
     .line()
@@ -377,8 +375,8 @@ function AdvertiserChart({ data }) {
             firstDayOfWeekCurrent: datapointCurrent.week_start || null,
             variable: metric,
             title: metrics.find((m) => m.value === metric).label,
-            valuePrev: datapointPrev[metric + "_wow"] || null,
-            valueCurrent: datapointCurrent[metric + "_wow"] || null,
+            valuePrev: datapointPrev[metric] || null,
+            valueCurrent: datapointCurrent[metric] || null,
           });
         } else {
           setHoveredValues(null);
@@ -483,14 +481,47 @@ function AdvertiserChart({ data }) {
           })}
         </g>
 
-        <rect
-          x="0"
-          y="0"
-          width="${innerWidth}"
-          height="${innerHeight}"
-          fill="transparent"
-          stroke="transparent"
-        />
+        ${minValue &&
+        maxValue &&
+        valueScale &&
+        html`
+          <g class="y-axis">
+            <text
+              x="${0 - 5}"
+              y="${valueScale(valueScale.domain()[1])}"
+              text-anchor="end"
+              dominant-baseline="middle"
+              class="charts-text-body"
+            >
+              ${valueScale.domain()[1]}
+            </text>
+            <line
+              x1="0"
+              x2="${innerWidth}"
+              y1="${valueScale(100)}"
+              y2="${valueScale(100)}"
+              stroke="#D5D5D5"
+            />
+            <text
+              x="${0 - 5}"
+              y="${valueScale(100)}"
+              text-anchor="end"
+              dominant-baseline="middle"
+              class="charts-text-body"
+            >
+              100
+            </text>
+            <text
+              x="${0 - 5}"
+              y="${valueScale(valueScale.domain()[0])}"
+              text-anchor="end"
+              dominant-baseline="middle"
+              class="charts-text-body"
+            >
+              ${valueScale.domain()[0]}
+            </text>
+          </g>
+        `}
         <path
           d="${prevLine}"
           fill="none"
@@ -550,7 +581,7 @@ function TooltipValues({ hoveredItem }) {
     class="tooltip"
     style="left: ${hoveredItem.tooltipX}px; top: ${hoveredItem.tooltipY}px;"
   >
-    <p class="tooltip-title">${hoveredItem.title} weekly change</p>
+    <p class="tooltip-title">${hoveredItem.title}, indexed</p>
 
     <div>
       <p class="tooltip-label">
@@ -561,7 +592,7 @@ function TooltipValues({ hoveredItem }) {
       </p>
       <p class="tooltip-value">
         ${hoveredItem.valuePrev
-          ? valueFormatting.wow(hoveredItem.valuePrev)
+          ? valueFormatting.indexed(hoveredItem.valuePrev)
           : "-"}
       </p>
     </div>
@@ -575,7 +606,9 @@ function TooltipValues({ hoveredItem }) {
           : ""}
       </p>
       <p class="tooltip-value">
-        ${hoveredItem.valueCurrent ? hoveredItem.valueCurrent : "-"}
+        ${hoveredItem.valueCurrent
+          ? valueFormatting.indexed(hoveredItem.valueCurrent)
+          : "-"}
       </p>
     </div>
   </div>`;
