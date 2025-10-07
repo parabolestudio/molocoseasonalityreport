@@ -22,6 +22,7 @@ import {
 } from "./helpers.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
+import { holidayIcons } from "./holidays.js";
 
 export function renderUserElements(data = null) {
   // populate system selector
@@ -69,6 +70,32 @@ function UserChart({ data }) {
 
   const [hoveredHoliday, setHoveredHoliday] = useState(null);
   const [hoveredValues, setHoveredValues] = useState(null);
+
+  const [svgCache, setSvgCache] = useState({});
+
+  // Fetch and cache SVG content
+  const fetchSvgContent = async (iconPath) => {
+    if (svgCache[iconPath]) {
+      return svgCache[iconPath];
+    }
+    try {
+      const response = await fetch(ASSETS_URL + iconPath);
+      const svgText = await response.text();
+      setSvgCache((prev) => ({ ...prev, [iconPath]: svgText }));
+      return svgText;
+    } catch (error) {
+      console.error("Error fetching SVG:", error);
+      return null;
+    }
+  };
+
+  // Pre-fetch holiday SVG icons on mount
+  useEffect(async () => {
+    const iconPathsHolidays = holidayIcons.map((d) => d.icon);
+    for (const iconPath of iconPathsHolidays) {
+      await fetchSvgContent(iconPath);
+    }
+  }, []);
 
   function filterData(inputData) {
     if (!inputData || inputData.length === 0) return null;
@@ -393,35 +420,16 @@ function UserChart({ data }) {
           fill="#f8f8f8"
         />
         ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
+          const svgContent = svgCache[holiday.icon];
           return html`<g transform="translate(${x}, 0)">
-            <image
-              href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(${isMobile || isTablet
-                ? -20 / 2 + offsetX
-                : -35 / 2 + offsetX}, ${offsetY})"
-              width="${isMobile || isTablet ? 20 : 35}"
-              height="${isMobile || isTablet ? 20 : 35}"
-              onmouseleave="${() => setHoveredHoliday(null)}"
-              onmouseenter="${() => {
-                setHoveredHoliday({
-                  name: holiday.name,
-                  date: holiday.displayDate["current"],
-                  tooltipX: x + 20,
-                  tooltipY: 0 + 20,
-                });
-              }}"
-              style="cursor: pointer;"
-            />
-            <image
-              href="${ASSETS_URL}${holiday.icon}"
+            <g
+              class="holiday-icon-svg"
               transform="translate(${isMobile || isTablet
                 ? -20 / 2 + offsetX
                 : -35 / 2 + offsetX}, ${height -
               margin.bottom +
               20 +
-              -1 * offsetY})"
-              width="${isMobile || isTablet ? 20 : 35}"
-              height="${isMobile || isTablet ? 20 : 35}"
+              -1 * offsetY}) scale(${isMobile || isTablet ? 0.52 : 1})"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
@@ -432,7 +440,27 @@ function UserChart({ data }) {
                 });
               }}"
               style="cursor: pointer;"
-            />
+              dangerouslySetInnerHTML=${{ __html: svgContent || "" }}
+            ></g>
+            <g
+              class="holiday-icon-svg"
+              transform="translate(${isMobile || isTablet
+                ? -20 / 2 + offsetX
+                : -35 / 2 + offsetX}, ${offsetY}) scale(${isMobile || isTablet
+                ? 0.52
+                : 1})"
+              onmouseleave="${() => setHoveredHoliday(null)}"
+              onmouseenter="${() => {
+                setHoveredHoliday({
+                  name: holiday.name,
+                  date: holiday.displayDate["current"],
+                  tooltipX: x + 20,
+                  tooltipY: 0 + 20,
+                });
+              }}"
+              style="cursor: pointer;"
+              dangerouslySetInnerHTML=${{ __html: svgContent || "" }}
+            ></g>
           </g>`;
         })}
       </g>
@@ -632,7 +660,7 @@ function SingleChart({
       class="single-charts-title"
       dominant-baseline="middle"
       font-size="17.5"
-      font-weight="400"
+      font-weight="700"
       font-family="Montserrat, sans-serif"
       style="line-height: 1.25"
     >

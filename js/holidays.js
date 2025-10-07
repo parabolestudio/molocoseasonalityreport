@@ -130,3 +130,8 @@ export const holidays = [
     icon: "holi.svg",
   },
 ];
+
+export const holidayIcons = holidays.map((d) => ({
+  label: d.name,
+  icon: d.icon,
+}));
