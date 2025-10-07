@@ -539,3 +539,11 @@ export const holidayStyles = {
     "stroke-dasharray": "",
   },
 };
+
+export const metricsLabels = {
+  cpm_p50: "CPM = Cost Per Impression",
+  cpi_p50: "CPI = Cost Per Install",
+  roas_d7_p50: "ROAS = Return on Ad Spend",
+  arppu_d7_p50: "ARPPU = Average Revenue Per Paying User",
+  bids: "TODO",
+};

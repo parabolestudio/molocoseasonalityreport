@@ -20,6 +20,7 @@ import {
   monthsPastYear,
   getPrecalculatedHolidayPositions,
   holidayStyles,
+  metricsLabels,
 } from "./helpers.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
@@ -97,6 +98,7 @@ const metricDefault = metrics[0];
 
 function AdvertiserMetricsButtons() {
   const [selectedMetric, setSelectedMetric] = useState(metricDefault.value);
+  const [hoveredMetricItem, setHoveredMetric] = useState(null);
 
   return html`<div class="vis-metrics-buttons-container">
     ${metrics.map(
@@ -115,10 +117,41 @@ function AdvertiserMetricsButtons() {
               })
             );
           }}
+          onmouseleave="${() => setHoveredMetric(null)}"
+          onmouseenter="${(event) => {
+            const buttonRect = event.target.getBoundingClientRect();
+            const containerRect =
+              event.target.parentElement.getBoundingClientRect();
+
+            // Calculate position relative to the container, positioning tooltip below button
+            const x =
+              buttonRect.left - containerRect.left + buttonRect.width / 2 - 75; // Center tooltip on button relative to container
+            const y = buttonRect.bottom - containerRect.top + 5; // Position just below button with small gap
+
+            // Adjust if tooltip would go off-screen to the right
+            const containerWidth = containerRect.width;
+            const adjustedX =
+              x + 150 > containerWidth ? containerWidth - 160 : x;
+
+            setHoveredMetric({
+              value: metric.value,
+              x: Math.max(10, adjustedX), // Ensure tooltip doesn't go off-screen to the left
+              y: y,
+            });
+          }}"
         >
           ${metric.label}
         </button>`
     )}
+    ${hoveredMetricItem &&
+    html`<div
+      class="tooltip"
+      style="left: ${hoveredMetricItem.x}px; top: ${hoveredMetricItem.y}px;}"
+    >
+      <p class="tooltip-label" style="white-space: nowrap;">
+        ${metricsLabels[hoveredMetricItem.value]}
+      </p>
+    </div>`}
   </div>`;
 }
 
