@@ -16,6 +16,7 @@ import {
   getDateInUTC,
   ASSETS_URL,
   isMobile,
+  isTablet,
   getPrecalculatedHolidayPositions,
   holidayStyles,
 } from "./helpers.js";
@@ -338,81 +339,68 @@ function UserChart({ data }) {
     >
       <g>
         ${holidayPositions.map(({ x, offsetX, offsetY }) => {
-          return html`<g transform="translate(${x}, 0)">
+          return html`<g
+            transform="translate(${x}, 0)"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke="${holidayStyles.line.stroke}"
+            stroke-width="${holidayStyles.line["stroke-width"]}"
+            stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
+          >
             <line
               x1="0"
               x2="0"
-              y1="${isMobile
+              y1="${isMobile || isTablet
                 ? 45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)
                 : 45}"
-              y2="${height - margin.bottom + (isMobile ? 5 : 10)}"
-              stroke="${holidayStyles.line.stroke}"
-              stroke-width="${holidayStyles.line["stroke-width"]}"
-              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              y2="${height - margin.bottom + (isMobile || isTablet ? 5 : 10)}"
             />
-            <line
-              x1="0"
-              x2="${offsetX}"
-              y1="${45}"
-              y2="${45}"
-              stroke="${holidayStyles.line.stroke}"
-              stroke-width="${holidayStyles.line["stroke-width"]}"
-              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
+            <line x1="0" x2="${offsetX}" y1="${45}" y2="${45}" />
             <line
               x1="0"
               x2="${offsetX}"
               y1="${height - margin.bottom + 10}"
               y2="${height - margin.bottom + 10}"
-              stroke="${holidayStyles.line.stroke}"
-              stroke-width="${holidayStyles.line["stroke-width"]}"
-              stroke-dasharray="${holidayStyles.line["stroke-dasharray"]}"
-              stroke-linecap="round"
-              stroke-linejoin="round"
             />
           </g>`;
         })}
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartMargin.top + chartInnerHeight}"
-          width="${isMobile ? chartWidth : 0}"
-          height="${isMobile ? margin.bottom : 0}"
+          width="${isMobile || isTablet ? chartWidth : 0}"
+          height="${isMobile || isTablet ? margin.bottom : 0}"
           fill="#f8f8f8"
         />
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartHeight + chartMargin.top + chartInnerHeight}"
-          width="${isMobile ? chartWidth : 0}"
-          height="${isMobile ? margin.bottom : 0}"
+          width="${isMobile || isTablet ? chartWidth : 0}"
+          height="${isMobile || isTablet ? margin.bottom : 0}"
           fill="#f8f8f8"
         />
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartHeight}"
-          width="${isMobile ? chartWidth : 0}"
-          height="${isMobile ? chartMargin.top : 0}"
+          width="${isMobile || isTablet ? chartWidth : 0}"
+          height="${isMobile || isTablet ? chartMargin.top : 0}"
           fill="#f8f8f8"
         />
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartHeight * 2}"
-          width="${isMobile ? chartWidth : 0}"
-          height="${isMobile ? chartMargin.top : 0}"
+          width="${isMobile || isTablet ? chartWidth : 0}"
+          height="${isMobile || isTablet ? chartMargin.top : 0}"
           fill="#f8f8f8"
         />
         ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(${isMobile
+              transform="translate(${isMobile || isTablet
                 ? -20 / 2 + offsetX
                 : -35 / 2 + offsetX}, ${offsetY})"
-              width="${isMobile ? 20 : 35}"
-              height="${isMobile ? 20 : 35}"
+              width="${isMobile || isTablet ? 20 : 35}"
+              height="${isMobile || isTablet ? 20 : 35}"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
@@ -426,14 +414,14 @@ function UserChart({ data }) {
             />
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(${isMobile
+              transform="translate(${isMobile || isTablet
                 ? -20 / 2 + offsetX
                 : -35 / 2 + offsetX}, ${height -
               margin.bottom +
               20 +
               -1 * offsetY})"
-              width="${isMobile ? 20 : 35}"
-              height="${isMobile ? 20 : 35}"
+              width="${isMobile || isTablet ? 20 : 35}"
+              height="${isMobile || isTablet ? 20 : 35}"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({

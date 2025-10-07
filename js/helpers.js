@@ -67,6 +67,7 @@ export function getDateInUTC(dateString) {
   return dateUTC;
 }
 export const isMobile = window.innerWidth <= 480;
+export const isTablet = window.innerWidth <= 800;
 
 // Function to find intersection points between consecutive data points
 export function findIntersection(p1, p2) {
@@ -502,21 +503,21 @@ export function getPrecalculatedHolidayPositions(
   holidayPositions.forEach((item, i) => {
     let offsetX = 0;
     let offsetY = 5;
-    if (i > 0 && !isMobile) {
+    if (i > 0 && !isMobile && !isTablet) {
       const prevItem = holidayPositions[i - 1];
       const prevFinalX = prevItem.x + prevItem.offsetX; // Consider previous holiday's final position
       if (item.x - prevFinalX < 35) {
         offsetX = 35;
       }
     }
-    if (isMobile && i % 2 === 1) {
+    if ((isMobile || isTablet) && i % 2 === 1) {
       offsetY = 30;
     }
-    if (item.holiday.name === "New Year" && isMobile) {
+    if (item.holiday.name === "New Year" && (isMobile || isTablet)) {
       offsetX = 10;
       offsetY = 12;
     }
-    if (item.holiday.name === "Valentine's day" && isMobile) {
+    if (item.holiday.name === "Valentine's day" && (isMobile || isTablet)) {
       offsetX = 0;
       offsetY = 30;
     }

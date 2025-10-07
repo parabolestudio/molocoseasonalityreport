@@ -16,6 +16,7 @@ import {
   getDateInUTC,
   ASSETS_URL,
   isMobile,
+  isTablet,
   monthsPastYear,
   getPrecalculatedHolidayPositions,
   holidayStyles,
@@ -390,7 +391,7 @@ function AdvertiserChart({ data }) {
             <line
               x1="0"
               x2="0"
-              y1="${isMobile
+              y1="${isMobile || isTablet
                 ? 45 - (offsetY > 5 && offsetX >= 0 ? 0 : 30)
                 : 45}"
               y2="${height - margin.bottom}"
@@ -425,11 +426,11 @@ function AdvertiserChart({ data }) {
           return html`<g transform="translate(${x}, 0)">
             <image
               href="${ASSETS_URL}${holiday.icon}"
-              transform="translate(${isMobile
+              transform="translate(${isMobile || isTablet
                 ? -20 / 2 + offsetX
                 : -35 / 2 + offsetX}, ${offsetY})"
-              width="${isMobile ? 20 : 35}"
-              height="${isMobile ? 20 : 35}"
+              width="${isMobile || isTablet ? 20 : 35}"
+              height="${isMobile || isTablet ? 20 : 35}"
               onmouseleave="${() => setHoveredHoliday(null)}"
               onmouseenter="${() => {
                 setHoveredHoliday({
