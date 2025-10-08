@@ -24,8 +24,8 @@ import {
 } from "./helpers.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
+import NoDataElement from "./NoDataElement.js";
 import { holidayIcons } from "./holidays.js";
-import { getVerticalFromVerticalValue } from "./verticals.js";
 
 export function renderAdvertiserElements(data, includedVerticalData) {
   console.log("Rendering advertiser elements");
@@ -342,39 +342,11 @@ function AdvertiserChart({ data, includedVerticalData }) {
   const innerHeight = height - margin.top - margin.bottom;
 
   if (chartData && chartData.length === 0) {
-    const verticalItem = getVerticalFromVerticalValue(vertical);
-    return html`<div style="position: relative;">
-      <svg
-        viewBox="0 0 ${width} ${height}"
-        style="width: 100%; height: 100%; background-color: #F7F7F7;"
-      ></svg>
-      <p
-        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);font-size: 14px; text-align: center; color: #000;"
-      >
-        No sufficient data for ${verticalItem?.label || vertical} in selected
-        country and operating system.<br /><br />Click${" "}
-        <a
-          style="color: #000; text-decoration: underline; cursor: pointer;font-size: 14px; font-weight: 700;"
-          onclick="${() => {
-            console.log(
-              "Setting vertical to all for category",
-              verticalItem?.type
-            );
-            document.dispatchEvent(
-              new CustomEvent("vertical-selector-set-externally", {
-                detail: {
-                  selectedCategory:
-                    verticalItem?.type.toLowerCase() || "gaming",
-                  selectedVertical: "all",
-                },
-              })
-            );
-          }}"
-        >
-          here</a
-        >${" "} to view all ${verticalItem?.type || "Gaming or Consumer"} data.
-      </p>
-    </div>`;
+    return html`<${NoDataElement}
+      width=${width}
+      height=${height}
+      vertical=${vertical}
+    />`;
   }
 
   const prevTime = prevTimeScaleUTC.range([0, innerWidth]);

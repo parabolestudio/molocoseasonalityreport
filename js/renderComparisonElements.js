@@ -24,10 +24,20 @@ import {
 } from "./helpers.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
+import NoDataElement from "./NoDataElement.js";
 import { holidayIcons } from "./holidays.js";
 
-export function renderComparisonElements(userData, advertiserData) {
-  console.log("Rendering comparison elements", userData, advertiserData);
+export function renderComparisonElements(
+  userData,
+  advertiserData,
+  includedVerticalData
+) {
+  console.log(
+    "Rendering comparison elements",
+    userData,
+    advertiserData,
+    includedVerticalData
+  );
 
   // populate system selector
   populateSystemSelector("vis-comparison-dropdown-systems");
@@ -83,9 +93,9 @@ export function renderComparisonElements(userData, advertiserData) {
     );
 
     // render chart with data
-    renderComparisonChart(userData, advertiserData);
+    renderComparisonChart(userData, advertiserData, includedVerticalData);
   } else {
-    renderComparisonChart(null, null);
+    renderComparisonChart(null, null, null);
   }
 
   function handleUserData(userData) {
@@ -320,7 +330,7 @@ function ComparisonPeriodButtons({ year }) {
   return html`<div class="vis-period-buttons-container">${buttons}</div>`;
 }
 
-function renderComparisonChart(userData, advertiserData) {
+function renderComparisonChart(userData, advertiserData, includedVerticalData) {
   const containerId = "vis-comparison-container";
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
@@ -332,6 +342,7 @@ function renderComparisonChart(userData, advertiserData) {
       html`<${ComparisonChart}
         userData=${userData}
         advertiserData=${advertiserData}
+        includedVerticalData=${includedVerticalData}
       />`,
       containerElement
     );
@@ -370,7 +381,7 @@ function getWeekNumberArray(year = "past", period) {
   return d3.range(startWeek, Number(endWeek) + 1);
 }
 
-function ComparisonChart({ userData, advertiserData }) {
+function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
   const [system, setSystem] = useState(
     getDropdownValue("vis-comparison-dropdown-systems")
   );
@@ -388,9 +399,11 @@ function ComparisonChart({ userData, advertiserData }) {
   const [hoveredHoliday, setHoveredHoliday] = useState(null);
   const [hoveredValues, setHoveredValues] = useState(null);
 
-  const [chartUserData, setChartUserData] = useState(filterData(userData));
+  const [chartUserData, setChartUserData] = useState(
+    filterData(userData, includedVerticalData)
+  );
   const [chartAdvertiserData, setChartAdvertiserData] = useState(
-    filterData(advertiserData)
+    filterData(advertiserData, includedVerticalData)
   );
 
   const [svgCache, setSvgCache] = useState({});
@@ -419,8 +432,20 @@ function ComparisonChart({ userData, advertiserData }) {
     }
   }, []);
 
-  function filterData(inputData) {
+  function filterData(inputData, includedVerticalData) {
     if (!inputData || inputData.length === 0) return null;
+    if (includedVerticalData) {
+      const filterCombinationIncluded = includedVerticalData.find(
+        (v) =>
+          v.vertical === vertical &&
+          v.country === country &&
+          v.system === system
+      );
+      if (!filterCombinationIncluded) {
+        return [];
+      }
+    }
+
     return inputData.filter(
       (d) =>
         d.system === system &&
@@ -430,8 +455,8 @@ function ComparisonChart({ userData, advertiserData }) {
     );
   }
   useEffect(() => {
-    setChartUserData(filterData(userData));
-    setChartAdvertiserData(filterData(advertiserData));
+    setChartUserData(filterData(userData, includedVerticalData));
+    setChartAdvertiserData(filterData(advertiserData, includedVerticalData));
   }, [system, country, category, vertical, userData, advertiserData]);
 
   // listen to change in comparison system dropdown
@@ -560,6 +585,7 @@ function ComparisonChart({ userData, advertiserData }) {
     "Rendering comparison chart",
     chartUserData,
     chartAdvertiserData,
+    includedVerticalData,
     system,
     country,
     category,
@@ -578,6 +604,19 @@ function ComparisonChart({ userData, advertiserData }) {
   const margin = { top: 60, right: 1, bottom: 60, left: 30 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
+
+  if (
+    chartUserData &&
+    chartUserData.length === 0 &&
+    chartAdvertiserData &&
+    chartAdvertiserData.length === 0
+  ) {
+    return html`<${NoDataElement}
+      width=${width}
+      height=${height}
+      vertical=${vertical}
+    />`;
+  }
 
   // months display
   const displayMonths = monthsTwoYears

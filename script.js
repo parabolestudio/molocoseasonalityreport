@@ -14,13 +14,13 @@ renderVerticalSelection(null);
 renderSeasonalityTimeline();
 
 // render user behavior chart and surrounding elements (filters, legend, etc)
-renderUserElements(null);
+renderUserElements(null, null);
 
 // render advertiser behavior chart and surrounding elements (filters, legend, etc)
 renderAdvertiserElements(null, null);
 
 // render comparison elements (filters, legend, etc)
-renderComparisonElements(null, null);
+renderComparisonElements(null, null, null);
 
 function handleUserData(inputData) {
   return inputData.forEach((d) => {
@@ -105,12 +105,16 @@ Promise.all([
     renderVerticalSelection(uniqueVerticals);
 
     handleUserData(userDataMerged);
-    renderUserElements(userDataMerged);
+    renderUserElements(userDataMerged, includedVerticalData);
 
     handleAdvertiserData(advertiserDataMerged);
     renderAdvertiserElements(advertiserDataMerged, includedVerticalData);
 
-    renderComparisonElements(userDataMerged, advertiserDataMerged);
+    renderComparisonElements(
+      userDataMerged,
+      advertiserDataMerged,
+      includedVerticalData
+    );
   })
   .catch((error) => {
     console.error("Error fetching sheet data:", error);

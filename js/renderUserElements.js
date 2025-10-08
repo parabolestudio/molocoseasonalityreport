@@ -22,9 +22,10 @@ import {
 } from "./helpers.js";
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
+import NoDataElement from "./NoDataElement.js";
 import { holidayIcons } from "./holidays.js";
 
-export function renderUserElements(data = null) {
+export function renderUserElements(data = null, includedVerticalData = null) {
   // populate system selector
   populateSystemSelector("vis-user-dropdown-systems");
   populateCountrySelector(["USA"], "vis-user-dropdown-countries");
@@ -37,13 +38,13 @@ export function renderUserElements(data = null) {
     populateCountrySelector(countries, "vis-user-dropdown-countries");
 
     // render chart with data
-    renderUserChart(data);
+    renderUserChart(data, includedVerticalData);
   } else {
-    renderUserChart(null);
+    renderUserChart(null, null);
   }
 }
 
-function renderUserChart(data) {
+function renderUserChart(data, includedVerticalData) {
   const containerId = "vis-user-container";
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
@@ -51,13 +52,19 @@ function renderUserChart(data) {
     // containerElement.innerHTML = "";
 
     // Render chart as a component so hooks work
-    renderComponent(html`<${UserChart} data=${data} />`, containerElement);
+    renderComponent(
+      html`<${UserChart}
+        data=${data}
+        includedVerticalData=${includedVerticalData}
+      />`,
+      containerElement
+    );
   } else {
     console.error(`Could not find container element with id ${containerId}`);
   }
 }
 
-function UserChart({ data }) {
+function UserChart({ data, includedVerticalData }) {
   const [system, setSystem] = useState(
     getDropdownValue("vis-user-dropdown-systems")
   );
@@ -66,7 +73,9 @@ function UserChart({ data }) {
   );
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
-  const [chartData, setChartData] = useState(filterData(data));
+  const [chartData, setChartData] = useState(
+    filterData(data, includedVerticalData)
+  );
 
   const [hoveredHoliday, setHoveredHoliday] = useState(null);
   const [hoveredValues, setHoveredValues] = useState(null);
@@ -97,8 +106,19 @@ function UserChart({ data }) {
     }
   }, []);
 
-  function filterData(inputData) {
+  function filterData(inputData, includedVerticalData) {
     if (!inputData || inputData.length === 0) return null;
+    if (includedVerticalData) {
+      const filterCombinationIncluded = includedVerticalData.find(
+        (v) =>
+          v.vertical === vertical &&
+          v.country === country &&
+          v.system === system
+      );
+      if (!filterCombinationIncluded) {
+        return [];
+      }
+    }
     return inputData.filter(
       (d) =>
         d.system === system &&
@@ -108,7 +128,7 @@ function UserChart({ data }) {
     );
   }
   useEffect(() => {
-    setChartData(filterData(data));
+    setChartData(filterData(data, includedVerticalData));
   }, [system, country, vertical, category, data]);
 
   // console.log(
@@ -254,6 +274,14 @@ function UserChart({ data }) {
     chartMargin,
     chartInnerHeight,
   };
+
+  if (chartData && chartData.length === 0) {
+    return html`<${NoDataElement}
+      width=${width}
+      height=${height}
+      vertical=${vertical}
+    />`;
+  }
 
   const prevTime = prevTimeScaleUTC.range([0, chartWidth]);
   const currentTime = currentTimeScaleUTC.range([0, chartWidth]);
