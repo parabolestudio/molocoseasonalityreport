@@ -349,12 +349,12 @@ function AdvertiserChart({ data, includedVerticalData }) {
         style="width: 100%; height: 100%; background-color: #F7F7F7;"
       ></svg>
       <p
-        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);font-size: 14px; text-align: center; max-width: 300px; color: #000;"
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);font-size: 14px; text-align: center; color: #000;"
       >
-        No sufficient data for <b>${verticalItem?.label || vertical}</b> in
-        selected country and operating system.<br /><br />Click${" "}
+        No sufficient data for ${verticalItem?.label || vertical} in selected
+        country and operating system.<br /><br />Click${" "}
         <a
-          style="color: #000; text-decoration: underline; cursor: pointer;"
+          style="color: #000; text-decoration: underline; cursor: pointer;font-size: 14px; font-weight: 700;"
           onclick="${() => {
             console.log(
               "Setting vertical to all for category",
