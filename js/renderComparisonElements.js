@@ -63,10 +63,24 @@ export function renderComparisonElements(userData, advertiserData) {
     handleAdvertiserData(advertiserData);
 
     // populate country selector
-    const countries = Array.from(
+    const countriesUser = Array.from(
       new Set(userData.map((d) => d["country"]).filter((c) => c && c !== ""))
     ).sort();
-    populateCountrySelector(countries, "vis-comparison-dropdown-countries");
+    const countriesAdvertiser = Array.from(
+      new Set(
+        advertiserData.map((d) => d["country"]).filter((c) => c && c !== "")
+      )
+    ).sort();
+
+    // get only countries that are in both datasets
+    const countriesUniqueMerged = countriesUser.filter((country) =>
+      countriesAdvertiser.includes(country)
+    );
+
+    populateCountrySelector(
+      countriesUniqueMerged,
+      "vis-comparison-dropdown-countries"
+    );
 
     // render chart with data
     renderComparisonChart(userData, advertiserData);
@@ -81,10 +95,6 @@ export function renderComparisonElements(userData, advertiserData) {
         .map((m) => m.value)
         .forEach((metric) => {
           d[metric] = d[metric] ? +d[metric] : null;
-
-          d[metric + "_wow"] = d["wow_" + metric + "_pct"]
-            ? +d["wow_" + metric + "_pct"].replace(/%/, "") / 100
-            : null;
         });
     });
   }
@@ -101,19 +111,15 @@ export function renderComparisonElements(userData, advertiserData) {
               ? +d[metric].replaceAll(",", "")
               : +d[metric]
             : null;
-
-          d[metric + "_wow"] = d[metric + "_wow_pct_change"]
-            ? +d[metric + "_wow_pct_change"].replace(/%/, "") / 100
-            : null;
         });
     });
   }
 }
 
 const userMetrics = [
-  { value: "downloads", label: "Downloads" },
-  { value: "revenue", label: "Revenue" },
-  { value: "time_spent", label: "Time Spent" },
+  { value: "downloads_indexed", label: "Downloads" },
+  { value: "revenue_indexed", label: "Revenue" },
+  { value: "time_spent_indexed", label: "Time Spent" },
 ];
 const userMetricDefault = userMetrics[0];
 
@@ -122,7 +128,7 @@ const advertiserMetrics = [
   { value: "cpi_p50", label: "CPI" },
   { value: "roas_d7_p50", label: "ROAS" },
   { value: "arppu_d7_p50", label: "ARPPU" },
-  { value: "bids", label: "Ad opportunities" },
+  { value: "ad_opportunities", label: "Ad opportunities" },
 ];
 const advertiserMetricDefault = advertiserMetrics[0];
 

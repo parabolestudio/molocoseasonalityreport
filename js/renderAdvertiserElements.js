@@ -65,9 +65,6 @@ export function renderAdvertiserElements(data) {
               ? +d[metric].replaceAll(",", "")
               : +d[metric]
             : null;
-          d[metric + "_wow"] = d[metric + "_wow_pct_change"]
-            ? +d[metric + "_wow_pct_change"].replace(/%/, "") / 100
-            : null;
         });
     });
   }
@@ -88,7 +85,7 @@ function renderMetricsButtons() {
 }
 
 const metrics = [
-  { value: "bids", label: "Ad opportunities" },
+  { value: "ad_opportunities", label: "Ad opportunities" },
   { value: "cpm_p50", label: "CPM" },
   { value: "cpi_p50", label: "CPI" },
   { value: "roas_d7_p50", label: "ROAS" },

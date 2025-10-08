@@ -545,5 +545,5 @@ export const metricsLabels = {
   cpi_p50: "CPI = Cost Per Install",
   roas_d7_p50: "ROAS = Return on Ad Spend",
   arppu_d7_p50: "ARPPU = Average Revenue Per Paying User",
-  bids: "TODO",
+  ad_opportunities: "TODO",
 };

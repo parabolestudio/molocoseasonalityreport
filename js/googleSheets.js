@@ -49,11 +49,8 @@ const SHEET_ID =
   "2PACX-1vQV_fJ4xrBe0Wvwmk92stpzuxnCUxpmm5l7wz-HJ-N0DzRH0tyT2gS8SEQs0mNef3k8aImO2NVwyiS7";
 
 const SHEET_TAB_IDS = {
-  "user-engagement": "996352335", // with WOW changes
-  "user-engagement-indexed": "785304877", // indexed
-  // "advertiser-kpis": "1295386751", // with WOW changes
-  "advertiser-kpis-indexed": "2011387951", // indexed
-  "bid-requests-indexed": "1496414394", // indexed
+  "user-engagement-merged": "1283514660", // merged with non-indexed and indexed data
+  "advertiser-kpis-merged": "860406561", // indexed data + bid requests
 };
 
 function getSheetUrl(tabName) {

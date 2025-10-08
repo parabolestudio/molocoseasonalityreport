@@ -31,39 +31,15 @@ function handleUserData(inputData) {
         ? "consumer"
         : d["category"].toLowerCase();
     d["vertical"] = d["vertical"].toLowerCase().trim();
-    // d["wau"] = +d["median_wau"];
     d["downloads"] = +d["downloads"];
     d["revenue"] = +d["revenue"];
     d["time_spent"] = +d["time_spent"].trim();
-    // d["downloads"] = +d["total_downloads"];
-    // d["revenue"] = +d["total_revenue"];
-    // d["time_spent"] = +d["total_time_spent"].trim();
-    d["week_start"] = d["week_start_date"];
-    d["weekNumber"] = +d["Week number"].trim();
-  });
-}
-function handleUserDataIndexed(inputData) {
-  return inputData.forEach((d) => {
-    d["country"] = d["country"];
-    d["system"] = d["os"];
-    d["category"] =
-      d["category"].toLowerCase() === "non-gaming"
-        ? "consumer"
-        : d["category"].toLowerCase();
-    d["vertical"] = d["vertical"].toLowerCase().trim();
-    // d["wau"] = +d["median_wau"];
-    d["downloads"] = +d["downloads"];
-    d["revenue"] = +d["revenue"];
-    d["time_spent"] = +d["time_spent"].trim();
-    // d["downloads"] = +d["total_downloads"];
-    // d["revenue"] = +d["total_revenue"];
-    // d["time_spent"] = +d["total_time_spent"].trim();
     d["week_start"] = d["week_start_date"];
     d["weekNumber"] = +d["Week Number"].trim();
   });
 }
 
-function handleAdvertiserDataIndexed(data) {
+function handleAdvertiserData(data) {
   return data.forEach((d) => {
     d["country"] = d["country"];
     d["system"] = d["os"];
@@ -83,40 +59,24 @@ function handleAdvertiserDataIndexed(data) {
     }
 
     d["week_start"] = d["week_start_date"];
-    d["weekNumber"] = +d["Week Number"].trim();
+    d["weekNumber"] = +d["Week number"].trim();
   });
 }
 
 Promise.all([
-  fetchGoogleSheetCSV("user-engagement"),
-  fetchGoogleSheetCSV("advertiser-kpis-indexed"),
-  fetchGoogleSheetCSV("user-engagement-indexed"),
-  fetchGoogleSheetCSV("bid-requests-indexed"),
+  fetchGoogleSheetCSV("user-engagement-merged"),
+  fetchGoogleSheetCSV("advertiser-kpis-merged"),
 ])
-  .then(
-    ([
-      userDataNonIndexed,
-      advertiserDataIndexed,
-      userDataIndexed,
-      bidRequestsIndexed,
-    ]) => {
-      console.log(
-        "Fetched sheet data",
-        userDataNonIndexed,
-        advertiserDataIndexed,
-        userDataIndexed,
-        bidRequestsIndexed
-      );
-      handleUserData(userDataNonIndexed);
-      renderUserElements(userDataNonIndexed);
+  .then(([userDataMerged, advertiserDataMerged]) => {
+    console.log("Fetched sheet data", userDataMerged, advertiserDataMerged);
+    handleUserData(userDataMerged);
+    renderUserElements(userDataMerged);
 
-      handleAdvertiserDataIndexed(advertiserDataIndexed);
-      renderAdvertiserElements(advertiserDataIndexed);
+    handleAdvertiserData(advertiserDataMerged);
+    renderAdvertiserElements(advertiserDataMerged);
 
-      handleUserDataIndexed(userDataIndexed);
-      renderComparisonElements(userDataIndexed, advertiserDataIndexed);
-    }
-  )
+    renderComparisonElements(userDataMerged, advertiserDataMerged);
+  })
   .catch((error) => {
     console.error("Error fetching sheet data:", error);
   });
