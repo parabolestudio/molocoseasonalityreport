@@ -9,15 +9,18 @@ import { ASSETS_URL } from "./helpers.js";
 
 const containerId = "vis-vertical-filter";
 
-export function renderVerticalSelection() {
+export function renderVerticalSelection(includedVerticals) {
   let containerElement = document.querySelector(`#${containerId}`);
 
   if (containerElement) {
     // clear existing content before rendering
-    containerElement.innerHTML = "";
+    // containerElement.innerHTML = "";
 
     // Render ButtonGroup as a component so hooks work
-    renderComponent(html`<${VerticalSelector} />`, containerElement);
+    renderComponent(
+      html`<${VerticalSelector} includedVerticals=${includedVerticals} />`,
+      containerElement
+    );
   } else {
     console.error(
       `Could not find container element for vertical selection with id ${containerId}`
@@ -36,7 +39,7 @@ const categoryIcons = [
   },
 ];
 
-function VerticalSelector() {
+function VerticalSelector({ includedVerticals }) {
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
   const [inlineMenuOpen, setInlineMenuOpen] = useState(false);
@@ -62,6 +65,13 @@ function VerticalSelector() {
       return null;
     }
   };
+
+  function filterVerticalsByIncluded(verticals, includedVerticals) {
+    if (!includedVerticals || includedVerticals.length === 0) {
+      return verticals;
+    }
+    return verticals.filter((v) => includedVerticals.includes(v.value));
+  }
 
   // get vertical icons on mount
   useEffect(async () => {
@@ -95,6 +105,32 @@ function VerticalSelector() {
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // listen to external change (done by no data message)
+  useEffect(() => {
+    const handleChange = (e) => {
+      setCategory(e.detail.selectedCategory);
+      setVertical(e.detail.selectedVertical);
+      // Dispatch custom event to notify other components
+      document.dispatchEvent(
+        new CustomEvent(`${containerId}-category-changed`, {
+          detail: { selectedCategory: e.detail.selectedCategory },
+        })
+      );
+      document.dispatchEvent(
+        new CustomEvent(`${containerId}-vertical-changed`, {
+          detail: { selectedVertical: e.detail.selectedVertical || "all" },
+        })
+      );
+    };
+    document.addEventListener("vertical-selector-set-externally", handleChange);
+    return () => {
+      document.removeEventListener(
+        "vertical-selector-set-externally",
+        handleChange
+      );
     };
   }, []);
 
@@ -134,10 +170,11 @@ function VerticalSelector() {
     }
   }
 
-  const verticalSet =
-    category === "gaming" ? gamingVerticals : consumerVerticals;
-
   const getVerticalItems = (position) => {
+    const verticalSet =
+      category === "gaming"
+        ? filterVerticalsByIncluded(gamingVerticals, includedVerticals)
+        : filterVerticalsByIncluded(consumerVerticals, includedVerticals);
     return verticalSet.map((item) => {
       const svgContent = svgCache[item.icon];
 

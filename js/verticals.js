@@ -128,3 +128,12 @@ export const consumerVerticals = [
     icon: "other.svg",
   },
 ];
+
+const allVerticals = [
+  ...gamingVerticals.map((v) => ({ ...v, type: "Gaming" })),
+  ...consumerVerticals.map((v) => ({ ...v, type: "Consumer" })),
+];
+
+export function getVerticalFromVerticalValue(value) {
+  return allVerticals.find((vertical) => vertical.value === value);
+}

@@ -51,6 +51,7 @@ const SHEET_ID =
 const SHEET_TAB_IDS = {
   "user-engagement-merged": "1283514660", // merged with non-indexed and indexed data
   "advertiser-kpis-merged": "860406561", // indexed data + bid requests
+  "vertical-inclusion-merged": "889937452", // tab for vertical inclusion iOS and Android
 };
 
 function getSheetUrl(tabName) {

@@ -8,7 +8,7 @@ import { renderComparisonElements } from "./js/renderComparisonElements.js";
 import { fetchGoogleSheetCSV } from "./js/googleSheets.js";
 
 // render page-wide vertical selection
-renderVerticalSelection();
+renderVerticalSelection(null);
 
 // render seasonality timeline
 renderSeasonalityTimeline();
@@ -17,7 +17,7 @@ renderSeasonalityTimeline();
 renderUserElements(null);
 
 // render advertiser behavior chart and surrounding elements (filters, legend, etc)
-renderAdvertiserElements(null);
+renderAdvertiserElements(null, null);
 
 // render comparison elements (filters, legend, etc)
 renderComparisonElements(null, null);
@@ -63,17 +63,52 @@ function handleAdvertiserData(data) {
   });
 }
 
+function handleVerticalData(data) {
+  data.forEach((d) => {
+    d["vertical"] = d["vertical"].toLowerCase().trim();
+    d["system"] = d["os"].trim();
+  });
+  //add "all" option for all countries and systems
+  const allCountries = Array.from(new Set(data.map((d) => d.country)));
+  const allSystems = Array.from(new Set(data.map((d) => d.system)));
+  allCountries.forEach((country) => {
+    allSystems.forEach((system) => {
+      data.push({
+        country: country,
+        system: system,
+        vertical: "all",
+      });
+    });
+  });
+
+  return data;
+}
+
 Promise.all([
   fetchGoogleSheetCSV("user-engagement-merged"),
   fetchGoogleSheetCSV("advertiser-kpis-merged"),
+  fetchGoogleSheetCSV("vertical-inclusion-merged"),
 ])
-  .then(([userDataMerged, advertiserDataMerged]) => {
-    console.log("Fetched sheet data", userDataMerged, advertiserDataMerged);
+  .then(([userDataMerged, advertiserDataMerged, includedVerticalData]) => {
+    console.log(
+      "Fetched sheet data",
+      userDataMerged,
+      advertiserDataMerged,
+      includedVerticalData
+    );
+    handleVerticalData(includedVerticalData);
+
+    // create unique list of possible verticals
+    const uniqueVerticals = Array.from(
+      new Set(includedVerticalData.map((d) => d.vertical))
+    );
+    renderVerticalSelection(uniqueVerticals);
+
     handleUserData(userDataMerged);
     renderUserElements(userDataMerged);
 
     handleAdvertiserData(advertiserDataMerged);
-    renderAdvertiserElements(advertiserDataMerged);
+    renderAdvertiserElements(advertiserDataMerged, includedVerticalData);
 
     renderComparisonElements(userDataMerged, advertiserDataMerged);
   })

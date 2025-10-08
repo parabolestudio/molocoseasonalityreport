@@ -25,8 +25,9 @@ import {
 import TooltipHoliday from "./TooltipHoliday.js";
 import Loader from "./Loader.js";
 import { holidayIcons } from "./holidays.js";
+import { getVerticalFromVerticalValue } from "./verticals.js";
 
-export function renderAdvertiserElements(data) {
+export function renderAdvertiserElements(data, includedVerticalData) {
   console.log("Rendering advertiser elements");
 
   // populate system selector
@@ -48,9 +49,9 @@ export function renderAdvertiserElements(data) {
     populateCountrySelector(countries, "vis-advertiser-dropdown-countries");
 
     // render chart with data
-    renderAdvertiserChart(data);
+    renderAdvertiserChart(data, includedVerticalData);
   } else {
-    renderAdvertiserChart(null);
+    renderAdvertiserChart(null, null);
   }
 
   function handleData(data) {
@@ -152,7 +153,7 @@ function AdvertiserMetricsButtons() {
   </div>`;
 }
 
-function renderAdvertiserChart(data) {
+function renderAdvertiserChart(data, includedVerticalData) {
   const containerId = "vis-advertiser-container";
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
@@ -161,7 +162,10 @@ function renderAdvertiserChart(data) {
 
     // Render chart as a component so hooks work
     renderComponent(
-      html`<${AdvertiserChart} data=${data} />`,
+      html`<${AdvertiserChart}
+        data=${data}
+        includedVerticalData=${includedVerticalData}
+      />`,
       containerElement
     );
   } else {
@@ -169,7 +173,7 @@ function renderAdvertiserChart(data) {
   }
 }
 
-function AdvertiserChart({ data }) {
+function AdvertiserChart({ data, includedVerticalData }) {
   console.log("Rendering advertiser chart component", data);
   const [system, setSystem] = useState(
     getDropdownValue("vis-advertiser-dropdown-systems")
@@ -180,7 +184,9 @@ function AdvertiserChart({ data }) {
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
   const [metric, setMetric] = useState(metricDefault.value);
-  const [chartData, setChartData] = useState(filterData(data));
+  const [chartData, setChartData] = useState(
+    filterData(data, includedVerticalData)
+  );
 
   const [hoveredHoliday, setHoveredHoliday] = useState(null);
   const [hoveredValues, setHoveredValues] = useState(null);
@@ -211,8 +217,20 @@ function AdvertiserChart({ data }) {
     }
   }, []);
 
-  function filterData(inputData) {
+  function filterData(inputData, includedVerticalData) {
     if (!inputData || inputData.length === 0) return null;
+    if (includedVerticalData) {
+      const filterCombinationIncluded = includedVerticalData.find(
+        (v) =>
+          v.vertical === vertical &&
+          v.country === country &&
+          v.system === system
+      );
+      if (!filterCombinationIncluded) {
+        return [];
+      }
+    }
+
     return inputData.filter(
       (d) =>
         d.system === system &&
@@ -222,8 +240,8 @@ function AdvertiserChart({ data }) {
     );
   }
   useEffect(() => {
-    setChartData(filterData(data));
-  }, [system, country, category, vertical, data]);
+    setChartData(filterData(data, includedVerticalData));
+  }, [system, country, category, vertical, data, includedVerticalData]);
 
   // listen to change in advertiser system dropdown
   useEffect(() => {
@@ -322,6 +340,42 @@ function AdvertiserChart({ data }) {
   const margin = { top: 60, right: 1, bottom: 60, left: 30 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
+
+  if (chartData && chartData.length === 0) {
+    const verticalItem = getVerticalFromVerticalValue(vertical);
+    return html`<div style="position: relative;">
+      <svg
+        viewBox="0 0 ${width} ${height}"
+        style="width: 100%; height: 100%; background-color: #F7F7F7;"
+      ></svg>
+      <p
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);font-size: 14px; text-align: center; max-width: 300px; color: #000;"
+      >
+        No sufficient data for <b>${verticalItem?.label || vertical}</b> in
+        selected country and operating system.<br /><br />Click${" "}
+        <a
+          style="color: #000; text-decoration: underline; cursor: pointer;"
+          onclick="${() => {
+            console.log(
+              "Setting vertical to all for category",
+              verticalItem?.type
+            );
+            document.dispatchEvent(
+              new CustomEvent("vertical-selector-set-externally", {
+                detail: {
+                  selectedCategory:
+                    verticalItem?.type.toLowerCase() || "gaming",
+                  selectedVertical: "all",
+                },
+              })
+            );
+          }}"
+        >
+          here</a
+        >${" "} to view all ${verticalItem?.type || "Gaming or Consumer"} data.
+      </p>
+    </div>`;
+  }
 
   const prevTime = prevTimeScaleUTC.range([0, innerWidth]);
   const currentTime = currentTimeScaleUTC.range([0, innerWidth]);
