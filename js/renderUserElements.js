@@ -464,7 +464,8 @@ function UserChart({ data, includedVerticalData }) {
                   name: holiday.name,
                   date: holiday.displayDate["current"],
                   tooltipX: x + 20,
-                  tooltipY: 0 + 20,
+                  tooltipY: 0 - 40 - offsetY,
+                  align: "bottom",
                 });
               }}"
               style="cursor: pointer;"
@@ -484,6 +485,7 @@ function UserChart({ data, includedVerticalData }) {
                   date: holiday.displayDate["current"],
                   tooltipX: x + 20,
                   tooltipY: 0 + 20,
+                  align: "top",
                 });
               }}"
               style="cursor: pointer;"

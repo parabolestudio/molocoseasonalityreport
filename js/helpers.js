@@ -30,13 +30,16 @@ export const valueFormatting = {
       : value;
   },
   time_spent: (value) => {
-    return value >= 1_000_000_000
-      ? (value / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
-      : value >= 1_000_000
-      ? (value / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
-      : value >= 1_000
-      ? (value / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
-      : value;
+    const absValue = Math.abs(value);
+    let formatted =
+      absValue >= 1_000_000_000
+        ? (absValue / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
+        : absValue >= 1_000_000
+        ? (absValue / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
+        : absValue >= 1_000
+        ? (absValue / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
+        : absValue;
+    return value < 0 ? "-" + formatted : formatted;
   },
   wow: (value) => {
     const percent = value * 100;
