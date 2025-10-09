@@ -360,6 +360,19 @@ function UserChart({ data, includedVerticalData }) {
             return;
           }
 
+          // if no data available for one metric, do not show tooltip (India, time spent)
+          const allDatapoints = [...datapointsPrev, ...datapointsCurrent];
+          const hasOnlyZeros =
+            d3.sum(
+              allDatapoints.map((d) => d[chart.value]),
+              (d) => d
+            ) === 0;
+
+          if (hasOnlyZeros) {
+            setHoveredValues(null);
+            return;
+          }
+
           const tooltipY = margin.top + metricIndex * chartHeight;
 
           const index = Math.floor(innerX / weekScale.step()) - 1;
@@ -545,6 +558,8 @@ function SingleChart({
     (d) => d.value !== null && d.value !== undefined
   );
 
+  const hasOnlyZeros = d3.sum(allDatapoints, (d) => d.value) === 0;
+
   const maxValue = d3.max(allDatapoints, (d) => d.value);
   const minValue = d3.min(allDatapoints, (d) => d.value);
   const minValueWithPadding = minValue - (maxValue - minValue) * 0.2;
@@ -606,7 +621,8 @@ function SingleChart({
             style="transition: all ease 0.3s"
           />`
         : ""}
-      <path
+      ${!hasOnlyZeros &&
+      html` <path
         d="${prevLine}"
         fill="none"
         stroke="${chartColors[index % chartColors.length]}"
@@ -615,14 +631,15 @@ function SingleChart({
         style="transition: all ease 0.3s"
         stroke-linecap="round"
         stroke-linejoin="round"
-      />
-      <path
+      />`}
+      ${!hasOnlyZeros &&
+      html` <path
         d="${currentLine}"
         fill="none"
         stroke="${chartColors[index % chartColors.length]}"
         stroke-width="3"
         style="transition: all ease 0.3s"
-      />
+      />`}
 
       <text
         y=${dim.chartInnerHeight + 20}
@@ -658,6 +675,7 @@ function SingleChart({
         >March</text
       >
       ${chart.data.length > 0 &&
+      !hasOnlyZeros &&
       html` <text
         x="-10"
         y=${valueScale(minValueWithPadding) - 8}
@@ -671,6 +689,7 @@ function SingleChart({
         >${valueFormatting[chart.value](minValueWithPadding)}</text
       >`}
       ${chart.data.length > 0 &&
+      !hasOnlyZeros &&
       html`<text
         x="-10"
         y=${valueScale(maxValue) + 8}
@@ -696,6 +715,30 @@ function SingleChart({
     >
       ${chart.title}
     </text>
+    ${hasOnlyZeros && chart.data.length > 0
+      ? html`<g>
+          <rect
+            x="${dim.chartMargin.left}"
+            y="${dim.chartMargin.top}"
+            width="${dim.chartWidth}"
+            height="${dim.chartInnerHeight}"
+            fill="#f8f8f8"
+          />
+          <text
+            x="${dim.chartWidth / 2 + dim.chartMargin.left}"
+            y="${dim.chartInnerHeight / 2 + dim.chartMargin.top}"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            class="charts-text-body"
+            font-size="16"
+            font-weight="600"
+            font-family="Montserrat, sans-serif"
+            style="line-height: 1.25; fill: #000;"
+          >
+            No data available
+          </text></g
+        >`
+      : ""}
   </g>`;
 }
 
