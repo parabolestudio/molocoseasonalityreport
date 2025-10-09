@@ -134,11 +134,11 @@ const userMetrics = [
 const userMetricDefault = userMetrics[0];
 
 const advertiserMetrics = [
+  { value: "ad_opportunities", label: "Ad opportunities" },
   { value: "cpm_p50", label: "CPM" },
   { value: "cpi_p50", label: "CPI" },
   { value: "roas_d7_p50", label: "ROAS" },
   { value: "arppu_d7_p50", label: "ARPPU" },
-  { value: "ad_opportunities", label: "Ad opportunities" },
 ];
 const advertiserMetricDefault = advertiserMetrics[0];
 
