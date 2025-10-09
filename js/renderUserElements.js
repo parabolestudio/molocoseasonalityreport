@@ -718,9 +718,7 @@ function TooltipValues({ hoveredItem }) {
     ${hoveredItem.firstDayOfWeekCurrent
       ? html`
           <div>
-            <p class="tooltip-label">
-              Week of ${hoveredItem.firstDayOfWeekCurrent}
-            </p>
+            <p class="tooltip-label">Week of ${formattedDayCurrent}</p>
             <p class="tooltip-value">
               ${hoveredItem.valueCurrent
                 ? valueFormatting[hoveredItem.variable](
