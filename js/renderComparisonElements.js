@@ -60,7 +60,7 @@ export function renderComparisonElements(
   // render period buttons
   renderPeriodButtons("past");
 
-  populateCountrySelector(["USA"], "vis-comparison-dropdown-countries");
+  populateCountrySelector(["WW"], "vis-comparison-dropdown-countries");
 
   if (
     userData &&
@@ -386,7 +386,7 @@ function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
     getDropdownValue("vis-comparison-dropdown-systems")
   );
   const [country, setCountry] = useState(
-    getDropdownValue("vis-comparison-dropdown-countries") || "USA"
+    getDropdownValue("vis-comparison-dropdown-countries") || "WW"
   );
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");

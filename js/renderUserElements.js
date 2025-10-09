@@ -28,7 +28,7 @@ import { holidayIcons } from "./holidays.js";
 export function renderUserElements(data = null, includedVerticalData = null) {
   // populate system selector
   populateSystemSelector("vis-user-dropdown-systems");
-  populateCountrySelector(["USA"], "vis-user-dropdown-countries");
+  populateCountrySelector(["WW"], "vis-user-dropdown-countries");
 
   if (data && data.length > 0) {
     // populate country selector
@@ -69,7 +69,7 @@ function UserChart({ data, includedVerticalData }) {
     getDropdownValue("vis-user-dropdown-systems")
   );
   const [country, setCountry] = useState(
-    getDropdownValue("vis-user-dropdown-countries") || "USA"
+    getDropdownValue("vis-user-dropdown-countries") || "WW"
   );
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");

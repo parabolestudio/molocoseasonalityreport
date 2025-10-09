@@ -36,7 +36,7 @@ export function renderAdvertiserElements(data, includedVerticalData) {
   // render metrics buttons
   renderMetricsButtons();
 
-  populateCountrySelector(["USA"], "vis-advertiser-dropdown-countries");
+  populateCountrySelector(["WW"], "vis-advertiser-dropdown-countries");
 
   if (data && data.length > 0) {
     // format data
@@ -179,7 +179,7 @@ function AdvertiserChart({ data, includedVerticalData }) {
     getDropdownValue("vis-advertiser-dropdown-systems")
   );
   const [country, setCountry] = useState(
-    getDropdownValue("vis-advertiser-dropdown-countries") || "USA"
+    getDropdownValue("vis-advertiser-dropdown-countries") || "WW"
   );
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");

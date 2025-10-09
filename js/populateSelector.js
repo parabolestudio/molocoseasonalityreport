@@ -19,7 +19,7 @@ export function populateCountrySelector(countries, containerId) {
     text: countryLabels[country] || country,
   }));
 
-  const countryDefault = { value: "USA", text: "U.S." };
+  const countryDefault = { value: "WW", text: "Global" };
 
   if (countryDropdown) {
     if (countryDropdown) countryDropdown.innerHTML = "";
