@@ -12,7 +12,7 @@ export function populateCountrySelector(countries, containerId) {
     ITA: "Italy",
     JPN: "Japan",
     KOR: "South Korea",
-    WW: "Worldwide",
+    WW: "Global",
   };
   const countriesArray = countries.map((country) => ({
     value: country,

@@ -541,9 +541,9 @@ export const holidayStyles = {
 };
 
 export const metricsLabels = {
-  cpm_p50: "CPM = Cost Per Impression",
-  cpi_p50: "CPI = Cost Per Install",
-  roas_d7_p50: "ROAS = Return on Ad Spend",
-  arppu_d7_p50: "ARPPU = Average Revenue Per Paying User",
-  ad_opportunities: "TODO",
+  cpm_p50: "Cost per mile (thousand) impressions",
+  cpi_p50: "Cost per install",
+  roas_d7_p50: "Return on Ad Spend (D7)",
+  arppu_d7_p50: "Average Revenue Per Paying User (D7)",
+  ad_opportunities: "Total bid requests across all supply inventory",
 };
