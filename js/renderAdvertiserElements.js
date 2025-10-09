@@ -554,11 +554,6 @@ function AdvertiserChart({ data, includedVerticalData }) {
                 font-weight="400"
                 font-family="Montserrat, sans-serif"
                 style="line-height: 1.25"
-                fill-opacity="${isMobile
-                  ? i === 0 || i === monthsPastYear.length - 1
-                    ? 1
-                    : 0
-                  : 1}"
               >
                 ${isMobile ? month.shortName : month.name}
               </text>
