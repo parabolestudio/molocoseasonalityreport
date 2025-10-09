@@ -422,29 +422,29 @@ function UserChart({ data, includedVerticalData }) {
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartMargin.top + chartInnerHeight}"
-          width="${isMobile || isTablet ? chartWidth : 0}"
-          height="${isMobile || isTablet ? margin.bottom : 0}"
+          width="${chartWidth}"
+          height="${margin.bottom}"
           fill="#f8f8f8"
         />
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartHeight + chartMargin.top + chartInnerHeight}"
-          width="${isMobile || isTablet ? chartWidth : 0}"
-          height="${isMobile || isTablet ? margin.bottom : 0}"
+          width="${chartWidth}"
+          height="${margin.bottom}"
           fill="#f8f8f8"
         />
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartHeight}"
-          width="${isMobile || isTablet ? chartWidth : 0}"
-          height="${isMobile || isTablet ? chartMargin.top : 0}"
+          width="${chartWidth}"
+          height="${chartMargin.top}"
           fill="#f8f8f8"
         />
         <rect
           x="${margin.left + chartMargin.left}"
           y="${margin.top + chartHeight * 2}"
-          width="${isMobile || isTablet ? chartWidth : 0}"
-          height="${isMobile || isTablet ? chartMargin.top : 0}"
+          width="${chartWidth}"
+          height="${chartMargin.top}"
           fill="#f8f8f8"
         />
         ${holidayPositions.map(({ holiday, x, offsetX, offsetY }) => {
