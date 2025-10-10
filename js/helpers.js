@@ -65,7 +65,7 @@ export const prevTimeScaleUTC = d3
 
 export const currentTimeScaleUTC = d3
   .scaleLinear()
-  .domain([Date.UTC(currentYear, 8, 30), Date.UTC(currentYear + 1, 2, 31)]);
+  .domain([Date.UTC(currentYear, 8, 29), Date.UTC(currentYear + 1, 2, 31)]);
 
 export function getDateInUTC(dateString) {
   const [year, month, day] = dateString.split("-").map(Number);
