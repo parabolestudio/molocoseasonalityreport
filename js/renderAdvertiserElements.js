@@ -117,7 +117,7 @@ function AdvertiserMetricsButtons() {
 
             setHoveredMetric({
               value: metric.value,
-              x: Math.max(10, adjustedX), // Ensure tooltip doesn't go off-screen to the left
+              x: isMobile ? 0 : Math.max(0, adjustedX), // Ensure tooltip doesn't go off-screen to the left
               y: y,
             });
           }}"
@@ -128,9 +128,14 @@ function AdvertiserMetricsButtons() {
     ${hoveredMetricItem &&
     html`<div
       class="tooltip"
-      style="left: ${hoveredMetricItem.x}px; top: ${hoveredMetricItem.y}px;}"
+      style="left: ${hoveredMetricItem.x}px; top: ${hoveredMetricItem.y}px; ${isMobile
+        ? "width: 100%;"
+        : ""}"
     >
-      <p class="tooltip-label" style="white-space: nowrap;">
+      <p
+        class="tooltip-label"
+        style="${!isMobile ? "white-space: nowrap;" : ""}"
+      >
         ${metricsLabels[hoveredMetricItem.value]}
       </p>
     </div>`}
