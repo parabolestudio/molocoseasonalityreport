@@ -1,46 +1,62 @@
-export function populateCountrySelector(countries, containerId) {
-  let countryDropdown = document.querySelector(`#${containerId}`);
+export function populateAllCountrySelectors() {
+  let countryDropdowns = document.querySelectorAll(`.vis-dropdown-countries`);
 
   const countryLabels = {
-    USA: "U.S.",
     CAN: "Canada",
-    GBR: "U.K.",
-    DEU: "Germany",
     FRA: "France",
-    AUS: "Australia",
+    DEU: "Germany",
+    WW: "Global",
     IND: "India",
-    ITA: "Italy",
     JPN: "Japan",
     KOR: "South Korea",
-    WW: "Global",
+    GBR: "U.K.",
+    USA: "U.S.",
   };
-  const countriesArray = countries.map((country) => ({
-    value: country,
-    text: countryLabels[country] || country,
-  }));
+  const countries = [
+    "WW",
+    "USA",
+    "IND",
+    "JPN",
+    "KOR",
+    "GBR",
+    "FRA",
+    "DEU",
+    "CAN",
+  ];
+  const countriesArray = countries
+    .map((country) => ({
+      value: country,
+      text: countryLabels[country] || country,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text));
 
   const countryDefault = { value: "WW", text: "Global" };
 
-  if (countryDropdown) {
-    if (countryDropdown) countryDropdown.innerHTML = "";
-    countriesArray
-      .sort((a, b) => a.text.localeCompare(b.text))
-      .forEach((country) => {
+  if (countryDropdowns)
+    countryDropdowns.forEach((dropdown) => {
+      if (dropdown) dropdown.innerHTML = "";
+      countriesArray.forEach((country) => {
         let option = document.createElement("option");
         option.value = country.value;
         option.text = country.text;
-        countryDropdown.add(option);
+        dropdown.add(option);
       });
-    countryDropdown.value = countryDefault.value;
-    countryDropdown.addEventListener("change", (e) => {
-      // Dispatch custom event to notify other components
-      document.dispatchEvent(
-        new CustomEvent(containerId + "-changed", {
-          detail: { selectedCountry: e.target.value },
-        })
-      );
+      dropdown.value = countryDefault.value;
+      dropdown.addEventListener("change", (e) => {
+        // Dispatch custom event to notify other components
+        document.dispatchEvent(
+          new CustomEvent("vis-dropdown-countries-changed", {
+            detail: { selectedCountry: e.target.value },
+          })
+        );
+        // loop over all other dropdowns and set their value to the same
+        countryDropdowns.forEach((otherDropdown) => {
+          if (otherDropdown !== dropdown) {
+            otherDropdown.value = e.target.value;
+          }
+        });
+      });
     });
-  }
 }
 
 export function populateAllSystemSelectors() {

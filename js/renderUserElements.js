@@ -1,8 +1,4 @@
 import {
-  populateCountrySelector,
-  getDropdownValue,
-} from "./populateSelector.js";
-import {
   html,
   renderComponent,
   useState,
@@ -25,15 +21,7 @@ import NoDataElement from "./NoDataElement.js";
 import { holidayIcons } from "./holidays.js";
 
 export function renderUserElements(data = null, includedVerticalData = null) {
-  populateCountrySelector(["WW"], "vis-user-dropdown-countries");
-
   if (data && data.length > 0) {
-    // populate country selector
-    const countries = Array.from(
-      new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))
-    ).sort();
-    populateCountrySelector(countries, "vis-user-dropdown-countries");
-
     // render chart with data
     renderUserChart(data, includedVerticalData);
   } else {
@@ -63,9 +51,7 @@ function renderUserChart(data, includedVerticalData) {
 
 function UserChart({ data, includedVerticalData }) {
   const [system, setSystem] = useState("IOS");
-  const [country, setCountry] = useState(
-    getDropdownValue("vis-user-dropdown-countries") || "WW"
-  );
+  const [country, setCountry] = useState("WW");
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
   const [chartData, setChartData] = useState(
@@ -154,12 +140,12 @@ function UserChart({ data, includedVerticalData }) {
   useEffect(() => {
     const handleCountryChange = (e) => setCountry(e.detail.selectedCountry);
     document.addEventListener(
-      "vis-user-dropdown-countries-changed",
+      "vis-dropdown-countries-changed",
       handleCountryChange
     );
     return () => {
       document.removeEventListener(
-        "vis-user-dropdown-countries-changed",
+        "vis-dropdown-countries-changed",
         handleCountryChange
       );
     };

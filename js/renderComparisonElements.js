@@ -1,8 +1,4 @@
 import {
-  populateCountrySelector,
-  getDropdownValue,
-} from "./populateSelector.js";
-import {
   html,
   renderComponent,
   useState,
@@ -56,8 +52,6 @@ export function renderComparisonElements(
   // render period buttons
   renderPeriodButtons("past");
 
-  populateCountrySelector(["WW"], "vis-comparison-dropdown-countries");
-
   if (
     userData &&
     userData.length > 0 &&
@@ -67,26 +61,6 @@ export function renderComparisonElements(
     // format data
     handleUserData(userData);
     handleAdvertiserData(advertiserData);
-
-    // populate country selector
-    const countriesUser = Array.from(
-      new Set(userData.map((d) => d["country"]).filter((c) => c && c !== ""))
-    ).sort();
-    const countriesAdvertiser = Array.from(
-      new Set(
-        advertiserData.map((d) => d["country"]).filter((c) => c && c !== "")
-      )
-    ).sort();
-
-    // get only countries that are in both datasets
-    const countriesUniqueMerged = countriesUser.filter((country) =>
-      countriesAdvertiser.includes(country)
-    );
-
-    populateCountrySelector(
-      countriesUniqueMerged,
-      "vis-comparison-dropdown-countries"
-    );
 
     // render chart with data
     renderComparisonChart(userData, advertiserData, includedVerticalData);
@@ -379,9 +353,7 @@ function getWeekNumberArray(year = "past", period) {
 
 function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
   const [system, setSystem] = useState("IOS");
-  const [country, setCountry] = useState(
-    getDropdownValue("vis-comparison-dropdown-countries") || "WW"
-  );
+  const [country, setCountry] = useState("WW");
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
   const [year, setYear] = useState("past");
@@ -468,16 +440,16 @@ function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
     };
   }, []);
 
-  // listen to change in comparison country dropdown
+  // listen to change in country dropdown
   useEffect(() => {
     const handleCountryChange = (e) => setCountry(e.detail.selectedCountry);
     document.addEventListener(
-      "vis-comparison-dropdown-countries-changed",
+      "vis-dropdown-countries-changed",
       handleCountryChange
     );
     return () => {
       document.removeEventListener(
-        "vis-comparison-dropdown-countries-changed",
+        "vis-dropdown-countries-changed",
         handleCountryChange
       );
     };

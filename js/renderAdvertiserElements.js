@@ -1,8 +1,4 @@
 import {
-  populateCountrySelector,
-  getDropdownValue,
-} from "./populateSelector.js";
-import {
   html,
   renderComponent,
   useState,
@@ -32,17 +28,9 @@ export function renderAdvertiserElements(data, includedVerticalData) {
   // render metrics buttons
   renderMetricsButtons();
 
-  populateCountrySelector(["WW"], "vis-advertiser-dropdown-countries");
-
   if (data && data.length > 0) {
     // format data
     handleData(data);
-
-    // populate country selector
-    const countries = Array.from(
-      new Set(data.map((d) => d["country"]).filter((c) => c && c !== ""))
-    ).sort();
-    populateCountrySelector(countries, "vis-advertiser-dropdown-countries");
 
     // render chart with data
     renderAdvertiserChart(data, includedVerticalData);
@@ -172,9 +160,7 @@ function renderAdvertiserChart(data, includedVerticalData) {
 function AdvertiserChart({ data, includedVerticalData }) {
   console.log("Rendering advertiser chart component", data);
   const [system, setSystem] = useState("IOS");
-  const [country, setCountry] = useState(
-    getDropdownValue("vis-advertiser-dropdown-countries") || "WW"
-  );
+  const [country, setCountry] = useState("WW");
   const [category, setCategory] = useState("gaming");
   const [vertical, setVertical] = useState("all");
   const [metric, setMetric] = useState(metricDefault.value);
@@ -256,12 +242,12 @@ function AdvertiserChart({ data, includedVerticalData }) {
   useEffect(() => {
     const handleCountryChange = (e) => setCountry(e.detail.selectedCountry);
     document.addEventListener(
-      "vis-advertiser-dropdown-countries-changed",
+      "vis-dropdown-countries-changed",
       handleCountryChange
     );
     return () => {
       document.removeEventListener(
-        "vis-advertiser-dropdown-countries-changed",
+        "vis-dropdown-countries-changed",
         handleCountryChange
       );
     };
