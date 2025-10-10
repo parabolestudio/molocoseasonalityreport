@@ -1,54 +1,22 @@
 export const ASSETS_URL =
   "https://raw.githubusercontent.com/parabolestudio/molocoseasonalityreport/refs/heads/main/assets/icons/";
 
+function formatNumber(value) {
+  const absValue = Math.abs(value);
+  let formatted =
+    absValue >= 1_000_000_000
+      ? (absValue / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
+      : absValue >= 1_000_000
+      ? (absValue / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
+      : absValue >= 1_000
+      ? (absValue / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
+      : absValue;
+  return value < 0 ? "-" + formatted : formatted;
+}
 export const valueFormatting = {
-  wau: (value) => {
-    return value >= 1_000_000_000
-      ? (value / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
-      : value >= 1_000_000
-      ? (value / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
-      : value >= 1_000
-      ? (value / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
-      : value;
-  },
-  downloads: (value) => {
-    return value >= 1_000_000_000
-      ? (value / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
-      : value >= 1_000_000
-      ? (value / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
-      : value >= 1_000
-      ? (value / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
-      : value;
-  },
-  revenue: (value) => {
-    return value >= 1_000_000_000
-      ? (value / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
-      : value >= 1_000_000
-      ? (value / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
-      : value >= 1_000
-      ? (value / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
-      : value;
-  },
-  time_spent: (value) => {
-    const absValue = Math.abs(value);
-    let formatted =
-      absValue >= 1_000_000_000
-        ? (absValue / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
-        : absValue >= 1_000_000
-        ? (absValue / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
-        : absValue >= 1_000
-        ? (absValue / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
-        : absValue;
-    return value < 0 ? "-" + formatted : formatted;
-  },
-  wow: (value) => {
-    const percent = value * 100;
-    return percent > 0
-      ? "+" + percent.toFixed(1).replace(/\.0$/, "") + "%"
-      : percent < 0
-      ? percent.toFixed(1).replace(/\.0$/, "") + "%"
-      : "0%";
-  },
+  downloads: (value) => formatNumber(value),
+  revenue: (value) => formatNumber(value),
+  time_spent: (value) => formatNumber(value),
   indexed: (value) => {
     return value.toFixed(0);
   },

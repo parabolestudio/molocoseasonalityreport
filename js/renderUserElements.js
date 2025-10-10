@@ -556,8 +556,14 @@ function SingleChart({
     .x((d) => weekScale(d.weekNumber))
     .defined((d) => d.value !== null);
 
-  const prevLine = lineGen(datapointsPrev);
-  const currentLine = lineGen(datapointsCurrent);
+  const prevLine =
+    d3.sum(datapointsPrev, (d) => d.value) === 0
+      ? null
+      : lineGen(datapointsPrev);
+  const currentLine =
+    d3.sum(datapointsCurrent, (d) => d.value) === 0
+      ? null
+      : lineGen(datapointsCurrent);
 
   const highlightPrev = hoveredValues
     ? datapointsPrev.find((d) => d.weekNumber === hoveredValues?.week)
