@@ -43,8 +43,8 @@ export function populateCountrySelector(countries, containerId) {
   }
 }
 
-export function populateSystemSelector(containerId) {
-  let systemDropdown = document.querySelector(`#${containerId}`);
+export function populateAllSystemSelectors() {
+  const systemDropdowns = document.querySelectorAll(".vis-dropdown-systems");
 
   const systemsArray = [
     {
@@ -58,22 +58,29 @@ export function populateSystemSelector(containerId) {
   ];
   const systemDefault = systemsArray[0];
 
-  if (systemDropdown) {
-    if (systemDropdown) systemDropdown.innerHTML = "";
-    systemsArray.forEach((system) => {
-      let option = document.createElement("option");
-      option.text = system.text;
-      option.value = system.value;
-      systemDropdown.add(option);
-    });
-    systemDropdown.value = systemDefault.value;
-    systemDropdown.addEventListener("change", (e) => {
-      // Dispatch custom event to notify other components
-      document.dispatchEvent(
-        new CustomEvent(containerId + "-changed", {
-          detail: { selectedSystem: e.target.value },
-        })
-      );
+  if (systemDropdowns) {
+    systemDropdowns.forEach((dropdown) => {
+      if (dropdown) dropdown.innerHTML = "";
+      systemsArray.forEach((system) => {
+        let option = document.createElement("option");
+        option.text = system.text;
+        option.value = system.value;
+        dropdown.add(option);
+      });
+      dropdown.value = systemDefault.value;
+      dropdown.addEventListener("change", (e) => {
+        document.dispatchEvent(
+          new CustomEvent("vis-dropdown-systems-changed", {
+            detail: { selectedSystem: e.target.value },
+          })
+        );
+        // loop over all other dropdowns and set their value to the same
+        systemDropdowns.forEach((otherDropdown) => {
+          if (otherDropdown !== dropdown) {
+            otherDropdown.value = e.target.value;
+          }
+        });
+      });
     });
   }
 }

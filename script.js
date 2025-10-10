@@ -6,6 +6,7 @@ import { renderUserElements } from "./js/renderUserElements.js";
 import { renderAdvertiserElements } from "./js/renderAdvertiserElements.js";
 import { renderComparisonElements } from "./js/renderComparisonElements.js";
 import { fetchGoogleSheetCSV } from "./js/googleSheets.js";
+import { populateAllSystemSelectors } from "./js/populateSelector.js";
 
 // render page-wide vertical selection
 renderVerticalSelection(null);
@@ -21,6 +22,8 @@ renderAdvertiserElements(null, null);
 
 // render comparison elements (filters, legend, etc)
 renderComparisonElements(null, null, null);
+
+populateAllSystemSelectors();
 
 function handleUserData(inputData) {
   return inputData.forEach((d) => {

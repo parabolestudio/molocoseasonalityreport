@@ -1,6 +1,5 @@
 import {
   populateCountrySelector,
-  populateSystemSelector,
   getDropdownValue,
 } from "./populateSelector.js";
 import {
@@ -26,8 +25,6 @@ import NoDataElement from "./NoDataElement.js";
 import { holidayIcons } from "./holidays.js";
 
 export function renderUserElements(data = null, includedVerticalData = null) {
-  // populate system selector
-  populateSystemSelector("vis-user-dropdown-systems");
   populateCountrySelector(["WW"], "vis-user-dropdown-countries");
 
   if (data && data.length > 0) {
@@ -65,9 +62,7 @@ function renderUserChart(data, includedVerticalData) {
 }
 
 function UserChart({ data, includedVerticalData }) {
-  const [system, setSystem] = useState(
-    getDropdownValue("vis-user-dropdown-systems")
-  );
+  const [system, setSystem] = useState("IOS");
   const [country, setCountry] = useState(
     getDropdownValue("vis-user-dropdown-countries") || "WW"
   );
@@ -131,25 +126,25 @@ function UserChart({ data, includedVerticalData }) {
     setChartData(filterData(data, includedVerticalData));
   }, [system, country, vertical, category, data]);
 
-  // console.log(
-  //   "Rendering user chart",
-  //   chartData,
-  //   system,
-  //   country,
-  //   category,
-  //   vertical
-  // );
+  console.log(
+    "Rendering user chart",
+    chartData,
+    system,
+    country,
+    category,
+    vertical
+  );
 
   // listen to change in user system dropdown
   useEffect(() => {
     const handleSystemChange = (e) => setSystem(e.detail.selectedSystem);
     document.addEventListener(
-      "vis-user-dropdown-systems-changed",
+      "vis-dropdown-systems-changed",
       handleSystemChange
     );
     return () => {
       document.removeEventListener(
-        "vis-user-dropdown-systems-changed",
+        "vis-dropdown-systems-changed",
         handleSystemChange
       );
     };

@@ -1,6 +1,5 @@
 import {
   populateCountrySelector,
-  populateSystemSelector,
   getDropdownValue,
 } from "./populateSelector.js";
 import {
@@ -29,9 +28,6 @@ import { holidayIcons } from "./holidays.js";
 
 export function renderAdvertiserElements(data, includedVerticalData) {
   console.log("Rendering advertiser elements");
-
-  // populate system selector
-  populateSystemSelector("vis-advertiser-dropdown-systems");
 
   // render metrics buttons
   renderMetricsButtons();
@@ -175,9 +171,7 @@ function renderAdvertiserChart(data, includedVerticalData) {
 
 function AdvertiserChart({ data, includedVerticalData }) {
   console.log("Rendering advertiser chart component", data);
-  const [system, setSystem] = useState(
-    getDropdownValue("vis-advertiser-dropdown-systems")
-  );
+  const [system, setSystem] = useState("IOS");
   const [country, setCountry] = useState(
     getDropdownValue("vis-advertiser-dropdown-countries") || "WW"
   );
@@ -243,16 +237,16 @@ function AdvertiserChart({ data, includedVerticalData }) {
     setChartData(filterData(data, includedVerticalData));
   }, [system, country, category, vertical, data, includedVerticalData]);
 
-  // listen to change in advertiser system dropdown
+  // listen to change in system dropdown
   useEffect(() => {
     const handleSystemChange = (e) => setSystem(e.detail.selectedSystem);
     document.addEventListener(
-      "vis-advertiser-dropdown-systems-changed",
+      "vis-dropdown-systems-changed",
       handleSystemChange
     );
     return () => {
       document.removeEventListener(
-        "vis-advertiser-dropdown-systems-changed",
+        "vis-dropdown-systems-changed",
         handleSystemChange
       );
     };

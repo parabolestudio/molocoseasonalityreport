@@ -1,6 +1,5 @@
 import {
   populateCountrySelector,
-  populateSystemSelector,
   getDropdownValue,
 } from "./populateSelector.js";
 import {
@@ -38,9 +37,6 @@ export function renderComparisonElements(
     advertiserData,
     includedVerticalData
   );
-
-  // populate system selector
-  populateSystemSelector("vis-comparison-dropdown-systems");
 
   // render metrics buttons
   renderMetricsButtons(
@@ -382,9 +378,7 @@ function getWeekNumberArray(year = "past", period) {
 }
 
 function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
-  const [system, setSystem] = useState(
-    getDropdownValue("vis-comparison-dropdown-systems")
-  );
+  const [system, setSystem] = useState("IOS");
   const [country, setCountry] = useState(
     getDropdownValue("vis-comparison-dropdown-countries") || "WW"
   );
@@ -459,16 +453,16 @@ function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
     setChartAdvertiserData(filterData(advertiserData, includedVerticalData));
   }, [system, country, category, vertical, userData, advertiserData]);
 
-  // listen to change in comparison system dropdown
+  // listen to change in  system dropdown
   useEffect(() => {
     const handleSystemChange = (e) => setSystem(e.detail.selectedSystem);
     document.addEventListener(
-      "vis-comparison-dropdown-systems-changed",
+      "vis-dropdown-systems-changed",
       handleSystemChange
     );
     return () => {
       document.removeEventListener(
-        "vis-comparison-dropdown-systems-changed",
+        "vis-dropdown-systems-changed",
         handleSystemChange
       );
     };
