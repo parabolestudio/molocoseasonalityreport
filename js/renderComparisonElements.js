@@ -642,6 +642,7 @@ function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
         })
         .sort((a, b) => getDateInUTC(a.week_start) - getDateInUTC(b.week_start))
     : [];
+  const userHasOnlyZeros = datapointsUser.every((d) => d[userMetric] === null);
 
   const minUserValue = datapointsUser
     ? d3.min(datapointsUser, (d) => d[userMetric])
@@ -655,8 +656,13 @@ function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
   const maxAdvertiserValue = datapointsAdvertiser
     ? d3.max(datapointsAdvertiser, (d) => d[advertiserMetric])
     : 0;
-  const minComparisonValue = Math.min(minUserValue, minAdvertiserValue);
-  const maxComparisonValue = Math.max(maxUserValue, maxAdvertiserValue);
+  const minComparisonValue = userHasOnlyZeros
+    ? minAdvertiserValue
+    : Math.min(minUserValue, minAdvertiserValue);
+  const maxComparisonValue = userHasOnlyZeros
+    ? maxAdvertiserValue
+    : Math.max(maxUserValue, maxAdvertiserValue);
+
   const valueComparisonScale = d3
     .scaleLinear()
     .domain([minComparisonValue, maxComparisonValue])
@@ -675,12 +681,13 @@ function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
     .x((d) => weekScale(d.weekNumber))
     .defined((d) => d[advertiserMetric] !== null);
 
-  const userLine = lineUserGen(datapointsUser);
+  const userLine = userHasOnlyZeros ? null : lineUserGen(datapointsUser);
   const advertiserLine = lineAdvertiserGen(datapointsAdvertiser);
 
-  const highlightUser = hoveredValues
-    ? datapointsUser.find((d) => d.weekNumber === hoveredValues?.week)
-    : null;
+  const highlightUser =
+    hoveredValues && !userHasOnlyZeros
+      ? datapointsUser.find((d) => d.weekNumber === hoveredValues?.week)
+      : null;
   const highlightAdvertiser = hoveredValues
     ? datapointsAdvertiser.find((d) => d.weekNumber === hoveredValues?.week)
     : null;
@@ -728,8 +735,9 @@ function ComparisonChart({ userData, advertiserData, includedVerticalData }) {
     }
   });
 
-  const { userAboveSegments, userBelowSegments } =
-    createAreaSegments(alignedData);
+  const { userAboveSegments, userBelowSegments } = userHasOnlyZeros
+    ? { userAboveSegments: [], userBelowSegments: [] }
+    : createAreaSegments(alignedData);
 
   const areaGen = d3
     .area()
