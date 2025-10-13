@@ -536,7 +536,7 @@ function SingleChart({
   //   datapointsCurrent
   // );
   const allDatapoints = [...datapointsPrev, ...datapointsCurrent].filter(
-    (d) => d.value !== null && d.value !== undefined
+    (d) => d.value !== null && d.value !== undefined && d.value !== 0
   );
 
   const hasOnlyZeros = d3.sum(allDatapoints, (d) => d.value) === 0;
@@ -571,6 +571,19 @@ function SingleChart({
   const highlightCurrent = hoveredValues
     ? datapointsCurrent.find((d) => d.weekNumber === hoveredValues?.week)
     : null;
+
+  const [precisionFormat, setPrecisionFormat] = useState(0);
+
+  useEffect(() => {
+    if (
+      valueFormatting[chart.value](minValueWithPadding, 0) ===
+      valueFormatting[chart.value](maxValue, 0)
+    ) {
+      setPrecisionFormat(1);
+    } else {
+      setPrecisionFormat(0);
+    }
+  }, [minValueWithPadding, maxValue]);
 
   return html`<g transform="translate(0, ${index * dim.chartHeight})">
     <g transform="translate(${dim.chartMargin.left}, ${dim.chartMargin.top})">
@@ -673,7 +686,10 @@ function SingleChart({
         style="line-height: 1.25"
         text-anchor="end"
         dominant-baseline="middle"
-        >${valueFormatting[chart.value](minValueWithPadding)}</text
+        >${valueFormatting[chart.value](
+          minValueWithPadding,
+          precisionFormat
+        )}</text
       >`}
       ${chart.data.length > 0 &&
       !hasOnlyZeros &&
@@ -687,7 +703,7 @@ function SingleChart({
         style="line-height: 1.25"
         text-anchor="end"
         dominant-baseline="middle"
-        >${valueFormatting[chart.value](maxValue)}</text
+        >${valueFormatting[chart.value](maxValue, precisionFormat)}</text
       >`}
     </g>
     <text
@@ -753,7 +769,7 @@ function TooltipValues({ hoveredItem }) {
               ${hoveredItem.valueCurrent
                 ? valueFormatting[hoveredItem.variable](
                     hoveredItem.valueCurrent,
-                    2
+                    1
                   )
                 : "-"}
             </p>
@@ -768,7 +784,7 @@ function TooltipValues({ hoveredItem }) {
           <p class="tooltip-label">Week of ${formattedDayPrev}</p>
           <p class="tooltip-value">
             ${hoveredItem.valuePrev
-              ? valueFormatting[hoveredItem.variable](hoveredItem.valuePrev, 2)
+              ? valueFormatting[hoveredItem.variable](hoveredItem.valuePrev, 1)
               : "-"}
           </p>
         </div>`

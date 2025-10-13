@@ -1,22 +1,22 @@
 export const ASSETS_URL =
   "https://raw.githubusercontent.com/parabolestudio/molocoseasonalityreport/refs/heads/main/assets/icons/";
 
-function formatNumber(value) {
+function formatNumber(value, precision = 0) {
   const absValue = Math.abs(value);
   let formatted =
     absValue >= 1_000_000_000
-      ? (absValue / 1_000_000_000).toFixed(0).replace(/\.0$/, "") + "B"
+      ? (absValue / 1_000_000_000).toFixed(precision).replace(/\.0$/, "") + "B"
       : absValue >= 1_000_000
-      ? (absValue / 1_000_000).toFixed(0).replace(/\.0$/, "") + "M"
+      ? (absValue / 1_000_000).toFixed(precision).replace(/\.0$/, "") + "M"
       : absValue >= 1_000
-      ? (absValue / 1_000).toFixed(0).replace(/\.0$/, "") + "k"
+      ? (absValue / 1_000).toFixed(precision).replace(/\.0$/, "") + "k"
       : absValue;
   return value < 0 ? "-" + formatted : formatted;
 }
 export const valueFormatting = {
-  downloads: (value) => formatNumber(value),
-  revenue: (value) => formatNumber(value),
-  time_spent: (value) => formatNumber(value),
+  downloads: (value, precision) => formatNumber(value, precision),
+  revenue: (value, precision) => formatNumber(value, precision),
+  time_spent: (value, precision) => formatNumber(value, precision),
   indexed: (value) => {
     return value.toFixed(0);
   },
