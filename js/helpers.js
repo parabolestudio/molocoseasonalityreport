@@ -518,3 +518,14 @@ export const metricsLabels = {
   arppu_d7_p50: "Average Revenue Per Paying User (D7)",
   ad_opportunities: "Total bid requests across all supply inventory",
 };
+
+// from YYYY-MM-DD to September 25, 2024
+export function formatDate(dateString, type = null) {
+  const date = new Date(dateString);
+  const month = date.toLocaleString("en-US", {
+    month: type === "short-month" ? "short" : "long",
+  });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
+}

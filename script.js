@@ -10,6 +10,9 @@ import {
   populateAllCountrySelectors,
   populateAllSystemSelectors,
 } from "./js/populateSelector.js";
+import renderLatestDataUpdate from "./js/renderLatestDataUpdate.js";
+
+renderLatestDataUpdate();
 
 // render page-wide vertical selection
 renderVerticalSelection(null);
