@@ -200,7 +200,7 @@ function UserChart({ data, includedVerticalData }) {
         : [],
     },
     {
-      title: "Revenue*",
+      title: "Revenue",
       value: "revenue",
       tooltipTitle: "Revenue",
       data: chartData
