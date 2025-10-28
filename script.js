@@ -43,7 +43,7 @@ function handleUserData(inputData) {
     d["vertical"] = d["vertical"].toLowerCase().trim();
     d["downloads"] = +d["downloads"];
     d["revenue"] = +d["revenue"];
-    d["time_spent"] = +d["time_spent"].trim();
+    d["time_spent"] = d["time_spent"] === "" ? null : +d["time_spent"].trim();
     d["week_start"] = d["week_start_date"];
     d["weekNumber"] = +d["Week Number"].trim();
   });

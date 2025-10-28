@@ -568,9 +568,18 @@ function SingleChart({
   const highlightPrev = hoveredValues
     ? datapointsPrev.find((d) => d.weekNumber === hoveredValues?.week)
     : null;
-  const highlightCurrent = hoveredValues
+
+  let highlightCurrent = null;
+  const currentHighlightDatapoint = hoveredValues
     ? datapointsCurrent.find((d) => d.weekNumber === hoveredValues?.week)
     : null;
+  if (
+    currentHighlightDatapoint &&
+    currentHighlightDatapoint.value !== null &&
+    currentHighlightDatapoint.value !== undefined
+  ) {
+    highlightCurrent = currentHighlightDatapoint;
+  }
 
   const [precisionFormat, setPrecisionFormat] = useState(0);
 
