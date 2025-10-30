@@ -5,7 +5,7 @@ import { renderSeasonalityTimeline } from "./js/renderSeasonalityTimeline.js";
 import { renderUserElements } from "./js/renderUserElements.js";
 import { renderAdvertiserElements } from "./js/renderAdvertiserElements.js";
 import { renderComparisonElements } from "./js/renderComparisonElements.js";
-import { fetchGoogleSheetCSV } from "./js/googleSheets.js";
+import { fetchCSV } from "./js/dataLoader.js";
 import {
   populateAllCountrySelectors,
   populateAllSystemSelectors,
@@ -95,9 +95,9 @@ function handleVerticalData(data) {
 }
 
 Promise.all([
-  fetchGoogleSheetCSV("user-engagement-merged"),
-  fetchGoogleSheetCSV("advertiser-kpis-merged"),
-  fetchGoogleSheetCSV("vertical-inclusion-merged"),
+  fetchCSV("user-engagement-merged"),
+  fetchCSV("advertiser-kpis-merged"),
+  fetchCSV("vertical-inclusion-merged"),
 ])
   .then(([userDataMerged, advertiserDataMerged, includedVerticalData]) => {
     console.log(

@@ -1,4 +1,4 @@
-import { fetchGoogleSheetCSV } from "./googleSheets.js";
+import { fetchCSV } from "./dataLoader.js";
 import { html, renderComponent } from "./utils/preact-htm.js";
 import { formatDate } from "./helpers.js";
 
@@ -6,7 +6,7 @@ const containerId = "vis-text-last-data-update";
 export default function renderLatestDataUpdate() {
   console.log("Rendering latest data update...");
 
-  fetchGoogleSheetCSV("latest-data-update")
+  fetchCSV("latest-data-update")
     .then((data) => {
       console.log("Latest data update", data);
 
