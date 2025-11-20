@@ -30,7 +30,7 @@ function SeasonalityTimeline() {
   console.log("Rendering seasonality timeline", selectedState);
 
   useEffect(() => {
-    setSelectedState("pre-hol");
+    setSelectedState("peak-hol");
   }, []);
 
   useEffect(() => {
@@ -1247,7 +1247,6 @@ function SeasonalityTimeline() {
       </g>
     </svg>`;
   } else {
-    // style="height: 100%; width: 100%; max-width: 1485px;"
     return html`<svg
       fill="none"
       viewBox="0 0 1485 552"
