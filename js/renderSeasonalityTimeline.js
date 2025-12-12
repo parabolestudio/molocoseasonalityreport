@@ -30,7 +30,7 @@ function SeasonalityTimeline() {
   console.log("Rendering seasonality timeline", selectedState);
 
   useEffect(() => {
-    setSelectedState("peak-hol");
+    setSelectedState("post-hol");
   }, []);
 
   useEffect(() => {
