@@ -23,8 +23,8 @@ export const valueFormatting = {
 };
 
 // time scales
-const prevYear = new Date().getFullYear() - 1;
-const currentYear = new Date().getFullYear();
+const prevYear = 2024;
+const currentYear = 2025;
 
 // Create a time scale from Oct 1 to end of March the following year (month is zero-based)
 export const prevTimeScaleUTC = d3

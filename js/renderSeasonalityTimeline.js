@@ -27,7 +27,7 @@ export function renderSeasonalityTimeline() {
 function SeasonalityTimeline() {
   const [selectedState, setSelectedState] = useState(null);
 
-  console.log("Rendering seasonality timeline", selectedState);
+  // console.log("Rendering seasonality timeline", selectedState);
 
   useEffect(() => {
     setSelectedState("post-hol");
