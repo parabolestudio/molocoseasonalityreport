@@ -63,8 +63,8 @@ export const consumerVerticals = [
     icon: "social.svg",
   },
   {
-    label: "Trading & Investing",
-    value: "finance (trading & investing)",
+    label: "Finance", // "Trading & Investing",
+    value: "finance", // finance (trading & investing)
     icon: "trading.svg",
   },
   {
@@ -73,8 +73,8 @@ export const consumerVerticals = [
     icon: "finance.svg",
   },
   {
-    label: "Utility & Productivity",
-    value: "utility & productivity",
+    label: "Utilities & Productivity",
+    value: "utilities & productivity",
     icon: "utility.svg",
   },
   {
@@ -88,8 +88,8 @@ export const consumerVerticals = [
     icon: "dating.svg",
   },
   {
-    label: "Entertainment",
-    value: "entertainment",
+    label: "Media & Entertainment", // "Entertainment",
+    value: "media & entertainment", // entertainment
     icon: "entertainment.svg",
   },
   {
@@ -98,8 +98,8 @@ export const consumerVerticals = [
     icon: "travel.svg",
   },
   {
-    label: "Health & Fitness",
-    value: "health & fitness",
+    label: "Health & Wellness", // Health & Fitness,
+    value: "health & wellness", // health & fitness
     icon: "health.svg",
   },
   {
