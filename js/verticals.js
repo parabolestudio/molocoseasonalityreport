@@ -79,7 +79,7 @@ export const consumerVerticals = [
   },
   {
     label: "Food & Delivery",
-    value: "on-demand", // TODO: check if this is really "food & delivery" category
+    value: "on-demand",
     icon: "food.svg",
   },
   {
@@ -121,6 +121,11 @@ export const consumerVerticals = [
     label: "Gen AI",
     value: "generative ai",
     icon: "genai.svg",
+  },
+  {
+    label: "Shopping",
+    value: "shopping",
+    icon: "ecommerce.svg",
   },
   {
     label: "Other",

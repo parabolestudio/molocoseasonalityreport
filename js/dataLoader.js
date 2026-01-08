@@ -1,11 +1,11 @@
 const SHEET_ID =
-  "2PACX-1vQV_fJ4xrBe0Wvwmk92stpzuxnCUxpmm5l7wz-HJ-N0DzRH0tyT2gS8SEQs0mNef3k8aImO2NVwyiS7";
+  "2PACX-1vTIHTQnmp5gELDxoqd-e70EzKMHIOiVYpdw-cl1wWp79fSR--V-s6trYXY97rUTrXsXBYP5VaNeVPoo";
 
 const SHEET_TAB_IDS = {
-  "user-engagement-merged": "1283514660", // merged with non-indexed and indexed data
-  "advertiser-kpis-merged": "860406561", // indexed data + bid requests
-  "vertical-inclusion-merged": "889937452", // tab for vertical inclusion iOS and Android
-  "latest-data-update": "1840538966", // tab to show latest data update date
+  "user-engagement-merged": "734297840", // merged with non-indexed and indexed data
+  "advertiser-kpis-merged": "337233485", // indexed data + bid requests
+  "vertical-inclusion-merged": "1073630041", // tab for vertical inclusion iOS and Android
+  "latest-data-update": "1752590836", // tab to show latest data update date
 };
 
 function getSheetUrl(tabName) {

@@ -189,7 +189,7 @@ function UserChart({ data, includedVerticalData }) {
 
   const charts = [
     {
-      title: "Downloads",
+      title: "Downloads (new data structure)",
       value: "downloads",
       tooltipTitle: "Downloads",
       data: chartData
